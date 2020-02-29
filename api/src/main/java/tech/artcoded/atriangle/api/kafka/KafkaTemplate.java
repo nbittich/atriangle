@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.function.Function;
 
-public interface KafkaTemplate<K,V> {
+public interface KafkaTemplate<K, V> {
   List<PartitionInfo> getPartitionInfos();
 
   Future<RecordMetadata> produce(K key, V body, int partition);
@@ -31,9 +31,9 @@ public interface KafkaTemplate<K,V> {
 
   PropertyStore getConsumerConfig();
 
-  Producer<K,V> getProducer();
+  Producer<K, V> getProducer();
 
-  Consumer<K,V> getConsumer();
+  Consumer<K, V> getConsumer();
 
   Serializer<K> getSerializerKey();
 
@@ -49,9 +49,9 @@ public interface KafkaTemplate<K,V> {
 
   void setConsumerConfig(PropertyStore consumerConfig);
 
-  void setProducer(Producer<K,V> producer);
+  void setProducer(Producer<K, V> producer);
 
-  void setConsumer(Consumer<K,V> consumer);
+  void setConsumer(Consumer<K, V> consumer);
 
   void setSerializerKey(Serializer<K> serializerKey);
 

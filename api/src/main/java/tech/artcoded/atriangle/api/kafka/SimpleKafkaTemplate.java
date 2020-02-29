@@ -29,21 +29,21 @@ import java.util.function.Function;
 @NoArgsConstructor
 @AllArgsConstructor
 @Slf4j
-public class SimpleKafkaTemplate implements KafkaTemplate<String,String> {
+public class SimpleKafkaTemplate implements KafkaTemplate<String, String> {
     private String topic;
     private PropertyStore producerConfig;
     private PropertyStore consumerConfig;
-    private Producer<String,String>producer;
-    private Consumer<String,String>consumer;
+    private Producer<String, String> producer;
+    private Consumer<String, String> consumer;
     private Serializer<String> serializerKey;
     private Serializer<String> serializerValue;
     private Deserializer<String> deserializerKey;
     private Deserializer<String> deserializerValue;
 
     @Override
-    public List<PartitionInfo> getPartitionInfos(){
+    public List<PartitionInfo> getPartitionInfos() {
         List<PartitionInfo> partitionInfos = getProducer().partitionsFor(getTopic());
-        if(partitionInfos == null || partitionInfos.isEmpty()){
+        if (partitionInfos == null || partitionInfos.isEmpty()) {
             throw new IllegalStateException("at least one partition should exist");
         }
         log.debug("Number of partition: {}", partitionInfos.size());
@@ -53,7 +53,7 @@ public class SimpleKafkaTemplate implements KafkaTemplate<String,String> {
     @Override
     public Future<RecordMetadata> produce(String key, String body, int partition) {
         log.info("produce message with key: " + key + " in topic " + this.getTopic());
-        log.info("Partition used to produce the message: {}",partition);
+        log.info("Partition used to produce the message: {}", partition);
         Future<RecordMetadata> send = getProducer().send(new ProducerRecord<>(this.getTopic(), partition, key, body));
         log.info("message sent.");
         return send;
@@ -69,7 +69,7 @@ public class SimpleKafkaTemplate implements KafkaTemplate<String,String> {
 
     @Override
     public <T> T consume(long pollingSeconds, boolean commit, Function<ConsumerRecords<String, String>, T> transform) {
-        ConsumerRecords<String,String>poll = getConsumer().poll(Duration.of(pollingSeconds, ChronoUnit.SECONDS));
+        ConsumerRecords<String, String> poll = getConsumer().poll(Duration.of(pollingSeconds, ChronoUnit.SECONDS));
         T converted = transform.apply(poll);
         if (commit) {
             getConsumer().commitSync();
@@ -80,7 +80,7 @@ public class SimpleKafkaTemplate implements KafkaTemplate<String,String> {
     @Override
     public void consume(long pollingSeconds, boolean commit,
                         java.util.function.Consumer<ConsumerRecords<String, String>> consumer) {
-        ConsumerRecords<String,String>poll = getConsumer().poll(Duration.of(pollingSeconds, ChronoUnit.SECONDS));
+        ConsumerRecords<String, String> poll = getConsumer().poll(Duration.of(pollingSeconds, ChronoUnit.SECONDS));
         consumer.accept(poll);
         if (commit) {
             getConsumer().commitSync();

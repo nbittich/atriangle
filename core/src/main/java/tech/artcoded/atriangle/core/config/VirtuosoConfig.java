@@ -7,12 +7,9 @@ import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.riot.Lang;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import tech.artcoded.atriangle.api.ModelUtils;
 import tech.artcoded.atriangle.api.SparqlService;
 import tech.artcoded.atriangle.api.SparqlServiceParam;
 

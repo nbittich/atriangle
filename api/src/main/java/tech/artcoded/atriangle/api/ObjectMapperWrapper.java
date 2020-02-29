@@ -17,61 +17,67 @@ import java.util.stream.Collectors;
  */
 @FunctionalInterface
 public interface ObjectMapperWrapper {
-    ObjectMapper mapper();
-    Logger LOG = LoggerFactory.getLogger(ObjectMapperWrapper.class.getName());
+  ObjectMapper mapper();
 
-    @SneakyThrows
-    default String serialize(Object object) {
-        return mapper().writeValueAsString(object);
+  Logger LOG = LoggerFactory.getLogger(ObjectMapperWrapper.class.getName());
+
+  @SneakyThrows
+  default String serialize(Object object) {
+    return mapper().writeValueAsString(object);
+  }
+
+  default <T> boolean instanceOf(String value, Class<T> tClass) {
+    // todo refactor
+    try {
+      Optional<T> deserialize = deserialize(value, tClass);
+      return deserialize.isPresent();
     }
-
-    default<T> boolean instanceOf(String value, Class<T> tClass){
-        // todo refactor
-        try{
-            Optional<T> deserialize = deserialize(value, tClass);
-           return deserialize.isPresent();
-        }catch (Exception e){
-            return false;
-        }
+    catch (Exception e) {
+      return false;
     }
+  }
 
-    default <T> Optional<T> deserialize(String value, Class<T> tClass) {
-        try {
-            return Optional.of(mapper().readValue(value, tClass));
-        } catch (Exception e) {
-            LOG.debug("error while deserialize -> " + tClass, e);
-            return Optional.empty();
-        }
+  default <T> Optional<T> deserialize(String value, Class<T> tClass) {
+    try {
+      return Optional.of(mapper().readValue(value, tClass));
     }
-
-    /**
-     * if any error occurs during the process of deserialization or if the object is null, throws a runtime exception
-     */
-    default <T> T deserializeStrict(String value, Class<T> tClass) {
-        try {
-            return Optional.of(mapper().readValue(value, tClass))
-                    .orElseThrow(()->new RuntimeException(String.format("cannot deserialize class %s with value %s", tClass.getName(), value)));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    catch (Exception e) {
+      LOG.debug("error while deserialize -> " + tClass, e);
+      return Optional.empty();
     }
+  }
 
-    @SneakyThrows
-    default <T> T deserialize(InputStream value, Class<T> tClass) {
-        return mapper().readValue(value, tClass);
+  /**
+   * if any error occurs during the process of deserialization or if the object is null, throws a runtime exception
+   */
+  default <T> T deserializeStrict(String value, Class<T> tClass) {
+    try {
+      return Optional.of(mapper().readValue(value, tClass))
+                     .orElseThrow(() -> new RuntimeException(String.format("cannot deserialize class %s with value %s", tClass.getName(), value)));
     }
-
-    default List<String> serializeList(List<Object> list) {
-        return list.stream().map(this::serialize).collect(Collectors.toList());
+    catch (IOException e) {
+      throw new RuntimeException(e);
     }
+  }
+
+  @SneakyThrows
+  default <T> T deserialize(InputStream value, Class<T> tClass) {
+    return mapper().readValue(value, tClass);
+  }
+
+  default List<String> serializeList(List<Object> list) {
+    return list.stream()
+               .map(this::serialize)
+               .collect(Collectors.toList());
+  }
 
 
-    default <T> List<T> deserializeList(List<String> list, Class<T> tClass) {
-        return list.stream()
-                .filter(Objects::nonNull)
-                .map(o -> deserialize(o, tClass))
-                .filter(Optional::isPresent)
-                .map(Optional::get)
-                .collect(Collectors.toList());
-    }
+  default <T> List<T> deserializeList(List<String> list, Class<T> tClass) {
+    return list.stream()
+               .filter(Objects::nonNull)
+               .map(o -> deserialize(o, tClass))
+               .filter(Optional::isPresent)
+               .map(Optional::get)
+               .collect(Collectors.toList());
+  }
 }

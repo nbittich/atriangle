@@ -8,9 +8,9 @@ import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import tech.artcoded.atriangle.api.kafka.CommonConstants;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.PropertyStore;
+import tech.artcoded.atriangle.api.kafka.CommonConstants;
 import tech.artcoded.atriangle.api.kafka.KafkaHelper;
 import tech.artcoded.atriangle.api.kafka.KafkaService;
 import tech.artcoded.atriangle.api.kafka.SimpleKafkaTemplate;
@@ -28,13 +28,13 @@ public class KafkaConfig {
 
   @Bean
   @Named(OBJECT_MAPPER_WRAPPER)
-  public ObjectMapperWrapper objectMapperWrapper(){
+  public ObjectMapperWrapper objectMapperWrapper() {
     return ObjectMapper::new;
   }
 
   @Bean
   @Named(KAFKA_TEMPLATE)
-  public SimpleKafkaTemplate kafkaTemplate(){
+  public SimpleKafkaTemplate kafkaTemplate() {
 
     StringSerializer stringSerializer = new StringSerializer();
     StringDeserializer stringDeserializer = new StringDeserializer();
@@ -43,8 +43,8 @@ public class KafkaConfig {
     PropertyStore consumerConfig = PropertyStore.single(CommonConstants.CONSUMER_PROPERTY_FILE);
 
     var props = PropertyStore.systemProperties()
-      .merge(producerConfig)
-      .merge(consumerConfig);
+                             .merge(producerConfig)
+                             .merge(consumerConfig);
     String toTopic = props.getRequiredPropertyAsString(CommonConstants.TOPIC_TO);
     List<String> fromTopic = props.getRequiredPropertyAsListOfString(CommonConstants.TOPIC_FROM, Optional.empty());
 
@@ -52,16 +52,16 @@ public class KafkaConfig {
     Consumer<String, String> consumer = KafkaHelper.createConsumer(consumerConfig, stringDeserializer.getClass(), stringDeserializer.getClass(), fromTopic);
 
     return SimpleKafkaTemplate.builder()
-      .topic(toTopic)
-      .producerConfig(producerConfig)
-      .consumerConfig(consumerConfig)
-      .producer(producer)
-      .consumer(consumer)
-      .serializerKey(stringSerializer)
-      .serializerValue(stringSerializer)
-      .deserializerKey(stringDeserializer)
-      .deserializerValue(stringDeserializer)
-      .build();
+                              .topic(toTopic)
+                              .producerConfig(producerConfig)
+                              .consumerConfig(consumerConfig)
+                              .producer(producer)
+                              .consumer(consumer)
+                              .serializerKey(stringSerializer)
+                              .serializerValue(stringSerializer)
+                              .deserializerKey(stringDeserializer)
+                              .deserializerValue(stringDeserializer)
+                              .build();
   }
 
 
@@ -69,7 +69,7 @@ public class KafkaConfig {
   @Named(KAFKA_SERVICE)
   @Inject
   public KafkaService kafkaService(@Named(KAFKA_TEMPLATE) SimpleKafkaTemplate kafkaTemplate,
-                                   @Named(OBJECT_MAPPER_WRAPPER) ObjectMapperWrapper objectMapperWrapper){
-    return new KafkaService(kafkaTemplate,objectMapperWrapper);
+                                   @Named(OBJECT_MAPPER_WRAPPER) ObjectMapperWrapper objectMapperWrapper) {
+    return new KafkaService(kafkaTemplate, objectMapperWrapper);
   }
 }

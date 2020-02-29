@@ -24,7 +24,9 @@ public interface KafkaHelper {
         Properties props = new Properties();
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, keyClass.getName());
         props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, valueClass.getName());
-        Properties properties = PropertyStore.fromProperties(props).merge(extraProps).toProperties();
+        Properties properties = PropertyStore.fromProperties(props)
+                                             .merge(extraProps)
+                                             .toProperties();
         return new KafkaProducer<>(properties);
     }
 
@@ -35,7 +37,9 @@ public interface KafkaHelper {
         Properties props = new Properties();
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, keyClass.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, valueClass.getName());
-        Properties properties = PropertyStore.fromProperties(props).merge(extraProps).toProperties();
+        Properties properties = PropertyStore.fromProperties(props)
+                                             .merge(extraProps)
+                                             .toProperties();
         KafkaConsumer<K, V> consumer = new KafkaConsumer<>(properties);
 
         consumer.subscribe(topics);

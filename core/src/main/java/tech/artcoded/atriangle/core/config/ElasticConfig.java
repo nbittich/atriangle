@@ -15,6 +15,7 @@ import javax.inject.Named;
 import java.io.IOException;
 
 import static tech.artcoded.atriangle.core.config.NamedBean.ELASTIC_CLIENT;
+import static tech.artcoded.atriangle.core.config.NamedBean.ELASTIC_SEARCH_RDF_SERVICE;
 
 @Configuration
 @Slf4j
@@ -38,6 +39,7 @@ public class ElasticConfig {
 
   @Bean
   @Inject
+  @Named(ELASTIC_SEARCH_RDF_SERVICE)
   public ElasticSearchRdfService elasticSearchRdfService(
     @Named(ELASTIC_CLIENT) RestHighLevelClient client) throws IOException {
     ElasticSearchRdfService elasticSearchRdfService = () -> client;

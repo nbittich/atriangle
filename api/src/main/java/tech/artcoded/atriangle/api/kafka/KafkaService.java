@@ -6,7 +6,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.PartitionInfo;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 
-import java.util.Collections;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -24,11 +23,14 @@ public class KafkaService implements IKafkaService {
         this.mapperHelper = mapperHelper;
     }
 
-    private int randomPartition(){
+    private int randomPartition() {
         List<PartitionInfo> partitionInfos = consumerPartitionInfos();
-        List<Integer> ids = IntStream.range(0, partitionInfos.size()).boxed().collect(Collectors.toList());
+        List<Integer> ids = IntStream.range(0, partitionInfos.size())
+                                     .boxed()
+                                     .collect(Collectors.toList());
         Collections.shuffle(ids);
-        return partitionInfos.get(ids.get(0)).partition();
+        return partitionInfos.get(ids.get(0))
+                             .partition();
     }
 
     @Override
@@ -38,7 +40,7 @@ public class KafkaService implements IKafkaService {
 
 
     @Override
-    public <T>List<?> consumeEvents(Class<T> tClass) {
+    public <T> List<?> consumeEvents(Class<T> tClass) {
         return consumeEvents(1, tClass);
     }
 
@@ -47,11 +49,11 @@ public class KafkaService implements IKafkaService {
         return kafkaTemplate.consume(pollingSeconds, true, messages -> {
             log.info("messages count: " + messages.count());
             List<String> records = StreamSupport.stream(messages.spliterator(), false)
-                    .peek(e -> log.info("key: " + e.key()))
-                    .map(ConsumerRecord::value)
-                     .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
-            return  mapperHelper.deserializeList(records, tClass);
+                                                .peek(e -> log.info("key: " + e.key()))
+                                                .map(ConsumerRecord::value)
+                                                .filter(Objects::nonNull)
+                                                .collect(Collectors.toList());
+            return mapperHelper.deserializeList(records, tClass);
         });
 
     }
@@ -61,7 +63,7 @@ public class KafkaService implements IKafkaService {
         Map<Class<?>, List<?>> map = new HashMap<>();
         return Arrays.stream(tClasses)
                      .distinct()
-                     .map(aClass -> Map.entry(aClass, consumeEvents(pollingSeconds,aClass)))
-          .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                     .map(aClass -> Map.entry(aClass, consumeEvents(pollingSeconds, aClass)))
+                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
 }

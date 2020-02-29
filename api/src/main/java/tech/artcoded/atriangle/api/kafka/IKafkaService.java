@@ -12,5 +12,6 @@ public interface IKafkaService {
     <T> List<?> consumeEvents(Class<T> tClass);
 
     List<?> consumeEvents(Integer pollingSeconds, Class<?> tClass);
+
     Map<Class<?>, List<?>> consumeMultipleEvents(Integer pollingSeconds, Class<?>... tClasses);
 }

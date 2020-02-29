@@ -6,4 +6,5 @@ public interface NamedBean {
   String KAFKA_TEMPLATE = "coreKafkaTemplate";
   String KAFKA_SERVICE = "coreKafkaService";
   String OBJECT_MAPPER_WRAPPER = "coreObjectMapperWrapper";
+  String ELASTIC_SEARCH_RDF_SERVICE = "coreElasticSearchRdfService";
 }

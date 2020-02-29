@@ -59,7 +59,7 @@ public interface SparqlService {
 
   @SneakyThrows
   default Model construct(InputStream query) {
-    return queryExecution(IOUtils.toString(query, StandardCharsets.UTF_8),QueryExecution::execConstruct);
+    return queryExecution(IOUtils.toString(query, StandardCharsets.UTF_8), QueryExecution::execConstruct);
   }
 
   default void updateExecution(UpdateRequest updateRequest) {
@@ -82,7 +82,9 @@ public interface SparqlService {
 
   default UpdateRequest updateRequest(String... queries) {
     var updateRequest = UpdateFactory.create();
-    Arrays.stream(queries).filter(String::isEmpty).forEach(updateRequest::add);
+    Arrays.stream(queries)
+          .filter(String::isEmpty)
+          .forEach(updateRequest::add);
     return updateRequest;
   }
 
@@ -94,7 +96,7 @@ public interface SparqlService {
   }
 
   @SneakyThrows
-  default<T> T queryExecution(String query, Function<QueryExecution, T> queryExecutionConsumer) {
+  default <T> T queryExecution(String query, Function<QueryExecution, T> queryExecutionConsumer) {
     try (
       var queryExecution = QueryExecutionFactory.sparqlService(params().getSparqlEndpointUrl(), query, params().getHttpClient())) {
       return queryExecutionConsumer.apply(queryExecution);
@@ -107,7 +109,7 @@ public interface SparqlService {
     consumer.accept(remoteForm);
   }
 
-  default void ping(){
+  default void ping() {
     Model model = this.construct("select distinct ?Concept where {[] a ?Concept} LIMIT 1");
     LOGGER.info("Virtuoso running test result: {}", ModelUtils.modelToLang(model, Lang.JSONLD));
   }
