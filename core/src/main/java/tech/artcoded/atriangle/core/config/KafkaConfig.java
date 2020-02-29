@@ -45,6 +45,7 @@ public class KafkaConfig {
     var props = PropertyStore.systemProperties()
                              .merge(producerConfig)
                              .merge(consumerConfig);
+
     String toTopic = props.getRequiredPropertyAsString(CommonConstants.TOPIC_TO);
     List<String> fromTopic = props.getRequiredPropertyAsListOfString(CommonConstants.TOPIC_FROM, Optional.empty());
 
