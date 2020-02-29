@@ -38,7 +38,8 @@ import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static tech.artcoded.atriangle.api.ModelUtils.modelToLang;
+import static tech.artcoded.atriangle.api.ModelConverter.modelToLang;
+
 
 public interface ElasticSearchRdfService {
   Logger LOGGER = LoggerFactory.getLogger(ElasticSearchRdfService.class);

@@ -111,6 +111,6 @@ public interface SparqlService {
 
   default void ping() {
     Model model = this.construct("select distinct ?Concept where {[] a ?Concept} LIMIT 1");
-    LOGGER.info("Virtuoso running test result: {}", ModelUtils.modelToLang(model, Lang.JSONLD));
+    LOGGER.info("Virtuoso running test result: {}", ModelConverter.modelToLang(model, Lang.JSONLD));
   }
 }

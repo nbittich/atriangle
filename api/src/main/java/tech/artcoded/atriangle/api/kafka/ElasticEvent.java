@@ -1,19 +1,15 @@
 package tech.artcoded.atriangle.api.kafka;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class ElasticEvent {
-  private String id;
+public class ElasticEvent extends KafkaEvent {
   private String index;
   private String settings = "{}";
   private String mappings = "{}";
   private boolean createIndex;
-  private String json;
 }

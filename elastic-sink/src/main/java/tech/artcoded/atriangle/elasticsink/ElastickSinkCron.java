@@ -4,8 +4,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.common.xcontent.XContentType;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.ElasticSearchRdfService;
@@ -25,10 +23,6 @@ public class ElastickSinkCron {
   private final ElasticSearchRdfService elasticSearchRdfService;
   private final ObjectMapperWrapper mapperWrapper;
   private final SimpleKafkaTemplate kafkaTemplate;
-
-  @Value("classpath:elastic-index-config.json")
-  private Resource elasticSourceConfig;
-
 
   @Inject
   public ElastickSinkCron(ElasticSearchRdfService elasticSearchRdfService,
