@@ -24,7 +24,7 @@
     </dependencies>
 
     <build>
-        <finalName>atriangle-rdf-sink</finalName>
+        <finalName>atriangle-file-sink</finalName>
         <plugins>
             <plugin>
                 <artifactId>maven-compiler-plugin</artifactId>
