@@ -68,8 +68,15 @@ public class SimpleKafkaTemplate implements KafkaTemplate<String, String> {
     }
 
     @Override
-    public <T> T consume(long pollingSeconds, boolean commit, Function<ConsumerRecords<String, String>, T> transform) {
-        ConsumerRecords<String, String> poll = getConsumer().poll(Duration.of(pollingSeconds, ChronoUnit.SECONDS));
+    public <T> T consume(long pollingSeconds, boolean commit,
+                         Function<ConsumerRecords<String, String>, T> transform) {
+        return consume(pollingSeconds, ChronoUnit.SECONDS, commit, transform);
+    }
+
+    @Override
+    public <T> T consume(long polling, ChronoUnit chronoUnit, boolean commit,
+                         Function<ConsumerRecords<String, String>, T> transform) {
+        ConsumerRecords<String, String> poll = getConsumer().poll(Duration.of(polling, chronoUnit));
         T converted = transform.apply(poll);
         if (commit) {
             getConsumer().commitSync();
@@ -78,12 +85,41 @@ public class SimpleKafkaTemplate implements KafkaTemplate<String, String> {
     }
 
     @Override
+    public <T> T consume(long polling, ChronoUnit chronoUnit,
+                         Function<ConsumerRecords<String, String>, T> transform) {
+        return consume(polling, chronoUnit, true, transform);
+    }
+
+    @Override
+    public <T> T consume(long pollingSeconds, Function<ConsumerRecords<String, String>, T> transform) {
+        return consume(pollingSeconds, true, transform);
+    }
+
+    @Override
     public void consume(long pollingSeconds, boolean commit,
                         java.util.function.Consumer<ConsumerRecords<String, String>> consumer) {
-        ConsumerRecords<String, String> poll = getConsumer().poll(Duration.of(pollingSeconds, ChronoUnit.SECONDS));
-        consumer.accept(poll);
-        if (commit) {
-            getConsumer().commitSync();
-        }
+        Function<ConsumerRecords<String, String>, Void> func = (s) -> {
+            consumer.accept(s);
+            return null;
+        };
+
+        consume(pollingSeconds, commit, func);
+    }
+
+    @Override
+    public void consume(long pollingSeconds,
+                        java.util.function.Consumer<ConsumerRecords<String, String>> consumer) {
+        consume(pollingSeconds, true, consumer);
+    }
+
+    @Override
+    public void consume(long polling, ChronoUnit unit,
+                        java.util.function.Consumer<ConsumerRecords<String, String>> consumer) {
+        Function<ConsumerRecords<String, String>, Void> func = (s) -> {
+            consumer.accept(s);
+            return null;
+        };
+
+        consume(polling, unit, true, func);
     }
 }

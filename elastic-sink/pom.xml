@@ -14,12 +14,12 @@
 
     <dependencies>
         <dependency>
-            <groupId>tech.artcoded</groupId>
-            <artifactId>atriangle-core</artifactId>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>tech.artcoded</groupId>
+            <artifactId>atriangle-core</artifactId>
         </dependency>
     </dependencies>
 

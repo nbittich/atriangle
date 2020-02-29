@@ -89,6 +89,13 @@ public interface ElasticSearchRdfService {
                .deleteAsync(request, RequestOptions.DEFAULT, getDefaultAcknowledgeCallback());
   }
 
+  @SneakyThrows
+  default AcknowledgedResponse deleteIndex(String index) {
+    DeleteIndexRequest request = new DeleteIndexRequest(index);
+    return getClient().indices()
+                      .delete(request, RequestOptions.DEFAULT);
+  }
+
 
   @SneakyThrows
   default void indexAsync(String index, Function<IndexRequest, IndexRequest> requestTransformer) {
@@ -104,11 +111,19 @@ public interface ElasticSearchRdfService {
   }
 
   default IndexResponse index(String index, String id, Model model) {
-    return index(index, this.defaultIndexRequest(id, modelToLang(model, Lang.JSONLD)));
+    return index(index, id, modelToLang(model, Lang.JSONLD));
+  }
+
+  default IndexResponse index(String index, String id, String body) {
+    return index(index, this.defaultIndexRequest(id, body));
   }
 
   default void indexAsync(String index, String id, Model model) {
-    indexAsync(index, this.defaultIndexRequest(id, modelToLang(model, Lang.JSONLD)));
+    indexAsync(index, id, modelToLang(model, Lang.JSONLD));
+  }
+
+  default void indexAsync(String index, String id, String body) {
+    indexAsync(index, id, body);
   }
 
   @SneakyThrows

@@ -9,6 +9,7 @@ import org.apache.kafka.common.serialization.Deserializer;
 import org.apache.kafka.common.serialization.Serializer;
 import tech.artcoded.atriangle.api.PropertyStore;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.function.Function;
@@ -22,10 +23,19 @@ public interface KafkaTemplate<K, V> {
 
   <T> T consume(long pollingSeconds, boolean commit, Function<ConsumerRecords<K, V>, T> transform);
 
+  <T> T consume(long polling, ChronoUnit chronoUnit, boolean commit, Function<ConsumerRecords<K, V>, T> transform);
+
+  <T> T consume(long polling, ChronoUnit chronoUnit,
+                Function<ConsumerRecords<String, String>, T> transform);
+
+  <T> T consume(long pollingSeconds, Function<ConsumerRecords<K, V>, T> transform);
+
   void consume(long pollingSeconds, boolean commit,
                java.util.function.Consumer<ConsumerRecords<K, V>> consumer);
 
   String getTopic();
+
+  void consume(long pollingSeconds, java.util.function.Consumer<ConsumerRecords<String, String>> consumer);
 
   PropertyStore getProducerConfig();
 
@@ -60,4 +70,7 @@ public interface KafkaTemplate<K, V> {
   void setDeserializerKey(Deserializer<K> deserializerKey);
 
   void setDeserializerValue(Deserializer<V> deserializerValue);
+
+  void consume(long polling, ChronoUnit unit,
+               java.util.function.Consumer<ConsumerRecords<String, String>> consumer);
 }
