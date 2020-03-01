@@ -13,7 +13,7 @@ docker volume prune -f
 docker network prune -f
 docker-compose up -d --force-recreate
 
-echo "sleep 30s"
+echo "sleep 60s"
 
 sleep 60s # wait for kafka, elasticsearch & virtuoso then restart the containers
 
@@ -23,7 +23,8 @@ docker restart docker_atriangleeventdispatcher_1
 docker restart docker_atrianglerest_1
 docker restart docker_atriangleelasticsink_1
 
-echo "ready to use! check the containers using docker ps"
+echo "ready to use! Containers will restart until they are up, but check the containers using: "
+echo "docker ps"
 echo "docker logs -f docker_atrianglefilesink_1"
 echo "docker logs -f docker_atrianglerdfsink_1"
 echo "docker logs -f docker_atriangleeventdispatcher_1"
