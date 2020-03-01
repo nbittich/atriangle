@@ -140,6 +140,7 @@
         <module>file-sink</module>
         <module>elastic-sink</module>
         <module>virtuoso-sink</module>
+        <module>event-dispatcher</module>
     </modules>
 </project>
 

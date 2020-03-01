@@ -51,6 +51,7 @@ public class ElastickSinkCron {
               throw new RuntimeException("could not delete index");
             }
           }
+
           elasticSearchRdfService.createIndex(index, createIndexRequest -> createIndexRequest.settings(event.getSettings(), XContentType.JSON)
                                                                                              .mapping(event.getMappings(), XContentType.JSON));
         }
