@@ -3,11 +3,11 @@
 ![Screenshot](atriangle.png?raw=true)
 
  ## How it works
- A rest endpoint is exposed to save rdf files.
- The rest endpoint validates the model with the shacl validation file if it was provided.
- If the model is valid, it is transformed to a Kafka Event (json-ld) and redirect to a dispatcher topic (the event-dispatcher).
- The event-dispatcher topic extracts, transforms the event and redirect it to the topic of the workers responsible to consume it (e.g elastic-sink,rdf-sink).
- The Workers (ElasticSink,FileSkink,RdfSink) consumes the message & persist the Jena 
+ - A rest endpoint is exposed to save rdf files.
+ - The rest endpoint validates the model with the shacl validation file if it was provided.
+ - If the model is valid, it is transformed to a Kafka Event (json-ld) and redirect to a dispatcher topic (the event-dispatcher).
+ - The event-dispatcher topic extracts, transforms the event and redirect it to the topic of the workers responsible to consume it (e.g elastic-sink,rdf-sink).
+ - The Workers (ElasticSink,FileSkink,RdfSink) consumes the message & persist the Jena 
 
  ## Advantages
    - The event-dispatcher topic is the source of truth. 
