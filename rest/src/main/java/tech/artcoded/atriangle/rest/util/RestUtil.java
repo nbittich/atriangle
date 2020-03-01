@@ -19,7 +19,7 @@ public interface RestUtil {
                                                                      return IOUtils.toString(is, StandardCharsets.UTF_8);
                                                                    }
                                                                    catch (Exception e) {
-                                                                     LOGGER.error("error transforming file", e);
+                                                                     LOGGER.info("error transforming file", e);
                                                                      return null;
                                                                    }
                                                                  })

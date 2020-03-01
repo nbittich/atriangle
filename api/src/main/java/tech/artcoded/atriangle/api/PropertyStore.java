@@ -56,7 +56,7 @@ public interface PropertyStore {
       return properties;
     }
     catch (Exception e) {
-      log.error("an error occured when loading properties", e);
+      log.info("an error occured when loading properties", e);
       throw new RuntimeException("error while loading properties file.Check that the file exist.", e);
     }
   }

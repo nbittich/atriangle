@@ -79,7 +79,7 @@ public interface SparqlService {
       conn.delete(graphUri);
     }
     catch (Exception e) {
-      LOGGER.error("could not delete graph", e);
+      LOGGER.info("could not delete graph", e);
     }
   }
 
@@ -121,7 +121,7 @@ public interface SparqlService {
         .write(data);
 
     if ((conn.getResponseCode() / 100) != 2){
-      LOGGER.error("an error occurred, response code: {}, response message: {}",conn.getResponseCode(),conn.getResponseMessage());
+      LOGGER.info("an error occurred, response code: {}, response message: {}", conn.getResponseCode(), conn.getResponseMessage());
       throw new RuntimeException("Not 2xx as answer: " + conn.getResponseCode() + " " + conn.getResponseMessage());
     }
   }

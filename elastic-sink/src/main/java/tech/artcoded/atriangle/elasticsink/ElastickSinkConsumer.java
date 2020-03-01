@@ -60,20 +60,24 @@ public class ElastickSinkConsumer implements ATriangleConsumer<String, String> {
       if (indexExist) {
         AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.deleteIndex(index);
         if (!acknowledgedResponse.isAcknowledged()) {
-          log.error("acknowledge false");
+          log.info("acknowledge false");
           throw new RuntimeException("could not delete index");
         }
       }
       elasticSearchRdfService.createIndex(index, createIndexRequest -> createIndexRequest.settings(event.getSettings(), XContentType.JSON)
                                                                                          .mapping(event.getMappings(), XContentType.JSON));
+      log.info("index created");
+
     }
 
     IndexResponse response = elasticSearchRdfService.index(index, kafkaEvent.getId(), kafkaEvent.getJson());
+    log.info("status {}", response.status());
 
-    if (RestStatus.ACCEPTED.equals(response.status())) {
-      log.error("could not index");
+    if (!RestStatus.CREATED.equals(response.status())) {
+      log.info("could not index");
       throw new RuntimeException("could not index");
     }
+    log.info("index done {}");
 
     return Map.entry(UUID.randomUUID()
                          .toString(), mapperWrapper.serialize(Map.of("status", response.status()

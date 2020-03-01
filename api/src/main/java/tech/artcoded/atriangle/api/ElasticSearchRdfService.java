@@ -68,7 +68,7 @@ public interface ElasticSearchRdfService {
                         .create(requestTransformer.apply(createIndexRequest), RequestOptions.DEFAULT);
     }
     catch (Exception e) {
-      LOGGER.error("could not create index", e);
+      LOGGER.info("could not create index", e);
       throw new RuntimeException(e);
     }
   }
@@ -102,7 +102,7 @@ public interface ElasticSearchRdfService {
                         .delete(request, RequestOptions.DEFAULT);
     }
     catch (Exception e) {
-      LOGGER.error("could not delete index", e);
+      LOGGER.info("could not delete index", e);
       throw new RuntimeException(e);
     }
   }
@@ -121,7 +121,7 @@ public interface ElasticSearchRdfService {
       return getClient().index(requestTransformer.apply(request), RequestOptions.DEFAULT);
     }
     catch (Exception e) {
-      LOGGER.error("error during indexing", e);
+      LOGGER.info("error during indexing", e);
       throw new RuntimeException(e);
     }
   }
@@ -223,18 +223,18 @@ public interface ElasticSearchRdfService {
   default ActionListener<BulkByScrollResponse> getDefaultReindexCallback() {
     return ActionListener.wrap(response -> {
       LOGGER.info("Result of reindexing: {}", response.toString());
-    }, e -> LOGGER.error("error during deletion", e));
+    }, e -> LOGGER.info("error during deletion", e));
   }
 
   default ActionListener<IndexResponse> getDefaultIndexCallback() {
     return ActionListener.wrap(response -> {
       LOGGER.info("Result of reindexing: {}", response.toString());
-    }, e -> LOGGER.error("error during deletion", e));
+    }, e -> LOGGER.info("error during deletion", e));
   }
 
   default ActionListener<AcknowledgedResponse> getDefaultAcknowledgeCallback() {
     return ActionListener.wrap(response -> LOGGER.info("acknowledge: " + response.isAcknowledged()),
-                               e -> LOGGER.error("error during deletion", e));
+                               e -> LOGGER.info("error during deletion", e));
   }
 
   default Function<IndexRequest, IndexRequest> defaultIndexRequest(String id, String json) {
