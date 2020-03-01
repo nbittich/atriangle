@@ -127,13 +127,13 @@
         }
         }
         ```
-        ## Helper commands
-        ```
-        docker ps
-        docker logs -f docker_atrianglefilesink_1
-        docker logs -f docker_atrianglerdfsink_1
-        docker logs -f docker_atrianglerestsink_1
-        docker logs -f docker_atriangleeventdispatcher_1
-        docker logs -f docker_atrianglerest_1
-        docker logs -f docker_atriangleelasticsink_1
-        ```
+  ## Helper commands
+   ```
+    docker ps
+    docker logs -f docker_atrianglefilesink_1
+    docker logs -f docker_atrianglerdfsink_1
+    docker logs -f docker_atrianglerestsink_1
+    docker logs -f docker_atriangleeventdispatcher_1
+    docker logs -f docker_atrianglerest_1
+    docker logs -f docker_atriangleelasticsink_1
+   ```
