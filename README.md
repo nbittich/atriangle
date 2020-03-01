@@ -126,8 +126,9 @@
         ]
         }
         }
-        ```
-  ## Helper commands
+    ```
+
+
    ```
     docker ps
     docker logs -f docker_atrianglefilesink_1
