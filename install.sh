@@ -13,7 +13,9 @@ docker volume prune -f
 docker network prune -f
 docker-compose up -d --force-recreate
 
-sleep 30s # wait for kafka, elasticsearch & virtuoso then restart the containers
+echo "sleep 30s"
+
+sleep 60s # wait for kafka, elasticsearch & virtuoso then restart the containers
 
 docker restart docker_atrianglefilesink_1
 docker restart docker_atrianglerdfsink_1

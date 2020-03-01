@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ElasticEvent {
   private String index;
-  private String settings = "{}";
-  private String mappings = "{}";
+  private String settings;
+  private String mappings;
 
   private boolean createIndex;
 }
