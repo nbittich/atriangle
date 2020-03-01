@@ -5,7 +5,7 @@
  ## About
  work in progress...
 
-        ![Screenshot](./docs/starhopper.gif?raw=true?style=center)
+   ![Screenshot](./docs/starhopper.gif?raw=true?style=center)
 
  ## How it works
  - A rest endpoint is exposed to save rdf files.
