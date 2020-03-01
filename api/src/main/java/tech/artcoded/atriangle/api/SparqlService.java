@@ -6,7 +6,6 @@ import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdfconnection.RDFConnection;
-import org.apache.jena.rdfconnection.RDFConnectionFactory;
 import org.apache.jena.rdfconnection.RDFConnectionRemote;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.update.UpdateFactory;
@@ -15,14 +14,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.net.Authenticator;
 import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 
 public interface SparqlService {
@@ -32,13 +29,6 @@ public interface SparqlService {
   Function<String, String> CONSTRUCT_GRAPH_URI = uri -> uri + GRAPH_SUFFIX;
   Function<String, String> CLEAR_GRAPH_QUERY = graphUri -> String.format("CLEAR GRAPH <%s>", graphUri);
   Function<String, String> ASK_GRAPH_QUERY = graphUri -> String.format("ask where {graph <%s> {?s ?p ?o }}", graphUri);
-
-  BiFunction<String, Model, String> INSERT_GRAPH_QUERY = (graphUri, model) -> {
-    var writer = new StringWriter();
-    model.write(writer, Lang.TURTLE.getLabel());
-
-    return String.format("INSERT DATA { GRAPH <%s> { %s } }", graphUri, writer.toString());
-  };
 
   SparqlServiceParam params();
 
@@ -80,23 +70,33 @@ public interface SparqlService {
     }
   }
 
-  @SneakyThrows
-  default void upload(String uri, Model model) {
+  default void update(String query) {
     try (
       RDFConnection conn = RDFConnectionRemote.create()
                                               .destination(params().getSparqlEndpointUrl())
                                               .httpClient(params().getHttpClient())
                                               .build()) {
-      String graphUri = CONSTRUCT_GRAPH_URI.apply(uri);
-      conn.update(CLEAR_GRAPH_QUERY.apply(graphUri));
-      loadModel(ModelConverter.modelToLang(model, Lang.TURTLE).getBytes(),graphUri);
+      conn.update(query);
     }
+  }
+
+  default void clearGraph(String graphUri) {
+    update(CLEAR_GRAPH_QUERY.apply(constructGraphUri(graphUri)));
+  }
+
+  @SneakyThrows
+  default void upload(String uri, Model model) {
+    String graphUri = constructGraphUri(uri);
+    clearGraph(graphUri);
+    loadModel(ModelConverter.modelToLang(model, Lang.TURTLE)
+                            .getBytes(), graphUri);
   }
 
   private void loadModel(byte[] data, String graphUri) throws Exception {
     Authenticator.setDefault(new Authenticator() {
       protected PasswordAuthentication getPasswordAuthentication() {
-        return new PasswordAuthentication(params().getUsername(), params().getPassword().toCharArray());
+        return new PasswordAuthentication(params().getUsername(), params().getPassword()
+                                                                          .toCharArray());
       }
     });
 
@@ -111,9 +111,11 @@ public interface SparqlService {
     conn.setRequestProperty("charset", "utf-8");
     conn.setRequestProperty("Content-Length", Integer.toString(data.length));
     conn.setUseCaches(false);
-    conn.getOutputStream().write(data);
+    conn.getOutputStream()
+        .write(data);
 
-    if ((conn.getResponseCode() / 100) != 2) throw new RuntimeException("Not 2xx as answer: " + conn.getResponseCode() + " " + conn.getResponseMessage());
+    if ((conn.getResponseCode() / 100) != 2)
+      throw new RuntimeException("Not 2xx as answer: " + conn.getResponseCode() + " " + conn.getResponseMessage());
   }
 
   default void ping() {
