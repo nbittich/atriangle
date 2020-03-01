@@ -1,6 +1,6 @@
 virtuoso:
   defaultGraph: https://www.artcoded.tech/default-graph
-  hostname: 192.168.99.101
+  hostname: ${VIRTUOSO_HOSTNAME:192.168.99.101}
   password: dba
   port: 8890
   scheme: http

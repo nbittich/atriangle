@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.topbraid.shacl.vocabulary.SH;
+import tech.artcoded.atriangle.api.CheckedSupplier;
 import tech.artcoded.atriangle.api.ModelConverter;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.ShaclValidator;
@@ -30,6 +31,7 @@ import tech.artcoded.atriangle.rest.annotation.CrossOriginRestController;
 import javax.inject.Inject;
 import java.io.InputStream;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 import static tech.artcoded.atriangle.rest.util.RestUtil.FILE_TO_JSON;
 import static tech.artcoded.atriangle.rest.util.RestUtil.ID_SUPPLIER;
@@ -71,13 +73,9 @@ public class RdfIngestionController {
                                                      required = false) MultipartFile mappingsFile
   ) throws Exception {
 
-    String index = Optional.ofNullable(elasticIndex)
-                           .filter(String::isEmpty)
-                           .orElse(defaultElasticIndex);
 
-    log.info("elastic search index to use '{}'", index);
-
-    Model inputModel = ModelConverter.inputStreamToModel(FilenameUtils.getExtension(rdfFile.getOriginalFilename()), rdfFile.getInputStream());
+    CheckedSupplier<InputStream> checkedSupplier = rdfFile::getInputStream;
+    Model inputModel = ModelConverter.inputStreamToModel(FilenameUtils.getExtension(rdfFile.getOriginalFilename()), checkedSupplier.safeGet());
 
     Optional<Model> validationErrors = Optional.ofNullable(shaclModel)
                                                .flatMap(shaclFile -> validateModel(inputModel, shaclFile));
@@ -93,49 +91,60 @@ public class RdfIngestionController {
     String json = ModelConverter.modelToLang(inputModel, Lang.JSONLD);
 
     log.info("request payload in json '{}'", json);
+    produceKafkaEvent(graphUri,elasticIndex,createIndex,settingsFile,mappingsFile, json);
 
-    String rdfSinkEventId = ID_SUPPLIER.get();
-    String elasticSinkEventId = ID_SUPPLIER.get();
+    return ResponseEntity.accepted().build();
+  }
 
-    RdfEvent rdfSinkEvent = RdfEvent.builder()
-                                    .graphUri(graphUri)
-                                    .build();
-    KafkaEvent kafkaEventForRdf = KafkaEvent.builder()
-                                 .id(rdfSinkEventId)
-                                 .json(json)
-                                 .eventType(EventType.RDF_SINK)
-                                 .event(objectMapperWrapper.serialize(rdfSinkEvent))
-                                 .build();
+  private void produceKafkaEvent(String graphUri, String elasticIndex, boolean createIndex,
+                                 MultipartFile settingsFile,  MultipartFile mappingsFile, String json) {
+    CompletableFuture.runAsync(()->{
+      String index = Optional.ofNullable(elasticIndex)
+                             .filter(String::isEmpty)
+                             .orElse(defaultElasticIndex);
 
-    ElasticEvent elasticEvent = ElasticEvent.builder()
-                                            .index(index)
-                                            .createIndex(createIndex)
-                                            .settings(FILE_TO_JSON.apply(settingsFile))
-                                            .mappings(FILE_TO_JSON.apply(mappingsFile))
-                                            .build();
+      log.info("elastic search index to use '{}'", index);
 
 
-    KafkaEvent kafkaEventForElastic = KafkaEvent.builder()
-                                                .id(elasticSinkEventId)
-                                                .json(json)
-                                                .eventType(EventType.ELASTIC_SINK)
-                                                .event(objectMapperWrapper.serialize(elasticEvent))
-                                                .build();
+      String rdfSinkEventId = ID_SUPPLIER.get();
+      String elasticSinkEventId = ID_SUPPLIER.get();
 
-    log.info("sending to topic dispatcher");
+      RdfEvent rdfSinkEvent = RdfEvent.builder()
+                                      .graphUri(graphUri)
+                                      .build();
+      KafkaEvent kafkaEventForRdf = KafkaEvent.builder()
+                                              .id(rdfSinkEventId)
+                                              .json(json)
+                                              .eventType(EventType.RDF_SINK)
+                                              .event(objectMapperWrapper.serialize(rdfSinkEvent))
+                                              .build();
 
-    ProducerRecord<String, String> rdfRecord = new ProducerRecord<>(topicProducer, rdfSinkEventId, objectMapperWrapper.serialize(kafkaEventForRdf));
-    ProducerRecord<String, String> elasticRecord = new ProducerRecord<>(topicProducer, elasticSinkEventId, objectMapperWrapper.serialize(kafkaEventForElastic));
+      ElasticEvent elasticEvent = ElasticEvent.builder()
+                                              .index(index)
+                                              .createIndex(createIndex)
+                                              .settings(FILE_TO_JSON.apply(settingsFile))
+                                              .mappings(FILE_TO_JSON.apply(mappingsFile))
+                                              .build();
+
+
+      KafkaEvent kafkaEventForElastic = KafkaEvent.builder()
+                                                  .id(elasticSinkEventId)
+                                                  .json(json)
+                                                  .eventType(EventType.ELASTIC_SINK)
+                                                  .event(objectMapperWrapper.serialize(elasticEvent))
+                                                  .build();
+
+      log.info("sending to topic dispatcher");
+
+      ProducerRecord<String, String> rdfRecord = new ProducerRecord<>(topicProducer, rdfSinkEventId, objectMapperWrapper.serialize(kafkaEventForRdf));
+      ProducerRecord<String, String> elasticRecord = new ProducerRecord<>(topicProducer, elasticSinkEventId, objectMapperWrapper.serialize(kafkaEventForElastic));
 
 
       log.info("sending rdf record");
       kafkaTemplate.send(rdfRecord);
       log.info("sending elastic record");
       kafkaTemplate.send(elasticRecord);
-
-
-    return ResponseEntity.accepted()
-                         .body(json);
+    });
   }
 
   @SneakyThrows

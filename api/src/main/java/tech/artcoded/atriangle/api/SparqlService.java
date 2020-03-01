@@ -114,8 +114,10 @@ public interface SparqlService {
     conn.getOutputStream()
         .write(data);
 
-    if ((conn.getResponseCode() / 100) != 2)
+    if ((conn.getResponseCode() / 100) != 2){
+      LOGGER.error("an error occurred, response code: {}, response message: {}",conn.getResponseCode(),conn.getResponseMessage());
       throw new RuntimeException("Not 2xx as answer: " + conn.getResponseCode() + " " + conn.getResponseMessage());
+    }
   }
 
   default void ping() {
