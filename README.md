@@ -48,133 +48,10 @@
   ![Screenshot](virtuoso.png?raw=true)  
   
   3. Check the result in elasticsearch (http://localhost:8088/proxy/elasticsearch/persons)
-     ```
-     {
-	"persons": {
+      ```
+          {
+	   "persons": {
 		"aliases": {},
-		"mappings": {
-			"properties": {
-				"@context": {
-					"properties": {
-						"artcoded": {
-							"type": "text",
-							"fields": {
-								"keyword": {
-									"type": "keyword",
-									"ignore_above": 256
-								}
-							}
-						},
-						"artist": {
-							"properties": {
-								"@id": {
-									"type": "text",
-									"fields": {
-										"keyword": {
-											"type": "keyword",
-											"ignore_above": 256
-										}
-									}
-								}
-							}
-						},
-						"company": {
-							"properties": {
-								"@id": {
-									"type": "text",
-									"fields": {
-										"keyword": {
-											"type": "keyword",
-											"ignore_above": 256
-										}
-									}
-								}
-							}
-						},
-						"country": {
-							"properties": {
-								"@id": {
-									"type": "text",
-									"fields": {
-										"keyword": {
-											"type": "keyword",
-											"ignore_above": 256
-										}
-									}
-								}
-							}
-						},
-						"rdf": {
-							"type": "text",
-							"fields": {
-								"keyword": {
-									"type": "keyword",
-									"ignore_above": 256
-								}
-							}
-						},
-						"year": {
-							"properties": {
-								"@id": {
-									"type": "text",
-									"fields": {
-										"keyword": {
-											"type": "keyword",
-											"ignore_above": 256
-										}
-									}
-								}
-							}
-						}
-					}
-				},
-				"@id": {
-					"type": "text",
-					"fields": {
-						"keyword": {
-							"type": "keyword",
-							"ignore_above": 256
-						}
-					}
-				},
-				"artist": {
-					"type": "text",
-					"fields": {
-						"keyword": {
-							"type": "keyword",
-							"ignore_above": 256
-						}
-					}
-				},
-				"company": {
-					"type": "text",
-					"fields": {
-						"keyword": {
-							"type": "keyword",
-							"ignore_above": 256
-						}
-					}
-				},
-				"country": {
-					"type": "text",
-					"fields": {
-						"keyword": {
-							"type": "keyword",
-							"ignore_above": 256
-						}
-					}
-				},
-				"year": {
-					"type": "text",
-					"fields": {
-						"keyword": {
-							"type": "keyword",
-							"ignore_above": 256
-						}
-					}
-				}
-			}
-		},
 		"settings": {
 			"index": {
 				"creation_date": "1583084835376",
@@ -187,10 +64,9 @@
 				"provided_name": "persons"
 			}
 		}
-	}
-}
-     ```
-  
+	    }
+       }
+    ```
 ## Helper commands
    ```
    docker ps
