@@ -45,4 +45,14 @@
             select * from <http://artcoded.tech/person/graph> where {?s ?p ?o}
        ```
 
-  ![Screenshot](virtuoso.png?raw=true)   
+  ![Screenshot](virtuoso.png?raw=true)  
+  
+## Helper commands
+   ```
+   docker ps
+   docker logs -f docker_atrianglefilesink_1
+   docker logs -f docker_atrianglerdfsink_1
+   docker logs -f docker_atriangleeventdispatcher_1
+   docker logs -f docker_atrianglerest_1
+   docker logs -f docker_atriangleelasticsink_1
+   ```
