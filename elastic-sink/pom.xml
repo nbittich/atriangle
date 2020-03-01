@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <name>A Triangle - ELASTIC-SINK</name>
 
-    <artifactId>elastic-sink</artifactId>
+    <artifactId>atriangle-elastic-sink</artifactId>
 
     <dependencies>
         <dependency>

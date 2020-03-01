@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <name>A Triangle - VIRTUOSO-SINK</name>
 
-    <artifactId>virtuoso-sink</artifactId>
+    <artifactId>atriangle-virtuoso-sink</artifactId>
 
     <dependencies>
         <dependency>
