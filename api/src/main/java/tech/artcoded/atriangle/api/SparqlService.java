@@ -70,18 +70,18 @@ public interface SparqlService {
     }
   }
 
-  default void update(String query) {
+  default void update(String graphUri) {
     try (
       RDFConnection conn = RDFConnectionRemote.create()
                                               .destination(params().getSparqlEndpointUrl())
                                               .httpClient(params().getHttpClient())
                                               .build()) {
-      conn.update(query);
+      conn.delete();
     }
   }
 
   default void clearGraph(String graphUri) {
-    update(CLEAR_GRAPH_QUERY.apply(constructGraphUri(graphUri)));
+    update(constructGraphUri(graphUri));
   }
 
   @SneakyThrows
@@ -100,7 +100,10 @@ public interface SparqlService {
       }
     });
 
+    LOGGER.info("using graph uri {} ", graphUri);
     String sparqlUrl = params().getSparqlEndpointUrl() + "-graph-crud-auth?graph-uri=" + graphUri;
+    LOGGER.info("using sparql url {} ", sparqlUrl);
+
     URL url = new URL(sparqlUrl);
 
     HttpURLConnection conn = (HttpURLConnection) url.openConnection();

@@ -93,7 +93,8 @@ public class RdfIngestionController {
     log.info("request payload in json '{}'", json);
     produceKafkaEvent(graphUri,elasticIndex,createIndex,settingsFile,mappingsFile, json);
 
-    return ResponseEntity.accepted().build();
+    return ResponseEntity.accepted()
+                         .body(json);
   }
 
   private void produceKafkaEvent(String graphUri, String elasticIndex, boolean createIndex,
