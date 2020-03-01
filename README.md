@@ -23,3 +23,8 @@
   1. Send an rdf request with swagger:
 
   ![Screenshot](swagger.png?raw=true)
+  
+  2. Check the result in virtuoso
+       ```
+            select * from <http://artcoded.tech/person/graph> where {?s ?p ?o}
+       ```
