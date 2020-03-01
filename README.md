@@ -2,9 +2,24 @@
 
 ![Screenshot](atriangle.png?raw=true)
 
+ ## How it works
+ A rest endpoint is exposed to save rdf files.
+ The rest endpoint validates the model with the shacl validation file if it was provided.
+ If the model is valid, it is transformed to a Kafka Event (json-ld) and redirect to a dispatcher topic (the event-dispatcher).
+ The event-dispatcher topic extracts, transforms the event and redirect it to the topic of the workers responsible to consume it (e.g elastic-sink,rdf-sink).
+ The Workers (ElasticSink,FileSkink,RdfSink) consumes the message & persist the Jena 
+
+ ## Advantages
+   - The event-dispatcher topic is the source of truth. 
+   - It can be consumed from start to restore/sync virtuoso/elastic
+   - The sub-topics (worker topics) can be regularly deleted
+   - Micro service architecture combined with a Message Broker  makes it easier to maintain and develop new functionalities
+ 
  ## Requirements
    - Docker
  ## Features
+   - Serverless Architecture (Todo)
+   - Micro service architecture using Docker & kafka
    - No data losses
    - Dynamic Shacl Validation
    - Dynamic Elastic index settings & mappings (to fix nested & field exclusion)
