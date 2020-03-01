@@ -5,7 +5,7 @@ spring:
     include: kafka,virtuoso,elasticsearch,zuul
   kafka:
     template:
-      default-topic: event-dispatcher
+      default-topic: event-sink-rest
 
 elasticsearch:
   index: movies

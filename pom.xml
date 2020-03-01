@@ -188,6 +188,7 @@
         <module>elastic-sink</module>
         <module>virtuoso-sink</module>
         <module>event-dispatcher</module>
+        <module>rest-sink</module>
         <module>rest</module>
     </modules>
 </project>

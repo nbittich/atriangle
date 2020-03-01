@@ -78,6 +78,19 @@ services:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
       - elastic-sink-storage:/app/user
+  atrianglerestsink:
+    restart: always
+    depends_on:
+      - atrianglekafka
+    networks:
+      atriangle:
+        aliases:
+          - restsink
+    image: atriangle/rest-sink
+    environment:
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
+    volumes:
+      - rest-sink-storage:/app/user
   atrianglerdfsink:
     restart: always
     depends_on:
@@ -142,6 +155,7 @@ volumes:
   virtuoso-storage:
   elastic-sink-storage:
   rdf-sink-storage:
+  rest-sink-storage:
   file-sink-storage:
   event-dispatcher-storage:
   rest-storage:

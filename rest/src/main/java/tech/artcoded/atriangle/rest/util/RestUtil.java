@@ -7,9 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 public interface RestUtil {
   Logger LOGGER = LoggerFactory.getLogger(RestUtil.class);
@@ -25,6 +23,5 @@ public interface RestUtil {
                                                                  })
                                                                  .orElse("{}");
 
-  Supplier<String> ID_SUPPLIER = () -> UUID.randomUUID()
-                                           .toString();
+
 }

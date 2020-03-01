@@ -1,6 +1,7 @@
 package tech.artcoded.atriangle.core.kafka;
 
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+
 import java.util.Map;
 
 public interface ATriangleConsumer<K, V> {

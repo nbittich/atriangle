@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.ModelConverter;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.SparqlService;
-import tech.artcoded.atriangle.api.kafka.ElasticEvent;
 import tech.artcoded.atriangle.api.kafka.KafkaEvent;
 import tech.artcoded.atriangle.api.kafka.RdfEvent;
 import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
