@@ -47,7 +47,9 @@
 
   ![Screenshot](virtuoso.png?raw=true)  
   
-  3. Check the result in elasticsearch (http://localhost:8088/proxy/elasticsearch/persons)
+  3. Check the result in elasticsearch 
+     * Check index created: http://localhost:8088/proxy/elasticsearch/persons
+     * Check rdf indexed: http://localhost:8088/proxy/elasticsearch/persons/_search
 ```json
      {
         "persons":{
@@ -69,6 +71,56 @@
             }
         }
      }
+```
+```json
+{
+    "took":112,
+    "timed_out":false,
+    "_shards":{
+        "total":1,
+        "successful":1,
+        "skipped":0,
+        "failed":0
+    },
+    "hits":{
+        "total":{
+            "value":1,
+            "relation":"eq"
+        },
+        "max_score":1,
+        "hits":[
+            {
+                "_index":"persons",
+                "_type":"_doc",
+                "_id":"89845a3a-2d82-42f4-b40c-b438fd72de4e",
+                "_score":1,
+                "_source":{
+                    "@id":"http://artcoded.tech/person",
+                    "artist":"Nordine Bittich",
+                    "company":"Artcoded",
+                    "country":"BELGIUM",
+                    "year":"1988",
+                    "@context":{
+                        "year":{
+                            "@id":"http://artcoded.tech#year"
+                        },
+                        "company":{
+                            "@id":"http://artcoded.tech#company"
+                        },
+                        "country":{
+                            "@id":"http://artcoded.tech#country"
+                        },
+                        "artist":{
+                            "@id":"http://artcoded.tech#artist"
+                        },
+                        "rdf":"http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+                        "artcoded":"http://artcoded.tech#"
+                    }
+                }
+            }
+        ]
+    }
+}
 ```
 ## Helper commands
    ```
