@@ -2,6 +2,11 @@
 
 ![Screenshot](atriangle.png?raw=true)
 
+ ## About
+ work in progress...
+ 
+ ![Screenshot](starhopper.gif?raw=true?style=center)
+
  ## How it works
  - A rest endpoint is exposed to save rdf files.
  - The rest endpoint validates the model with the shacl validation file if it was provided.
