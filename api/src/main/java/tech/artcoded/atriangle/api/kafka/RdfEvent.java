@@ -1,12 +1,17 @@
 package tech.artcoded.atriangle.api.kafka;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
-@EqualsAndHashCode(callSuper = true)
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RdfEvent extends KafkaEvent {
+public class RdfEvent implements KafkaEvent {
   private String graphUri;
+  private String id;
+  private EventType eventType;
+  private String json;
 }
