@@ -48,25 +48,28 @@
   ![Screenshot](virtuoso.png?raw=true)  
   
   3. Check the result in elasticsearch (http://localhost:8088/proxy/elasticsearch/persons)
-      ```
-          {
-	   "persons": {
-		"aliases": {},
-		"settings": {
-			"index": {
-				"creation_date": "1583084835376",
-				"number_of_shards": "1",
-				"number_of_replicas": "1",
-				"uuid": "I4SRjwFtSpmhXTKAMytjOg",
-				"version": {
-					"created": "7060099"
-				},
-				"provided_name": "persons"
-			}
-		}
-	    }
-       }
-    ```
+```json
+     {
+        "persons":{
+            "aliases":{
+            },
+            "mappings":{
+            },
+            "settings":{
+                "index":{
+                    "creation_date":"1583084835376",
+                    "number_of_shards":"1",
+                    "number_of_replicas":"1",
+                    "uuid":"I4SRjwFtSpmhXTKAMytjOg",
+                    "version":{
+                        "created":"7060099"
+                    },
+                    "provided_name":"persons"
+              }
+            }
+        }
+     }
+```
 ## Helper commands
    ```
    docker ps
