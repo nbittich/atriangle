@@ -81,6 +81,7 @@ public class RdfIngestionController {
     String json = ModelConverter.modelToLang(inputModel, Lang.JSONLD);
 
     log.info("request payload in json '{}'", json);
+
     RestEvent restEvent = RestEvent.builder()
                                    .graphUri(graphUri)
                                    .elasticIndex(elasticIndex)
@@ -92,6 +93,7 @@ public class RdfIngestionController {
     KafkaEvent kafkaEvent = KafkaEvent.builder()
                                       .eventType(EventType.REST_SINK)
                                       .id(IdGenerators.UUID_SUPPLIER.get())
+                                      .json(json)
                                       .event(objectMapperWrapper.serialize(restEvent))
                                       .build();
 

@@ -52,6 +52,7 @@ public class RestSinkConsumer implements ATriangleConsumer<String, String> {
     RdfEvent rdfSinkEvent = RdfEvent.builder()
                                     .graphUri(event.getGraphUri())
                                     .build();
+
     KafkaEvent kafkaEventForRdf = KafkaEvent.builder()
                                             .id(rdfSinkEventId)
                                             .json(kafkaEvent.getJson())
