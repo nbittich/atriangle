@@ -46,7 +46,7 @@ public class VirtuosoConfig {
   @Bean
   @Inject
   public SparqlService sparqlService(@Named(VIRTUOSO_HTTP_CLIENT) HttpClient client) {
-    SparqlServiceParam sparqlServiceParam = new SparqlServiceParam(defaultGraphUri, sparqlEndpointUrl, client);
+    SparqlServiceParam sparqlServiceParam = new SparqlServiceParam(defaultGraphUri, sparqlEndpointUrl, client, username, password);
     log.info("sparql service params: {}", sparqlServiceParam.toString());
     SparqlService sparqlService = () -> sparqlServiceParam;
     sparqlService.ping();

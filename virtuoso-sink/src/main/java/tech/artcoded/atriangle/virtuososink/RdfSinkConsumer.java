@@ -55,10 +55,11 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
     log.info("converting to model");
 
     Model model = ModelConverter.toModel(kafkaEvent.getJson(), Lang.JSONLD);
+    model.write(System.out, Lang.TURTLE.getLabel());
 
     log.info("saving to triplestore");
-    sparqlService.insertOrUpdateToGraph(event.getGraphUri(), model);
-
+    sparqlService.upload(event.getGraphUri(), model);
+    log.info("saved to triplestore");
     return Map.entry(UUID.randomUUID()
                          .toString(), mapperWrapper.serialize(Map.of("ack", "true",
                                                                      "id", kafkaEvent.getId())));

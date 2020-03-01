@@ -11,5 +11,9 @@ public class SparqlServiceParam {
 
   private HttpClient httpClient;
 
+  private String username;
+  private String password;
+
+
 
 }

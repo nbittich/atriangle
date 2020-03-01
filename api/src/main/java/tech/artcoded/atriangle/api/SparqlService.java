@@ -5,21 +5,24 @@ import org.apache.commons.io.IOUtils;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdfconnection.RDFConnection;
+import org.apache.jena.rdfconnection.RDFConnectionFactory;
+import org.apache.jena.rdfconnection.RDFConnectionRemote;
 import org.apache.jena.riot.Lang;
-import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
-import org.apache.jena.update.UpdateProcessor;
 import org.apache.jena.update.UpdateRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
 import java.io.StringWriter;
+import java.net.Authenticator;
+import java.net.HttpURLConnection;
+import java.net.PasswordAuthentication;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.function.BiFunction;
-import java.util.function.Consumer;
 import java.util.function.Function;
 
 public interface SparqlService {
@@ -32,7 +35,7 @@ public interface SparqlService {
 
   BiFunction<String, Model, String> INSERT_GRAPH_QUERY = (graphUri, model) -> {
     var writer = new StringWriter();
-    model.write(writer, "ttl");
+    model.write(writer, Lang.TURTLE.getLabel());
 
     return String.format("INSERT DATA { GRAPH <%s> { %s } }", graphUri, writer.toString());
   };
@@ -41,16 +44,6 @@ public interface SparqlService {
 
   default String constructGraphUri(String uri) {
     return CONSTRUCT_GRAPH_URI.apply(uri);
-  }
-
-  default void insert(InputStream is, String rdfLang) {
-    insert(params().getDefaultGraphUri(), is, rdfLang, null);
-  }
-
-  default void insert(String graphUri, InputStream is, String rdfLang, String base) {
-    var model = ModelFactory.createDefaultModel();
-    model.read(is, base, rdfLang);
-    insertOrUpdateToGraph(graphUri, model);
   }
 
   default Model construct(String query) {
@@ -62,9 +55,6 @@ public interface SparqlService {
     return queryExecution(IOUtils.toString(query, StandardCharsets.UTF_8), QueryExecution::execConstruct);
   }
 
-  default void updateExecution(UpdateRequest updateRequest) {
-    updateExecution(updateRequest, UpdateProcessor::execute);
-  }
 
   default boolean ask(String askQuery) {
     return queryExecution(askQuery, QueryExecution::execAsk);
@@ -74,25 +64,12 @@ public interface SparqlService {
     return ask(ASK_GRAPH_QUERY.apply(graphUri));
   }
 
-  default void clearGraph(String graphUri) {
-    var query = CLEAR_GRAPH_QUERY.apply(graphUri);
-    var request = updateRequest(query);
-    updateExecution(request);
-  }
-
   default UpdateRequest updateRequest(String... queries) {
     var updateRequest = UpdateFactory.create();
     Arrays.stream(queries)
           .filter(String::isEmpty)
           .forEach(updateRequest::add);
     return updateRequest;
-  }
-
-  default void insertOrUpdateToGraph(String graphUri, Model model) {
-    String clearGraphQuery = CLEAR_GRAPH_QUERY.apply(graphUri);
-    String insertQuery = INSERT_GRAPH_QUERY.apply(graphUri, model);
-    UpdateRequest updateRequest = updateRequest(clearGraphQuery, insertQuery);
-    updateExecution(updateRequest);
   }
 
   @SneakyThrows
@@ -104,10 +81,39 @@ public interface SparqlService {
   }
 
   @SneakyThrows
-  default void updateExecution(UpdateRequest updateRequest, Consumer<UpdateProcessor> consumer) {
-    UpdateProcessor remoteForm = UpdateExecutionFactory.createRemoteForm(updateRequest, params().getSparqlEndpointUrl(), params().getHttpClient());
-    consumer.accept(remoteForm);
+  default void upload(String uri, Model model) {
+    try (
+      RDFConnection conn = RDFConnectionRemote.create()
+                                              .destination(params().getSparqlEndpointUrl())
+                                              .httpClient(params().getHttpClient())
+                                              .build()) {
+      String graphUri = CONSTRUCT_GRAPH_URI.apply(uri);
+      conn.update(CLEAR_GRAPH_QUERY.apply(graphUri));
+      loadModel(ModelConverter.modelToLang(model, Lang.TURTLE).getBytes(),graphUri);
+    }
+  }
 
+  private void loadModel(byte[] data, String graphUri) throws Exception {
+    Authenticator.setDefault(new Authenticator() {
+      protected PasswordAuthentication getPasswordAuthentication() {
+        return new PasswordAuthentication(params().getUsername(), params().getPassword().toCharArray());
+      }
+    });
+
+    String sparqlUrl = params().getSparqlEndpointUrl() + "-graph-crud-auth?graph-uri=" + graphUri;
+    URL url = new URL(sparqlUrl);
+
+    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+    conn.setDoOutput(true);
+    conn.setInstanceFollowRedirects(true);
+    conn.setRequestMethod("POST");
+    conn.setRequestProperty("Content-Type", "application/x-turtle");
+    conn.setRequestProperty("charset", "utf-8");
+    conn.setRequestProperty("Content-Length", Integer.toString(data.length));
+    conn.setUseCaches(false);
+    conn.getOutputStream().write(data);
+
+    if ((conn.getResponseCode() / 100) != 2) throw new RuntimeException("Not 2xx as answer: " + conn.getResponseCode() + " " + conn.getResponseMessage());
   }
 
   default void ping() {
