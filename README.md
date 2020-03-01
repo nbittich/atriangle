@@ -28,3 +28,4 @@
        ```
             select * from <http://artcoded.tech/person/graph> where {?s ?p ?o}
        ```
+  ![Screenshot](virtuoso.png?raw=true)   
