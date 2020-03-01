@@ -1,23 +1,15 @@
 package tech.artcoded.atriangle.eventdispatcher;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.kafka.annotation.EnableKafka;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import tech.artcoded.atriangle.api.ObjectMapperWrapper;
+import org.springframework.context.annotation.Import;
+import tech.artcoded.atriangle.core.config.KafkaConfig;
 
 @SpringBootApplication
-@EnableScheduling
-@EnableKafka
+@Import({KafkaConfig.class})
 public class EventDispatcherApplication {
   public static void main(String[] args) {
     SpringApplication.run(EventDispatcherApplication.class, args);
   }
 
-  @Bean
-  public ObjectMapperWrapper objectMapperWrapper() {
-    return ObjectMapper::new;
-  }
 }
