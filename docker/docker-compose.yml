@@ -27,7 +27,7 @@ services:
         aliases:
           - elasticsearch
     environment:
-      - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
+      - "ES_JAVA_OPTS=-Xms3072m -Xmx4196m"
       - "discovery.type=single-node"
     ports:
       - "9200"
