@@ -19,7 +19,7 @@
    - Docker
  ## Features
    - Serverless Architecture (Todo)
-   - Micro service architecture using Docker & kafka
+   - Micro service architecture using Spring Boot, Docker & kafka
    - No data losses
    - Dynamic Shacl Validation
    - Dynamic Elastic index settings & mappings (to fix nested & field exclusion)
