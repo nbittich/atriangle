@@ -85,7 +85,7 @@ public class RestSinkConsumer implements ATriangleConsumer<String, String> {
     kafkaTemplate.send(elasticRecord);
 
     return Map.entry(UUID.randomUUID()
-                         .toString(), mapperWrapper.serialize(Map.of("messafe", "kafka events produced",
+                         .toString(), mapperWrapper.serialize(Map.of("message", "kafka events produced",
                                                                      "id", kafkaEvent.getId())));
   }
 
