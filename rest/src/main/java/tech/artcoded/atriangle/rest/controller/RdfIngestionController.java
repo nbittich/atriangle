@@ -51,8 +51,6 @@ public class RdfIngestionController {
     this.objectMapperWrapper = objectMapperWrapper;
   }
 
-  @Value("${elasticsearch.index}")
-  private String defaultElasticIndex;
   @Value("${shacl.enabled:false}")
   private boolean shaclEnabled;
 
@@ -62,7 +60,7 @@ public class RdfIngestionController {
   @SneakyThrows
   @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> ingest(@RequestParam("graphUri") String graphUri,
-                                       @RequestParam(value = "elasticIndex", required = false) String elasticIndex,
+                                       @RequestParam(value = "elasticIndex") String elasticIndex,
                                        @RequestParam(value = "createIndex", defaultValue = "false") boolean createIndex,
                                        @RequestParam("rdfFile") MultipartFile rdfFile,
                                        @RequestParam(value = "elasticSettings",
@@ -100,11 +98,8 @@ public class RdfIngestionController {
   private void produceKafkaEvent(String graphUri, String elasticIndex, boolean createIndex,
                                  MultipartFile settingsFile,  MultipartFile mappingsFile, String json) {
     CompletableFuture.runAsync(()->{
-      String index = Optional.ofNullable(elasticIndex)
-                             .filter(String::isEmpty)
-                             .orElse(defaultElasticIndex);
 
-      log.info("elastic search index to use '{}'", index);
+      log.info("elastic search index to use '{}'", elasticIndex);
 
 
       String rdfSinkEventId = ID_SUPPLIER.get();
@@ -121,7 +116,7 @@ public class RdfIngestionController {
                                               .build();
 
       ElasticEvent elasticEvent = ElasticEvent.builder()
-                                              .index(index)
+                                              .index(elasticIndex)
                                               .createIndex(createIndex)
                                               .settings(FILE_TO_JSON.apply(settingsFile))
                                               .mappings(FILE_TO_JSON.apply(mappingsFile))
