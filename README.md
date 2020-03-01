@@ -1,4 +1,3 @@
 # WIP A Triangle
 
-        ![Image description](atriangle.png)
-
+![Screenshot](atriangle.png?raw=true)
