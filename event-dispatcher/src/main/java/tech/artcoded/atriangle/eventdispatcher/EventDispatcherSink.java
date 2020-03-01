@@ -37,7 +37,7 @@ public class EventDispatcherSink {
     log.info("receiving output event with id {} and value {}", event.key(), event.value());
   }
 
-  @KafkaListener(topics = {"${spring.kafka.template.default-topic}"})
+  @KafkaListener(topics = "${spring.kafka.template.default-topic}")
   public void dispatch(ConsumerRecord<String, String> event) throws Exception {
     String value = event.value();
     log.info("receiving key {} value {}", event.key(), event.value());

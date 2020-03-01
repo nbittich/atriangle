@@ -9,9 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RdfEvent implements KafkaEvent {
+public class RdfEvent {
   private String graphUri;
-  private String id;
-  private final EventType eventType = EventType.RDF_SINK;
-  private String json;
 }

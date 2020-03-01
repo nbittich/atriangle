@@ -10,7 +10,7 @@
     <modelVersion>4.0.0</modelVersion>
     <name>A Triangle - FILE-SINK</name>
 
-    <artifactId>file-sink</artifactId>
+    <artifactId>atriangle-file-sink</artifactId>
 
     <dependencies>
         <dependency>
@@ -27,7 +27,8 @@
         <finalName>atriangle-file-sink</finalName>
         <plugins>
             <plugin>
-                <artifactId>maven-compiler-plugin</artifactId>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

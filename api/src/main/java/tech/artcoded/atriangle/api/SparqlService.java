@@ -107,6 +107,7 @@ public interface SparqlService {
   default void updateExecution(UpdateRequest updateRequest, Consumer<UpdateProcessor> consumer) {
     UpdateProcessor remoteForm = UpdateExecutionFactory.createRemoteForm(updateRequest, params().getSparqlEndpointUrl(), params().getHttpClient());
     consumer.accept(remoteForm);
+
   }
 
   default void ping() {
