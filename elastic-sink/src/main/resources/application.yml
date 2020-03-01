@@ -1,0 +1,9 @@
+out:
+  topic: event-sink-elastic-out
+
+spring:
+  profiles:
+    include: kafka,elasticsearch
+  kafka:
+    template:
+      default-topic: event-sink-elastic

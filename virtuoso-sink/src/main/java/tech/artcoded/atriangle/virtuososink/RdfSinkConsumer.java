@@ -32,8 +32,11 @@ public class RdfSinkConsumer extends ATriangleConsumer<String, String> {
     Optional<RdfEvent> optionalRdfEvent = mapperWrapper.deserialize(rdfEvent, RdfEvent.class);
     RdfEvent event = optionalRdfEvent.orElseThrow(() -> new RuntimeException("event could not be parsed"));
 
+    log.info("converting to model");
+
     Model model = ModelConverter.toModel(event.getJson(), Lang.JSONLD);
 
+    log.info("saving to triplestore");
     sparqlService.insertOrUpdateToGraph(event.getGraphUri(), model);
 
     return Map.entry(UUID.randomUUID()

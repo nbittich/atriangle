@@ -1,0 +1,8 @@
+out:
+  topic: event-sink-rdf-out
+spring:
+  profiles:
+    include: kafka,virtuoso
+  kafka:
+    template:
+      default-topic: event-sink-rdf

@@ -1,0 +1,12 @@
+event:
+  dispatcher:
+    elastic-sink-topic: event-sink-elastic
+    elastic-sink-topic-out: event-sink-elastic-out
+    rdf-sink-topic: event-sink-rdf
+    rdf-sink-topic-out: event-sink-rdf-out
+spring:
+  profiles:
+    include: kafka
+  kafka:
+    template:
+      default-topic: event-dispatcher

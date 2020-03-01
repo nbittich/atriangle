@@ -51,8 +51,6 @@ public interface ModelConverter {
 
   static String inputStreamToLang(String fileExtension, InputStream file, Lang lang) {
 
-    Model model = null;
-
     return modelToLang(inputStreamToModel(fileExtension, file), lang);
   }
 

@@ -14,7 +14,7 @@ public class ElasticEvent implements KafkaEvent {
   private String settings = "{}";
   private String mappings = "{}";
   private String id;
-  private EventType eventType;
+  private final EventType eventType = EventType.ELASTIC_SINK;
   private String json;
   private boolean createIndex;
 }

@@ -12,6 +12,6 @@ import lombok.NoArgsConstructor;
 public class RdfEvent implements KafkaEvent {
   private String graphUri;
   private String id;
-  private EventType eventType;
+  private final EventType eventType = EventType.RDF_SINK;
   private String json;
 }

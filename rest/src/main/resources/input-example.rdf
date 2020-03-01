@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+
+<rdf:RDF
+xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+xmlns:artcoded="http://artcoded.tech#">
+
+<rdf:Description
+rdf:about="http://artcoded.tech/person">
+  <artcoded:artist>Nordine Bittich</artcoded:artist>
+  <artcoded:country>BELGIUM</artcoded:country>
+  <artcoded:company>Artcoded</artcoded:company>
+  <artcoded:year>1988</artcoded:year>
+</rdf:Description>
+</rdf:RDF>

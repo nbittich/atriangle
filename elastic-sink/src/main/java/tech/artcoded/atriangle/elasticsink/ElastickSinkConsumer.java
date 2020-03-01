@@ -34,6 +34,7 @@ public class ElastickSinkConsumer extends ATriangleConsumer<String, String> {
     String index = event.getIndex();
 
     if (event.isCreateIndex()) {
+      log.info("index must be created");
       boolean indexExist = elasticSearchRdfService.indexExist(index);
       if (indexExist) {
         AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.deleteIndex(index);

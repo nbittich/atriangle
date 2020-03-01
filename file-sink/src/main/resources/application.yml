@@ -1,0 +1,11 @@
+filesink:
+  folder:
+    ext: /tmp/file-sink/ext
+out:
+  topic: event-sink-file-out
+spring:
+  profiles:
+    include: kafka
+  kafka:
+    template:
+      default-topic: event-sink-file

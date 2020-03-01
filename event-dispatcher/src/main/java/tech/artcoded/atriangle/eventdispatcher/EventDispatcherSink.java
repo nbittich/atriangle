@@ -32,6 +32,11 @@ public class EventDispatcherSink {
     this.mapperWrapper = mapperWrapper;
   }
 
+  @KafkaListener(topics = {"${event.dispatcher.elastic-sink-topic-out}", "${event.dispatcher.rdf-sink-topic-out}"})
+  public void logOutput(ConsumerRecord<String, String> event) throws Exception {
+    log.info("receiving output event with id {} and value {}", event.key(), event.value());
+  }
+
   @KafkaListener(topics = {"${spring.kafka.template.default-topic}"})
   public void dispatch(ConsumerRecord<String, String> event) throws Exception {
     String value = event.value();

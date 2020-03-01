@@ -1,0 +1,16 @@
+server:
+  port: 8088
+spring:
+  profiles:
+    include: kafka,virtuoso,elasticsearch,zuul
+  kafka:
+    template:
+      default-topic: event-dispatcher
+
+elasticsearch:
+  index: movies
+
+management:
+  health:
+    elasticsearch:
+      enabled: false
