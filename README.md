@@ -1,11 +1,11 @@
 # WIP A Triangle
 
-![Screenshot](docs/atriangle.png?raw=true)
+![Screenshot](./docs/atriangle.png?raw=true)
 
  ## About
  work in progress...
 
-        ![Screenshot](docs/starhopper.gif?raw=true?style=center)
+        ![Screenshot](./docs/starhopper.gif?raw=true?style=center)
 
  ## How it works
  - A rest endpoint is exposed to save rdf files.
@@ -42,7 +42,7 @@
 
   1. Send an rdf request with swagger:
 
-        ![Screenshot](docs/swagger.png?raw=true)
+        ![Screenshot](./docs/swagger.png?raw=true)
   
   2. Check the result in virtuoso
 
@@ -50,7 +50,7 @@
       select * from <http://artcoded.tech/person/graph> where {?s ?p ?o}
       ```
 
-        ![Screenshot](docs/virtuoso.png?raw=true)
+        ![Screenshot](./docs/virtuoso.png?raw=true)
   
   3. Check the result in elasticsearch 
      * Check index created: http://localhost:8088/proxy/elasticsearch/persons
