@@ -7,11 +7,26 @@ docker build -t atriangle/event-dispatcher -f docker/event-dispatcher/Dockerfile
 docker build -t atriangle/rest -f docker/rest/Dockerfile . --no-cache
 cd docker
 docker-compose stop
-docker-compose rm -y
+docker-compose rm -f
 docker system prune -f
 docker volume prune -f
 docker network prune -f
 docker-compose up -d --force-recreate
+
+sleep 30s # wait for kafka, elasticsearch & virtuoso then restart the containers
+
+docker restart docker_atrianglefilesink_1
+docker restart docker_atrianglerdfsink_1
+docker restart docker_atriangleeventdispatcher_1
+docker restart docker_atrianglerest_1
+docker restart docker_atriangleelasticsink_1
+
+echo "ready to use! check the containers using docker ps"
+echo "docker logs -f docker_atrianglefilesink_1"
+echo "docker logs -f docker_atrianglerdfsink_1"
+echo "docker logs -f docker_atriangleeventdispatcher_1"
+echo "docker logs -f docker_atrianglerest_1"
+echo "docker logs -f docker_atriangleelasticsink_1"
 
 
 

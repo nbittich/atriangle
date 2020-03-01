@@ -70,18 +70,21 @@ public interface SparqlService {
     }
   }
 
-  default void update(String graphUri) {
+  default void delete(String graphUri) {
     try (
       RDFConnection conn = RDFConnectionRemote.create()
                                               .destination(params().getSparqlEndpointUrl())
                                               .httpClient(params().getHttpClient())
                                               .build()) {
-      conn.delete();
+      conn.delete(graphUri);
+    }
+    catch (Exception e) {
+      LOGGER.error("could not delete graph", e);
     }
   }
 
   default void clearGraph(String graphUri) {
-    update(constructGraphUri(graphUri));
+    delete(constructGraphUri(graphUri));
   }
 
   @SneakyThrows

@@ -30,19 +30,23 @@ services:
       - "ES_JAVA_OPTS=-Xms2048m -Xmx2048m"
       - "discovery.type=single-node"
     ports:
-      - "9200:9200"
-      - "9300:9300"
+      - "9200"
+      - "9300"
 
   atrianglezookeeper:
+    restart: always
     image: wurstmeister/zookeeper
     ports:
-      - "2181:2181"
+      - "2181"
     networks:
       atriangle:
         aliases:
           - zookeeper
   atrianglekafka:
+    restart: always
     build: kafka-docker/.
+    depends_on:
+      - atrianglezookeeper
     ports:
       - "9092"
       - "9093"
@@ -52,56 +56,74 @@ services:
           - kafka
     environment:
       KAFKA_ADVERTISED_HOST_NAME: kafka
-      KAFKA_LISTENERS: INTERNAL://:9092,EXTERNAL://:9093
-      KAFKA_ADVERTISED_LISTENERS: INTERNAL://:9092,EXTERNAL://:9093
+      KAFKA_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://kafka:9093
+      KAFKA_ADVERTISED_LISTENERS: INTERNAL://kafka:9092,EXTERNAL://kafka:9093
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: INTERNAL:PLAINTEXT,EXTERNAL:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: INTERNAL
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   atriangleelasticsink:
+    restart: always
+    depends_on:
+      - atriangleelasticsearch
+      - atrianglekafka
     networks:
       atriangle:
         aliases:
           - elasticsink
     image: atriangle/elastic-sink
     environment:
-      ELASTICSEARCH_HOSTNAME: elasticsearch
-      KAFKA_BOOTSTRAP_SERVER: kafka
+      ELASTICSEARCH_HOSTNAME: "elasticsearch"
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
       - elastic-sink-storage:/app/user
   atrianglerdfsink:
+    restart: always
+    depends_on:
+      - atrianglevirtuoso
+      - atrianglekafka
     networks:
       atriangle:
         aliases:
           - rdfsink
     image: atriangle/rdf-sink
     environment:
-      VIRTUOSO_HOSTNAME: virtuoso
-      KAFKA_BOOTSTRAP_SERVER: kafka
+      VIRTUOSO_HOSTNAME: "virtuoso"
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
       - rdf-sink-storage:/app/user
   atrianglefilesink:
+    restart: always
+    depends_on:
+      - atrianglekafka
     networks:
       atriangle:
         aliases:
           - filesink
     image: atriangle/file-sink
     environment:
-      KAFKA_BOOTSTRAP_SERVER: kafka
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
       - file-sink-storage:/app/user
   atriangleeventdispatcher:
+    depends_on:
+      - atrianglekafka
     networks:
       atriangle:
         aliases:
           - eventdispatcher
     image: atriangle/event-dispatcher
     environment:
-      KAFKA_BOOTSTRAP_SERVER: kafka
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
       - event-dispatcher-storage:/app/user
   atrianglerest:
+    restart: always
+    depends_on:
+      - atrianglekafka
+      - atrianglevirtuoso
+      - atriangleelasticsearch
     networks:
       atriangle:
         aliases:
@@ -110,9 +132,9 @@ services:
     ports:
       - "8088:8088"
     environment:
-      ELASTICSEARCH_HOSTNAME: elasticsearch
-      VIRTUOSO_HOSTNAME: virtuoso
-      KAFKA_BOOTSTRAP_SERVER: kafka
+      ELASTICSEARCH_HOSTNAME: "elasticsearch"
+      VIRTUOSO_HOSTNAME: "virtuoso"
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
       - rest-storage:/app/user
 

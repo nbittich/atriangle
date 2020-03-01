@@ -6,6 +6,7 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.common.xcontent.XContentType;
+import org.elasticsearch.rest.RestStatus;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -59,15 +60,21 @@ public class ElastickSinkConsumer implements ATriangleConsumer<String, String> {
       if (indexExist) {
         AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.deleteIndex(index);
         if (!acknowledgedResponse.isAcknowledged()) {
+          log.error("acknowledge false");
           throw new RuntimeException("could not delete index");
         }
       }
-
       elasticSearchRdfService.createIndex(index, createIndexRequest -> createIndexRequest.settings(event.getSettings(), XContentType.JSON)
                                                                                          .mapping(event.getMappings(), XContentType.JSON));
     }
 
     IndexResponse response = elasticSearchRdfService.index(index, kafkaEvent.getId(), kafkaEvent.getJson());
+
+    if (RestStatus.ACCEPTED.equals(response.status())) {
+      log.error("could not index");
+      throw new RuntimeException("could not index");
+    }
+
     return Map.entry(UUID.randomUUID()
                          .toString(), mapperWrapper.serialize(Map.of("status", response.status()
                                                                                        .getStatus(),

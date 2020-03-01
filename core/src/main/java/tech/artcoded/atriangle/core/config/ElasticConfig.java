@@ -31,6 +31,7 @@ public class ElasticConfig {
   @Bean(destroyMethod = "close")
   @Named(ELASTIC_CLIENT)
   public RestHighLevelClient restHighLevelClient() {
+    log.info("hostname {}, port {}, scheme {}", hostname, port, scheme);
     return new RestHighLevelClient(
       RestClient.builder(
         new HttpHost(hostname, port, scheme),

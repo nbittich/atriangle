@@ -5,4 +5,4 @@ zuul:
       url: ${elasticsearch.scheme}://${elasticsearch.hostname}:${elasticsearch.port}
     virtuoso:
       path: /proxy/virtuoso/**
-      url: ${virtuoso.scheme}://${virtuoso.hostname}:${virtuoso.port}/sparql
+      url: ${virtuoso.scheme}://${virtuoso.hostname}:${virtuoso.port}

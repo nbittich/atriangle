@@ -60,12 +60,17 @@ public interface ElasticSearchRdfService {
     return createIndex(index, createIndexRequest -> createIndexRequest.source(inputStreamToString(source), XContentType.JSON));
   }
 
-  @SneakyThrows
   default CreateIndexResponse createIndex(String index,
                                           Function<CreateIndexRequest, CreateIndexRequest> requestTransformer) {
-    CreateIndexRequest createIndexRequest = new CreateIndexRequest(index);
-    return getClient().indices()
-                      .create(requestTransformer.apply(createIndexRequest), RequestOptions.DEFAULT);
+    try {
+      CreateIndexRequest createIndexRequest = new CreateIndexRequest(index);
+      return getClient().indices()
+                        .create(requestTransformer.apply(createIndexRequest), RequestOptions.DEFAULT);
+    }
+    catch (Exception e) {
+      LOGGER.error("could not create index", e);
+      throw new RuntimeException(e);
+    }
   }
 
   @SneakyThrows
@@ -90,11 +95,16 @@ public interface ElasticSearchRdfService {
                .deleteAsync(request, RequestOptions.DEFAULT, getDefaultAcknowledgeCallback());
   }
 
-  @SneakyThrows
   default AcknowledgedResponse deleteIndex(String index) {
-    DeleteIndexRequest request = new DeleteIndexRequest(index);
-    return getClient().indices()
-                      .delete(request, RequestOptions.DEFAULT);
+    try {
+      DeleteIndexRequest request = new DeleteIndexRequest(index);
+      return getClient().indices()
+                        .delete(request, RequestOptions.DEFAULT);
+    }
+    catch (Exception e) {
+      LOGGER.error("could not delete index", e);
+      throw new RuntimeException(e);
+    }
   }
 
 
@@ -104,11 +114,16 @@ public interface ElasticSearchRdfService {
     getClient().indexAsync(requestTransformer.apply(request), RequestOptions.DEFAULT, getDefaultIndexCallback());
   }
 
-  @SneakyThrows
   default IndexResponse index(String index, Function<IndexRequest, IndexRequest> requestTransformer) {
-    IndexRequest request = new IndexRequest(index);
-    request.opType(DocWriteRequest.OpType.INDEX);
-    return getClient().index(requestTransformer.apply(request), RequestOptions.DEFAULT);
+    try {
+      IndexRequest request = new IndexRequest(index);
+      request.opType(DocWriteRequest.OpType.INDEX);
+      return getClient().index(requestTransformer.apply(request), RequestOptions.DEFAULT);
+    }
+    catch (Exception e) {
+      LOGGER.error("error during indexing", e);
+      throw new RuntimeException(e);
+    }
   }
 
   default IndexResponse index(String index, String id, Model model) {
