@@ -8,6 +8,9 @@
    ![Screenshot](./docs/starhopper.gif?raw=true?style=center)
 
  ## How it works
+ 
+  ![Screenshot](./docs/architecture.png?raw=true?style=center)
+ 
  - A rest endpoint is exposed to save rdf files.
  - The rest endpoint validates the model with the shacl validation file if it was provided.
  - If the model is valid, it is transformed to a Kafka Event (json-ld) and redirect to a dispatcher topic (the event-dispatcher).
