@@ -9,7 +9,7 @@
 
  ## How it works
  
-  ![Screenshot](./docs/architecture.png?raw=true?style=center)
+  ![Screenshot](./docs/arch.png?raw=true?style=center)
  
  - A rest endpoint is exposed to save rdf files.
  - The rest endpoint validates the model with the shacl validation file if it was provided.
