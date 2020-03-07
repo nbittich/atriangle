@@ -68,7 +68,7 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
       }
       CreateIndexResponse response = elasticSearchRdfService.createIndex(index, createIndexRequest -> createIndexRequest.settings(event.getSettings(), XContentType.JSON)
                                                                                                                         .mapping(event.getMappings(), XContentType.JSON));
-      log.info("acknowwledge of index creation {}", response.isAcknowledged());
+      log.info("acknowledge of index creation {}", response.isAcknowledged());
 
     }
 

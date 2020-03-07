@@ -194,6 +194,7 @@
         <module>event-dispatcher</module>
         <module>rest-sink</module>
         <module>rest</module>
+        <module>log-sink</module>
     </modules>
 </project>
 

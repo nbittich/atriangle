@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.kafka.KafkaEvent;
+import tech.artcoded.atriangle.core.kafka.LoggerAction;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -19,6 +20,7 @@ import java.util.Optional;
 @Slf4j
 public class EventDispatcherSink {
   private final KafkaTemplate<String, String> kafkaTemplate;
+  private final LoggerAction loggerAction;
   private final ObjectMapperWrapper mapperWrapper;
 
   @Value("${event.dispatcher.elastic-sink-topic}")
@@ -29,20 +31,21 @@ public class EventDispatcherSink {
 
   @Inject
   public EventDispatcherSink(KafkaTemplate<String, String> kafkaTemplate,
+                             LoggerAction loggerAction,
                              ObjectMapperWrapper mapperWrapper) {
     this.kafkaTemplate = kafkaTemplate;
+    this.loggerAction = loggerAction;
     this.mapperWrapper = mapperWrapper;
   }
 
   @KafkaListener(topics = {"${event.dispatcher.elastic-sink-topic-out}", "${event.dispatcher.rdf-sink-topic-out}"})
   public void logOutput(ConsumerRecord<String, String> event) throws Exception {
-    log.info("receiving output event with id {} and value {}", event.key(), event.value());
+    loggerAction.info("receiving key %s, value %s", event.key(), event.value());
   }
 
   @KafkaListener(topics = "${spring.kafka.template.default-topic}")
   public void dispatch(ConsumerRecord<String, String> event) throws Exception {
     String value = event.value();
-    log.info("receiving key {} value {}", event.key(), event.value());
     Optional<KafkaEvent> optionalKafkaEvent = mapperWrapper.deserialize(value, KafkaEvent.class);
     CheckedFunction<String, SendResult<String, String>> sendEvent = (topic) ->
       kafkaTemplate.send(new ProducerRecord<>(topic, event.key(), event.value()))
@@ -52,11 +55,11 @@ public class EventDispatcherSink {
         case RDF_SINK:
           log.info("result of send event {}", sendEvent.safeGet(rdfSinkTopic));
           break;
-        case FILE_SINK:
-          log.info("file sink is disabled, event filtered ");
         case ELASTIC_SINK:
           log.info("result of send event {}", sendEvent.safeGet(elsticSinkTopic));
           break;
+        default:
+          throw new RuntimeException("not supported yet");
       }
     });
   }

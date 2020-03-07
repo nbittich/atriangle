@@ -1,0 +1,11 @@
+out:
+  topic: event-sink-log-out
+log:
+  sink:
+    index: logsink
+spring:
+  profiles:
+    include: kafka,elasticsearch
+  kafka:
+    template:
+      default-topic: event-sink-log

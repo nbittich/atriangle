@@ -77,6 +77,21 @@ services:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
       - elastic-sink-storage:/app/user
+  atrianglelogsink:
+    restart: always
+    depends_on:
+      - atriangleelasticsearch
+      - atrianglekafka
+    networks:
+      atriangle:
+        aliases:
+          - logsink
+    image: atriangle/log-sink
+    environment:
+      ELASTICSEARCH_HOSTNAME: "elasticsearch"
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
+    volumes:
+      - log-sink-storage:/app/user
   atrianglerestsink:
     restart: always
     depends_on:
@@ -142,7 +157,7 @@ volumes:
   elastic-sink-storage:
   rdf-sink-storage:
   rest-sink-storage:
-  file-sink-storage:
+  log-sink-storage:
   event-dispatcher-storage:
   rest-storage:
 
