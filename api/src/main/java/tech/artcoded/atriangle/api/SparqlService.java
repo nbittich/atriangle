@@ -89,6 +89,7 @@ public interface SparqlService {
     LOGGER.info("clear graph {}", graphUri);
     clearGraph(graphUri);
     LOGGER.info("save model to {}", graphUri);
+
     loadModel(ModelConverter.modelToLang(model, Lang.TURTLE)
                             .getBytes(), graphUri);
   }

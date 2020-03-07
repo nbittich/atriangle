@@ -31,6 +31,11 @@
                 <version>${project.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.aksw.jena-sparql-api</groupId>
+                <artifactId>jena-sparql-api-virtuoso</artifactId>
+                <version>3.13.1-1</version>
+            </dependency>
+            <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>atriangle-core</artifactId>
                 <version>${project.version}</version>

@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 import org.springframework.beans.factory.annotation.Value;
@@ -65,9 +66,9 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
           throw new RuntimeException("could not delete index");
         }
       }
-      elasticSearchRdfService.createIndex(index, createIndexRequest -> createIndexRequest.settings(event.getSettings(), XContentType.JSON)
-                                                                                         .mapping(event.getMappings(), XContentType.JSON));
-      log.info("index created");
+      CreateIndexResponse response = elasticSearchRdfService.createIndex(index, createIndexRequest -> createIndexRequest.settings(event.getSettings(), XContentType.JSON)
+                                                                                                                        .mapping(event.getMappings(), XContentType.JSON));
+      log.info("acknowwledge of index creation {}", response.isAcknowledged());
 
     }
 
@@ -80,7 +81,8 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
     }
 
     return Map.of(UUID.randomUUID()
-                      .toString(), mapperWrapper.serialize(Map.of("status", response.status()
+                      .toString(), mapperWrapper.serialize(Map.of("message", "indexing success",
+                                                                  "status", response.status()
                                                                                     .getStatus(),
                                                                   "id", kafkaEvent.getId())));
   }
