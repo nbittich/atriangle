@@ -1,0 +1,66 @@
+version: '3'
+
+services:
+  atrianglevirtuosolocal:
+    restart: always
+    container_name: virtuosolocal
+    image: tenforce/virtuoso:1.3.2-virtuoso7.2.5.1
+    environment:
+      SPARQL_UPDATE: "true"
+      DEFAULT_GRAPH: "https://www.artcoded.tech/default-graph"
+      DBA_PASSWORD: "dba"
+    volumes:
+      - virtuoso-storage-local:/data
+    ports:
+      - "8890:8890"
+      - "1111:1111"
+    networks:
+      atrianglelocal:
+        aliases:
+          - virtuoso
+  atriangleelasticsearchlocal:
+    restart: always
+    container_name: elasticsearch_local
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.6.0
+    networks:
+      atrianglelocal:
+        aliases:
+          - elasticsearch
+    environment:
+      - "ES_JAVA_OPTS=-Xms3072m -Xmx4196m"
+      - "discovery.type=single-node"
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+  atrianglezookeeperlocal:
+    restart: always
+    image: wurstmeister/zookeeper
+    ports:
+      - "2181:2181"
+    networks:
+      atrianglelocal:
+        aliases:
+          - zookeeper
+  atrianglekafkalocal:
+    restart: always
+    build: kafka-docker/.
+    depends_on:
+      - atrianglezookeeperlocal
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    networks:
+      atrianglelocal:
+        aliases:
+          - kafka
+    environment:
+      KAFKA_ADVERTISED_HOST_NAME: 192.168.99.101
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  virtuoso-storage-local:
+
+networks:
+  atrianglelocal:

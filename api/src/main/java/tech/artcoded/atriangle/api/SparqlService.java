@@ -5,9 +5,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.jena.query.QueryExecution;
 import org.apache.jena.query.QueryExecutionFactory;
 import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdfconnection.RDFConnection;
-import org.apache.jena.rdfconnection.RDFConnectionRemote;
 import org.apache.jena.riot.Lang;
+import org.apache.jena.update.UpdateExecutionFactory;
 import org.apache.jena.update.UpdateFactory;
 import org.apache.jena.update.UpdateRequest;
 import org.slf4j.Logger;
@@ -71,12 +70,9 @@ public interface SparqlService {
   }
 
   default void delete(String graphUri) {
-    try (
-      RDFConnection conn = RDFConnectionRemote.create()
-                                              .destination(params().getSparqlEndpointUrl())
-                                              .httpClient(params().getHttpClient())
-                                              .build()) {
-      conn.delete(graphUri);
+    try {
+      var factory = UpdateExecutionFactory.createRemote(UpdateFactory.create(CLEAR_GRAPH_QUERY.apply(graphUri)), params().getSparqlEndpointUrl(), params().getHttpClient());
+      factory.execute();
     }
     catch (Exception e) {
       LOGGER.info("could not delete graph", e);
@@ -90,7 +86,9 @@ public interface SparqlService {
   @SneakyThrows
   default void upload(String uri, Model model) {
     String graphUri = constructGraphUri(uri);
+    LOGGER.info("clear graph {}", graphUri);
     clearGraph(graphUri);
+    LOGGER.info("save model to {}", graphUri);
     loadModel(ModelConverter.modelToLang(model, Lang.TURTLE)
                             .getBytes(), graphUri);
   }

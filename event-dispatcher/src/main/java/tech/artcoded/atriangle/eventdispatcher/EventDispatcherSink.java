@@ -6,7 +6,9 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
+import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.kafka.KafkaEvent;
 
@@ -42,15 +44,18 @@ public class EventDispatcherSink {
     String value = event.value();
     log.info("receiving key {} value {}", event.key(), event.value());
     Optional<KafkaEvent> optionalKafkaEvent = mapperWrapper.deserialize(value, KafkaEvent.class);
+    CheckedFunction<String, SendResult<String, String>> sendEvent = (topic) ->
+      kafkaTemplate.send(new ProducerRecord<>(topic, event.key(), event.value()))
+                   .get();
     optionalKafkaEvent.ifPresent(kafkaEvent -> {
       switch (kafkaEvent.getEventType()) {
         case RDF_SINK:
-          kafkaTemplate.send(new ProducerRecord<>(rdfSinkTopic, event.key(), event.value()));
+          log.info("result of send event {}", sendEvent.safeGet(rdfSinkTopic));
           break;
         case FILE_SINK:
           log.info("file sink is disabled, event filtered ");
         case ELASTIC_SINK:
-          kafkaTemplate.send(new ProducerRecord<>(elsticSinkTopic, event.key(), event.value()));
+          log.info("result of send event {}", sendEvent.safeGet(elsticSinkTopic));
           break;
       }
     });

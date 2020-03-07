@@ -77,7 +77,8 @@ public class RestSinkConsumer implements ATriangleConsumer<String, String> {
 
     log.info("sending to topic dispatcher");
 
-    return Map.of(rdfSinkEventId, mapperWrapper.serialize(kafkaEventForRdf), elasticSinkEventId, mapperWrapper.serialize(kafkaEventForElastic));
+    return Map.of(rdfSinkEventId, mapperWrapper.serialize(kafkaEventForRdf),
+                  elasticSinkEventId, mapperWrapper.serialize(kafkaEventForElastic));
   }
 
 
