@@ -2,6 +2,7 @@
 mvn clean install
 docker build -t atriangle/elastic-sink -f docker/elastic-sink/Dockerfile . --no-cache
 docker build -t atriangle/rdf-sink -f docker/rdf-sink/Dockerfile . --no-cache
+docker build -t atriangle/log-sink -f docker/log-sink/Dockerfile . --no-cache
 docker build -t atriangle/event-dispatcher -f docker/event-dispatcher/Dockerfile . --no-cache
 docker build -t atriangle/rest-sink -f docker/rest-sink/Dockerfile . --no-cache
 docker build -t atriangle/rest -f docker/rest/Dockerfile . --no-cache
