@@ -32,7 +32,6 @@ services:
     ports:
       - "9200"
       - "9300"
-
   atrianglezookeeper:
     restart: always
     image: wurstmeister/zookeeper
@@ -106,19 +105,6 @@ services:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
       - rdf-sink-storage:/app/user
-  atrianglefilesink:
-    restart: always
-    depends_on:
-      - atrianglekafka
-    networks:
-      atriangle:
-        aliases:
-          - filesink
-    image: atriangle/file-sink
-    environment:
-      KAFKA_BOOTSTRAP_SERVER: "kafka"
-    volumes:
-      - file-sink-storage:/app/user
   atriangleeventdispatcher:
     depends_on:
       - atrianglekafka

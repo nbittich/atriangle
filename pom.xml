@@ -189,7 +189,6 @@
     <modules>
         <module>api</module>
         <module>core</module>
-        <module>file-sink</module>
         <module>elastic-sink</module>
         <module>virtuoso-sink</module>
         <module>event-dispatcher</module>
