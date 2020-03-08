@@ -1,6 +1,5 @@
 package tech.artcoded.atriangle.api;
 
-import lombok.SneakyThrows;
 import org.apache.jena.rdf.model.*;
 import org.apache.jena.riot.system.RiotLib;
 import org.topbraid.shacl.validation.ValidationUtil;
@@ -12,9 +11,8 @@ import java.util.Optional;
 public interface ShaclValidator {
   Model getShapes();
 
-  @SneakyThrows
   static Optional<Model> validateModel(Model inputModel, boolean shaclEnabled, String extension,
-                                       InputStream shaclInputStream) {
+                                       CheckedSupplier<InputStream> shaclInputStream) {
 
     if (!shaclEnabled) return Optional.empty();
 
@@ -30,6 +28,7 @@ public interface ShaclValidator {
     }
     return Optional.empty();
   }
+
   default Model validate(Model modelToValidate) {
     org.apache.jena.rdf.model.Resource report = ValidationUtil.validateModel(modelToValidate, getShapes(), true);
     Model model = report.getModel();

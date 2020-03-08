@@ -20,15 +20,18 @@ public interface ATriangleConsumer<K, V> {
 
    Map<K, V> consume(ConsumerRecord<K, V> record);
 
+   default CheckedFunction<Map.Entry<K, V>, SendResult<K, V>> sendKafkaMessageForEachEntries() {
+      return (var response) -> getKafkaTemplate().send(new ProducerRecord<>(getOutTopic(), response.getKey(), response.getValue()))
+                                                 .get();
+   }
+
    @KafkaListener(topics = "${spring.kafka.template.default-topic}")
    default void sink(ConsumerRecord<K, V> record) throws Exception {
       LOGGER.info("receiving key {} value {}", record.key(), record.value());
       Map<K, V> responses = consume(record);
-      CheckedFunction<Map.Entry<K, V>, SendResult<K, V>> sendKafkaMessageForEachEntries = (var response) -> getKafkaTemplate().send(new ProducerRecord<>(getOutTopic(), response.getKey(), response.getValue()))
-                                                                                                                              .get();
       responses.entrySet()
                .stream()
-               .map(sendKafkaMessageForEachEntries::safeGet)
+               .map(this.sendKafkaMessageForEachEntries()::safeGet)
                .forEach(result -> LOGGER.info("result {}", result.toString()));
    }
 

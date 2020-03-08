@@ -1,6 +1,5 @@
 package tech.artcoded.atriangle.api;
 
-import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.ontology.OntModel;
 import org.apache.jena.ontology.OntModelSpec;
@@ -24,16 +23,14 @@ public interface ModelConverter {
     return sw.toString();
   }
 
-  @SneakyThrows
   static Model toModel(String value, Lang lang) {
     if (Strings.isEmpty(value)) throw new RuntimeException("model cannot be empty");
-    return toModel(IOUtils.toInputStream(value, StandardCharsets.UTF_8), lang);
+    return toModel(() -> IOUtils.toInputStream(value, StandardCharsets.UTF_8), lang);
   }
 
-  @SneakyThrows
-  static Model toModel(InputStream is, Lang lang) {
+  static Model toModel(CheckedSupplier<InputStream> is, Lang lang) {
     Model defaultModel = ModelFactory.createDefaultModel();
-    defaultModel.read(is, null, lang.getLabel());
+    defaultModel.read(is.safeGet(), null, lang.getLabel());
     return defaultModel;
   }
 
@@ -49,12 +46,12 @@ public interface ModelConverter {
     return ontoModel;
   }
 
-  static String inputStreamToLang(String fileExtension, InputStream file, Lang lang) {
+  static String inputStreamToLang(String fileExtension, CheckedSupplier<InputStream> file, Lang lang) {
 
     return modelToLang(inputStreamToModel(fileExtension, file), lang);
   }
 
-  static Model inputStreamToModel(String fileExtension, InputStream file) {
+  static Model inputStreamToModel(String fileExtension, CheckedSupplier<InputStream> file) {
     switch (fileExtension) {
       case "ttl":
         return toModel(file, Lang.TURTLE);

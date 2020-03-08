@@ -45,11 +45,14 @@ public class EventDispatcherSink {
 
   @KafkaListener(topics = "${spring.kafka.template.default-topic}")
   public void dispatch(ConsumerRecord<String, String> event) throws Exception {
-    String value = event.value();
-    Optional<KafkaEvent> optionalKafkaEvent = mapperWrapper.deserialize(value, KafkaEvent.class);
+
     CheckedFunction<String, SendResult<String, String>> sendEvent = (topic) ->
       kafkaTemplate.send(new ProducerRecord<>(topic, event.key(), event.value()))
                    .get();
+
+    String value = event.value();
+    Optional<KafkaEvent> optionalKafkaEvent = mapperWrapper.deserialize(value, KafkaEvent.class);
+
     optionalKafkaEvent.ifPresent(kafkaEvent -> {
       switch (kafkaEvent.getEventType()) {
         case RDF_SINK:

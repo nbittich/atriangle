@@ -15,7 +15,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import tech.artcoded.atriangle.api.*;
+import tech.artcoded.atriangle.api.IdGenerators;
+import tech.artcoded.atriangle.api.ModelConverter;
+import tech.artcoded.atriangle.api.ObjectMapperWrapper;
+import tech.artcoded.atriangle.api.ShaclValidator;
 import tech.artcoded.atriangle.api.kafka.EventType;
 import tech.artcoded.atriangle.api.kafka.KafkaEvent;
 import tech.artcoded.atriangle.api.kafka.RestEvent;
@@ -23,7 +26,6 @@ import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 
 import javax.inject.Inject;
-import java.io.InputStream;
 import java.util.Map;
 import java.util.Optional;
 
@@ -69,12 +71,10 @@ public class RdfIngestionController implements PingControllerTrait {
                                        @RequestParam(value = "elasticMappings",
                                                      required = false) MultipartFile mappingsFile
   ) throws Exception {
-    CheckedSupplier<InputStream> checkedSupplier = rdfFile::getInputStream;
-
-    Model inputModel = ModelConverter.inputStreamToModel(requireNonNull(getExtension(rdfFile.getOriginalFilename())), checkedSupplier.safeGet());
+    Model inputModel = ModelConverter.inputStreamToModel(requireNonNull(getExtension(rdfFile.getOriginalFilename())), rdfFile::getInputStream);
 
     Optional<Model> validationErrors = Optional.ofNullable(shaclModel)
-                                               .flatMap(shaclFile -> ShaclValidator.validateModel(inputModel, shaclEnabled, getExtension(shaclFile.getOriginalFilename()), shaclFile.getInputStream()));
+                                               .flatMap(shaclFile -> ShaclValidator.validateModel(inputModel, shaclEnabled, getExtension(shaclFile.getOriginalFilename()), shaclFile::getInputStream));
 
     if (validationErrors.isPresent()) {
       return ResponseEntity.badRequest()
