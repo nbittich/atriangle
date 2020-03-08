@@ -34,7 +34,7 @@ services:
       - "9300"
   atrianglezookeeper:
     restart: always
-    image: wurstmeister/zookeeper
+    image: zookeeper
     ports:
       - "2181"
     networks:
@@ -149,6 +149,7 @@ services:
       ELASTICSEARCH_HOSTNAME: "elasticsearch"
       VIRTUOSO_HOSTNAME: "virtuoso"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
+      ZOOKEEPER_URL: "zookeeper:2181"
     volumes:
       - rest-storage:/app/user
 

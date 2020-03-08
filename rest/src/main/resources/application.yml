@@ -2,7 +2,7 @@ server:
   port: 8088
 spring:
   profiles:
-    include: kafka,virtuoso,elasticsearch,zuul
+    include: kafka, virtuoso, elasticsearch, zuul, zookeeper
   kafka:
     template:
       default-topic: event-sink-rest

@@ -34,7 +34,7 @@ services:
       - "9300:9300"
   atrianglezookeeperlocal:
     restart: always
-    image: wurstmeister/zookeeper
+    image: zookeeper
     ports:
       - "2181:2181"
     networks:

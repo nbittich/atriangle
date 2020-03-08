@@ -5,9 +5,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.netflix.zuul.EnableZuulProxy;
 import org.springframework.context.annotation.Import;
 import tech.artcoded.atriangle.core.config.KafkaConfig;
+import tech.artcoded.atriangle.core.config.ZookeeperDiscoveryConfig;
 
 @SpringBootApplication
-@Import(KafkaConfig.class)
+@Import({KafkaConfig.class, ZookeeperDiscoveryConfig.class})
 @EnableZuulProxy
 public class RestApplication {
   public static void main(String[] args) {
