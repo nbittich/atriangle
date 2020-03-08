@@ -31,7 +31,7 @@ public interface ATriangleConsumer<K, V> {
       Map<K, V> responses = consume(record);
       responses.entrySet()
                .stream()
-               .map(this.sendKafkaMessageForEachEntries()::safeGet)
+               .map(this.sendKafkaMessageForEachEntries()::safeExecute)
                .forEach(result -> LOGGER.info("result {}", result.toString()));
    }
 

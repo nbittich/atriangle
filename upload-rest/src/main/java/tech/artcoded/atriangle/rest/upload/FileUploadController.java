@@ -1,11 +1,11 @@
 package tech.artcoded.atriangle.rest.upload;
 
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.kafka.FileEvent;
 import tech.artcoded.atriangle.api.kafka.FileEventType;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
@@ -19,18 +19,17 @@ import java.util.Map;
 import java.util.Optional;
 
 @CrossOriginRestController
+@ApiOperation("File Upload")
 @Slf4j
 public class FileUploadController implements FileUploadControllerTrait, PingControllerTrait {
   private final FileUploadService uploadService;
   private final LoggerAction loggerAction;
-  private final ObjectMapperWrapper mapperWrapper;
 
   @Inject
   public FileUploadController(FileUploadService uploadService,
-                              LoggerAction loggerAction, ObjectMapperWrapper mapperWrapper) {
+                              LoggerAction loggerAction) {
     this.uploadService = uploadService;
     this.loggerAction = loggerAction;
-    this.mapperWrapper = mapperWrapper;
   }
 
   @Override

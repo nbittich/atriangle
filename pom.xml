@@ -43,6 +43,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>atriangle-core-feign-clients</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>atriangle-core-rest</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -214,6 +219,7 @@
         <module>core</module>
         <module>core-rest</module>
         <module>core-database</module>
+        <module>core-feign-clients</module>
         <module>elastic-sink</module>
         <module>virtuoso-sink</module>
         <module>event-dispatcher</module>
@@ -221,6 +227,7 @@
         <module>rest</module>
         <module>log-sink</module>
         <module>upload-rest</module>
+        <module>project-rest</module>
     </modules>
 </project>
 

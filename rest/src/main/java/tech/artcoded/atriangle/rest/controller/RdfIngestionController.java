@@ -1,7 +1,6 @@
 package tech.artcoded.atriangle.rest.controller;
 
 import io.swagger.annotations.ApiOperation;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.riot.Lang;
@@ -24,6 +23,7 @@ import tech.artcoded.atriangle.api.kafka.KafkaEvent;
 import tech.artcoded.atriangle.api.kafka.RestEvent;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
+import tech.artcoded.atriangle.feign.clients.FileRestFeignClient;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -58,7 +58,6 @@ public class RdfIngestionController implements PingControllerTrait {
   @Value("${spring.kafka.template.default-topic}")
   private String topicProducer;
 
-  @SneakyThrows
   @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> ingest(@RequestParam("graphUri") String graphUri,
                                        @RequestParam(value = "elasticIndex") String elasticIndex,
@@ -70,9 +69,8 @@ public class RdfIngestionController implements PingControllerTrait {
                                                      required = false) MultipartFile shaclModel,
                                        @RequestParam(value = "elasticMappings",
                                                      required = false) MultipartFile mappingsFile
-  ) throws Exception {
+  ) {
     Model inputModel = ModelConverter.inputStreamToModel(requireNonNull(getExtension(rdfFile.getOriginalFilename())), rdfFile::getInputStream);
-
     Optional<Model> validationErrors = Optional.ofNullable(shaclModel)
                                                .flatMap(shaclFile -> ShaclValidator.validateModel(inputModel, shaclEnabled, getExtension(shaclFile.getOriginalFilename()), shaclFile::getInputStream));
 

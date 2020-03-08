@@ -56,10 +56,10 @@ public class EventDispatcherSink {
     optionalKafkaEvent.ifPresent(kafkaEvent -> {
       switch (kafkaEvent.getEventType()) {
         case RDF_SINK:
-          log.info("result of send event {}", sendEvent.safeGet(rdfSinkTopic));
+          log.info("result of send event {}", sendEvent.safeExecute(rdfSinkTopic));
           break;
         case ELASTIC_SINK:
-          log.info("result of send event {}", sendEvent.safeGet(elsticSinkTopic));
+          log.info("result of send event {}", sendEvent.safeExecute(elsticSinkTopic));
           break;
         default:
           throw new RuntimeException("not supported yet");

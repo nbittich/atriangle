@@ -7,7 +7,7 @@ public interface CheckedFunction<I, O> {
   O get(I input) throws Exception;
 
   @SneakyThrows
-  default O safeGet(I input) {
+  default O safeExecute(I input) {
     return get(input);
   }
 }
