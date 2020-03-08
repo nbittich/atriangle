@@ -14,9 +14,6 @@ spring:
     name: FileRestPublicEndpoint
   profiles:
     include: kafka, zookeeper, database
-  kafka:
-    template:
-      default-topic: event-sink-file-rest
 
 management:
   health:

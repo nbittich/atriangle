@@ -7,8 +7,10 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.kafka.FileEvent;
 import tech.artcoded.atriangle.api.kafka.FileEventType;
+import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.FileUploadControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
@@ -21,10 +23,15 @@ import java.util.Optional;
 @Slf4j
 public class FileUploadController implements FileUploadControllerTrait, PingControllerTrait {
   private final FileUploadService uploadService;
+  private final LoggerAction loggerAction;
+  private final ObjectMapperWrapper mapperWrapper;
 
   @Inject
-  public FileUploadController(FileUploadService uploadService) {
+  public FileUploadController(FileUploadService uploadService,
+                              LoggerAction loggerAction, ObjectMapperWrapper mapperWrapper) {
     this.uploadService = uploadService;
+    this.loggerAction = loggerAction;
+    this.mapperWrapper = mapperWrapper;
   }
 
   @Override
@@ -39,7 +46,10 @@ public class FileUploadController implements FileUploadControllerTrait, PingCont
   public ResponseEntity<ByteArrayResource> download(@RequestParam("id") String id) throws Exception {
     Optional<FileUpload> upload = uploadService.findById(id);
     return upload.map(FileUpload::transform)
+                 .stream()
+                 .peek(event -> loggerAction.info(event::getId, "Download request: %s, name: %s, content-type: %s, event type: %s ", event.getId(), event.getName(), event.getContentType(), event.getEventType()))
                  .map(this::transformToByteArrayResource)
+                 .findFirst()
                  .orElseGet(ResponseEntity.notFound()::build);
   }
 
@@ -53,17 +63,27 @@ public class FileUploadController implements FileUploadControllerTrait, PingCont
   }
 
   @Override
-  public FileEvent upload(@RequestParam("file") MultipartFile file,
-                          @RequestParam(value = "fileUploadType",
-                                        defaultValue = "SHARED_FILE") FileEventType fileUploadType) throws Exception {
-    return uploadService.upload(file, fileUploadType);
+  public ResponseEntity<FileEvent> upload(@RequestParam("file") MultipartFile file,
+                                          @RequestParam(value = "fileUploadType",
+                                                        defaultValue = "SHARED_FILE") FileEventType fileUploadType) throws Exception {
+    return Optional.of(uploadService.upload(file, fileUploadType))
+                   .stream()
+                   .peek(event -> loggerAction.info(event::getId, "Upload request: %s, name: %s, content-type: %s, event type: %s ", event.getId(), event.getName(), event.getContentType(), event.getEventType()))
+                   .map(ResponseEntity::ok)
+                   .findFirst()
+                   .orElseGet(ResponseEntity.notFound()::build)
+      ;
   }
 
 
   @Override
   public Map.Entry<String, String> delete(@RequestParam("id") String id) {
-    uploadService.deleteOnDisk(uploadService.findById(id)
-                                            .orElseThrow(() -> new RuntimeException("Upload not found on disk")));
+    FileUpload byId = uploadService.findById(id)
+                                   .stream()
+                                   .peek(upload -> loggerAction.info(upload::getId, "Delete request: %s, name: %s", upload.getId(), upload.getName()))
+                                   .findFirst()
+                                   .orElseThrow(() -> new RuntimeException("Upload not found on disk"));
+    uploadService.deleteOnDisk(byId);
     return Map.entry("message", id + "file will be deleted");
   }
 }

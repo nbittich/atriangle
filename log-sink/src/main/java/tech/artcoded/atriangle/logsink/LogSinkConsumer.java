@@ -64,6 +64,7 @@ public class LogSinkConsumer implements ATriangleConsumer<String, String> {
 
     String uuid = UUID.randomUUID()
                       .toString();
+
     IndexResponse response = elasticSearchRdfService.index(logSinkIndex, uuid, mapperWrapper.serialize(event));
 
     log.info("status {}", response.status());

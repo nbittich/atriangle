@@ -40,7 +40,7 @@ public class EventDispatcherSink {
 
   @KafkaListener(topics = {"${event.dispatcher.elastic-sink-topic-out}", "${event.dispatcher.rdf-sink-topic-out}"})
   public void logOutput(ConsumerRecord<String, String> event) throws Exception {
-    loggerAction.info("receiving key %s, value %s", event.key(), event.value());
+    loggerAction.info(event::key, "receiving key %s, value %s", event.key(), event.value());
   }
 
   @KafkaListener(topics = "${spring.kafka.template.default-topic}")

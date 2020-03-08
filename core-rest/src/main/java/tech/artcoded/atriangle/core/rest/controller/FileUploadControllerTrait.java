@@ -20,9 +20,9 @@ public interface FileUploadControllerTrait {
   ResponseEntity<ByteArrayResource> download(@RequestParam("id") String id) throws Exception;
 
   @PostMapping
-  FileEvent upload(@RequestParam("file") MultipartFile file,
-                   @RequestParam(value = "fileUploadType",
-                                 defaultValue = "SHARED_FILE") FileEventType fileUploadType) throws Exception;
+  ResponseEntity<FileEvent> upload(@RequestParam("file") MultipartFile file,
+                                   @RequestParam(value = "fileUploadType",
+                                                 defaultValue = "SHARED_FILE") FileEventType fileUploadType) throws Exception;
 
 
   @DeleteMapping

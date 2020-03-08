@@ -11,6 +11,7 @@ import tech.artcoded.atriangle.api.kafka.LogEvent;
 import tech.artcoded.atriangle.api.kafka.LogEventType;
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
 public interface LoggerAction {
   String DEFAULT_TOPIC_NAME = "event-sink-log";
@@ -22,12 +23,13 @@ public interface LoggerAction {
   ObjectMapperWrapper MAPPER_WRAPPER = ObjectMapper::new;
 
   @SneakyThrows
-  default void log(LogEventType eventType, String messageFormat, Object... params) {
+  default void log(String correlationId, LogEventType eventType, String messageFormat, Object... params) {
     SendResult<String, String> response = getKafkaTemplate().send(DEFAULT_TOPIC_NAME, UUID.randomUUID()
                                                                                           .toString(),
                                                                   MAPPER_WRAPPER.serialize(
                                                                     LogEvent.builder()
                                                                             .message(String.format(messageFormat, params))
+                                                                            .correlationId(correlationId)
                                                                             .type(eventType)
                                                                             .build()
                                                                   ))
@@ -35,16 +37,16 @@ public interface LoggerAction {
     LOGGER.info("response {} ", response);
   }
 
-  default void info(String messageFormat, Object... params) {
-    log(LogEventType.INFO, messageFormat, params);
+  default void info(Supplier<String> correlationId, String messageFormat, Object... params) {
+    log(correlationId.get(), LogEventType.INFO, messageFormat, params);
   }
 
-  default void error(String messageFormat, Object... params) {
-    log(LogEventType.ERROR, messageFormat, params);
+  default void error(Supplier<String> correlationId, String messageFormat, Object... params) {
+    log(correlationId.get(), LogEventType.ERROR, messageFormat, params);
   }
 
-  default void warn(String messageFormat, Object... params) {
-    log(LogEventType.WARN, messageFormat, params);
+  default void warn(Supplier<String> correlationId, String messageFormat, Object... params) {
+    log(correlationId.get(), LogEventType.WARN, messageFormat, params);
   }
 
 }
