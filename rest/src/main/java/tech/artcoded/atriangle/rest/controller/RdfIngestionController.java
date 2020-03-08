@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -27,6 +28,7 @@ import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 
 import javax.inject.Inject;
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Optional;
 
 import static tech.artcoded.atriangle.core.rest.util.RestUtil.FILE_TO_JSON;
@@ -39,12 +41,15 @@ import static tech.artcoded.atriangle.core.rest.util.RestUtil.FILE_TO_JSON;
 public class RdfIngestionController implements PingControllerTrait {
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectMapperWrapper objectMapperWrapper;
+  private final FileRestFeignClient fileRestFeignClient;
 
   @Inject
   public RdfIngestionController(
-    KafkaTemplate<String, String> kafkaTemplate, ObjectMapperWrapper objectMapperWrapper) {
+    KafkaTemplate<String, String> kafkaTemplate, ObjectMapperWrapper objectMapperWrapper,
+    FileRestFeignClient fileRestFeignClient) {
     this.kafkaTemplate = kafkaTemplate;
     this.objectMapperWrapper = objectMapperWrapper;
+    this.fileRestFeignClient = fileRestFeignClient;
   }
 
   @Value("${shacl.enabled:false}")
@@ -126,5 +131,10 @@ public class RdfIngestionController implements PingControllerTrait {
       return Optional.of(validationModel);
     }
     return Optional.empty();
+  }
+
+  @GetMapping("/ping-file-endpoint")
+  public ResponseEntity<Map<String, String>> pingFileEndpoint() {
+    return this.fileRestFeignClient.ping();
   }
 }
