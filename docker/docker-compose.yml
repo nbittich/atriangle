@@ -76,7 +76,7 @@ services:
       ELASTICSEARCH_HOSTNAME: "elasticsearch"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
-      - elastic-sink-storage:/app/user
+      - elastic-sink-storage:/user/app
   atrianglelogsink:
     restart: always
     depends_on:
@@ -91,7 +91,25 @@ services:
       ELASTICSEARCH_HOSTNAME: "elasticsearch"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
-      - log-sink-storage:/app/user
+      - log-sink-storage:/user/app
+  atriangleuploadrest:
+    restart: always
+    depends_on:
+      - atrianglekafka
+      - atrianglezookeeper
+    networks:
+      atriangle:
+        aliases:
+          - uploadrest
+    image: atriangle/log-sink
+    environment:
+      ELASTICSEARCH_HOSTNAME: "elasticsearch"
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
+      ZOOKEEPER_URL: "zookeeper:2181"
+      APPLICATION_BASE_PATH: "/usr/app/uploads"
+      JPA_DDL_STRATEGY: "create-drop"
+    volumes:
+      - upload-rest-storage:/user/app
   atrianglerestsink:
     restart: always
     depends_on:
@@ -104,7 +122,7 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
-      - rest-sink-storage:/app/user
+      - rest-sink-storage:/user/app
   atrianglerdfsink:
     restart: always
     depends_on:
@@ -119,7 +137,7 @@ services:
       VIRTUOSO_HOSTNAME: "virtuoso"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
-      - rdf-sink-storage:/app/user
+      - rdf-sink-storage:/user/app
   atriangleeventdispatcher:
     depends_on:
       - atrianglekafka
@@ -131,7 +149,7 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
-      - event-dispatcher-storage:/app/user
+      - event-dispatcher-storage:/user/app
   atrianglerest:
     restart: always
     depends_on:
@@ -151,7 +169,7 @@ services:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
     volumes:
-      - rest-storage:/app/user
+      - rest-storage:/user/app
 
 volumes:
   virtuoso-storage:
@@ -161,6 +179,7 @@ volumes:
   log-sink-storage:
   event-dispatcher-storage:
   rest-storage:
+  upload-rest-storage:
 
 networks:
   atriangle:

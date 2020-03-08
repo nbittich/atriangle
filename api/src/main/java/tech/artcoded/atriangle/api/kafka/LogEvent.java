@@ -13,7 +13,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LogEvent {
-  @Builder.Default
   private String correlationId;
   private String message;
   @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
