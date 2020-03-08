@@ -23,7 +23,7 @@
         </dependency>
         <dependency>
             <groupId>tech.artcoded</groupId>
-            <artifactId>atriangle-core-rest</artifactId>
+            <artifactId>atriangle-core-feign-clients</artifactId>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>

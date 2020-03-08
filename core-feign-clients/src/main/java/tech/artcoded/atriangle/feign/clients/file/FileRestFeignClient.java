@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.feign.clients;
+package tech.artcoded.atriangle.feign.clients.file;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;

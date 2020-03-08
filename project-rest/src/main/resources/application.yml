@@ -1,0 +1,9 @@
+application:
+  basePath: ${PROJECT_BASE_PATH:/tmp/project-rest} # todo do not forget to override on docker compose
+server:
+  port: 0
+spring:
+  application:
+    name: ProjectRestPublicEndpoint
+  profiles:
+    include: kafka, zookeeper, database, rest
