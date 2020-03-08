@@ -21,7 +21,8 @@ import java.util.Optional;
 @CrossOriginRestController
 @ApiOperation("File Upload")
 @Slf4j
-public class FileUploadController implements FileUploadControllerTrait, PingControllerTrait {
+public class FileUploadController implements FileUploadControllerTrait,
+  PingControllerTrait {
   private final FileUploadService uploadService;
   private final LoggerAction loggerAction;
 
