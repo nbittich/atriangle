@@ -1,6 +1,8 @@
 server:
   port: 8088
 spring:
+  application:
+    name: RestPublicEndpoint
   profiles:
     include: kafka, virtuoso, elasticsearch, zuul, zookeeper
   kafka:
