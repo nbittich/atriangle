@@ -3,7 +3,12 @@ package tech.artcoded.atriangle.core.rest.util;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import tech.artcoded.atriangle.api.kafka.FileEvent;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
@@ -22,6 +27,15 @@ public interface RestUtil {
                                                                    }
                                                                  })
                                                                  .orElse("{}");
+
+  static ResponseEntity<ByteArrayResource> transformToByteArrayResource(FileEvent event, byte[] file) {
+    return Optional.ofNullable(event)
+                   .map(u -> ResponseEntity.ok()
+                                           .contentType(MediaType.parseMediaType(u.getContentType()))
+                                           .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + u.getOriginalFilename() + "\"")
+                                           .body(new ByteArrayResource(file)))
+                   .orElseGet(ResponseEntity.notFound()::build);
+  }
 
 
 }

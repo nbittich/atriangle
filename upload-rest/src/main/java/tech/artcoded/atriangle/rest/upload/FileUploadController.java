@@ -2,8 +2,6 @@ package tech.artcoded.atriangle.rest.upload;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,6 +12,7 @@ import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.FileUploadControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
+import tech.artcoded.atriangle.core.rest.util.RestUtil;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -48,19 +47,11 @@ public class FileUploadController implements FileUploadControllerTrait, PingCont
     return upload.map(FileUpload::transform)
                  .stream()
                  .peek(event -> loggerAction.info(event::getId, "Download request: %s, name: %s, content-type: %s, event type: %s ", event.getId(), event.getName(), event.getContentType(), event.getEventType()))
-                 .map(this::transformToByteArrayResource)
+                 .map(event -> RestUtil.transformToByteArrayResource(event, uploadService.uploadToByteArray(event)))
                  .findFirst()
                  .orElseGet(ResponseEntity.notFound()::build);
   }
 
-  private ResponseEntity<ByteArrayResource> transformToByteArrayResource(FileEvent event) {
-    return Optional.ofNullable(event)
-                   .map(u -> ResponseEntity.ok()
-                                           .contentType(MediaType.parseMediaType(u.getContentType()))
-                                           .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + u.getOriginalFilename() + "\"")
-                                           .body(new ByteArrayResource(uploadService.uploadToByteArray(u))))
-                   .orElseGet(ResponseEntity.notFound()::build);
-  }
 
   @Override
   public ResponseEntity<FileEvent> upload(@RequestParam("file") MultipartFile file,
