@@ -9,3 +9,6 @@ zuul:
     virtuoso:
       path: /proxy/virtuoso/**
       url: ${virtuoso.scheme}://${virtuoso.hostname}:${virtuoso.port}/sparql
+  host:
+    connect-timeout-millis: 30000
+    socket-timeout-millis: 30000

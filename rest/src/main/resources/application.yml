@@ -4,7 +4,7 @@ spring:
   application:
     name: RestPublicEndpoint
   profiles:
-    include: kafka, virtuoso, elasticsearch, zuul, zookeeper
+    include: kafka, virtuoso, elasticsearch, zuul, zookeeper, rest
   kafka:
     template:
       default-topic: event-sink-rest
@@ -12,7 +12,3 @@ spring:
 elasticsearch:
   index: movies
 
-management:
-  health:
-    elasticsearch:
-      enabled: false

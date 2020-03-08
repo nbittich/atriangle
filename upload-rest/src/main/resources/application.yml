@@ -4,18 +4,7 @@ application:
 server:
   port: 0
 spring:
-  resources:
-    add-mappings: true
-  servlet:
-    multipart:
-      max-request-size: ${MAX_REQUEST_SIZE:500MB}
-      max-file-size:  ${MAX_FILE_SIZE:500MB}
   application:
     name: FileRestPublicEndpoint
   profiles:
-    include: kafka, zookeeper, database
-
-management:
-  health:
-    elasticsearch:
-      enabled: false
+    include: kafka, zookeeper, database, rest

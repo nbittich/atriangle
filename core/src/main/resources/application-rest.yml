@@ -1,0 +1,12 @@
+spring:
+  resources:
+    add-mappings: true
+  servlet:
+    multipart:
+      max-request-size: ${MAX_REQUEST_SIZE:500MB}
+      max-file-size:  ${MAX_FILE_SIZE:500MB}
+
+management:
+  health:
+    elasticsearch:
+      enabled: false
