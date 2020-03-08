@@ -1,7 +1,8 @@
-package tech.artcoded.atriangle.upload;
+package tech.artcoded.atriangle.rest.upload;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.web.multipart.MultipartFile;
+import tech.artcoded.atriangle.api.kafka.FileEvent;
+import tech.artcoded.atriangle.api.kafka.FileEventType;
 import tech.artcoded.atriangle.core.database.Auditable;
 
 import javax.persistence.*;
@@ -11,8 +12,21 @@ import java.util.UUID;
 @Table(name = "file_rest_upload")
 public class FileUpload extends Auditable<String> {
 
+  public static FileEvent transform(FileUpload fileUpload) {
+    return FileEvent.builder()
+                    .creationDate(fileUpload.getCreationDate())
+                    .lastModifiedDate(fileUpload.getLastModifiedDate())
+                    .id(fileUpload.getId())
+                    .contentType(fileUpload.getContentType())
+                    .eventType(fileUpload.getUploadType())
+                    .name(fileUpload.getName())
+                    .originalFilename(fileUpload.getOriginalFilename())
+                    .pathToFile(fileUpload.getPathToFile())
+                    .size(fileUpload.getSize())
+                    .build();
+  }
 
-  public static FileUpload newUpload(MultipartFile file, FileUploadType uploadType, String pathToFile) {
+  public static FileUpload newUpload(MultipartFile file, FileEventType uploadType, String pathToFile) {
     FileUpload upload = new FileUpload();
     upload.setId(UUID.randomUUID()
                      .toString());
@@ -27,7 +41,7 @@ public class FileUpload extends Auditable<String> {
 
   public static FileUpload newUpload(String contentType,
                                      String originalFilename,
-                                     FileUploadType uploadType,
+                                     FileEventType uploadType,
                                      String pathToFile) {
     FileUpload upload = new FileUpload();
     upload.setId(UUID.randomUUID()
@@ -46,18 +60,17 @@ public class FileUpload extends Auditable<String> {
 
   private String contentType;
   @Enumerated(EnumType.ORDINAL)
-  private FileUploadType uploadType;
+  private FileEventType uploadType;
   private String originalFilename;
   private String name;
-  @JsonIgnore
   private String pathToFile;
   private long size;
 
-  public FileUploadType getUploadType() {
+  public FileEventType getUploadType() {
     return uploadType;
   }
 
-  public void setUploadType(FileUploadType uploadType) {
+  public void setUploadType(FileEventType uploadType) {
     this.uploadType = uploadType;
   }
 

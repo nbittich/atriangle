@@ -1,5 +1,8 @@
 zuul:
   routes:
+    filerestupload:
+      path: /api/upload/**
+      serviceId: FileRestPublicEndpoint
     elasticsearch:
       path: /proxy/elasticsearch/**
       url: ${elasticsearch.scheme}://${elasticsearch.hostname}:${elasticsearch.port}

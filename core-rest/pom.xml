@@ -30,8 +30,8 @@
         </dependency>
 
         <dependency>
-            <groupId>tech.artcoded</groupId>
-            <artifactId>atriangle-core</artifactId>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
         </dependency>
 
         <dependency>

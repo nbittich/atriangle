@@ -13,7 +13,7 @@ spring:
   application:
     name: FileRestPublicEndpoint
   profiles:
-    include: kafka, zookeeper, h2
+    include: kafka, zookeeper, database
   kafka:
     template:
       default-topic: event-sink-file-rest

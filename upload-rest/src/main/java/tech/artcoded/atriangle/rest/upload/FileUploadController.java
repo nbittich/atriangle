@@ -1,44 +1,32 @@
-package tech.artcoded.atriangle.upload;
+package tech.artcoded.atriangle.rest.upload;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import tech.artcoded.atriangle.api.kafka.FileEvent;
+import tech.artcoded.atriangle.api.kafka.FileEventType;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
+import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.Optional;
 
 @CrossOriginRestController
-@RequestMapping("/upload")
 @Slf4j
-public class FileUploadController {
+public class FileUploadController implements PingControllerTrait {
   private final FileUploadService uploadService;
 
   @Inject
   public FileUploadController(FileUploadService uploadService) {
     this.uploadService = uploadService;
-  }
-
-  @GetMapping
-  public Page<FileUpload> paginatedEntries(Pageable pageable) {
-    return uploadService.findAll(pageable);
-  }
-
-  @GetMapping("/by-type")
-  public Page<FileUpload> findAllByType(@RequestParam("type") FileUploadType uploadType, Pageable pageable) {
-    return uploadService.findAllByUploadType(uploadType, pageable);
-  }
-
-  @GetMapping("/by-author")
-  public Page<FileUpload> findAllByCreatedBy(@RequestParam("author") String author, Pageable pageable) {
-    return uploadService.findAllByCreatedBy(author, pageable);
   }
 
   @GetMapping("/by-id")
@@ -48,16 +36,16 @@ public class FileUploadController {
                         .orElseGet(ResponseEntity.notFound()::build);
   }
 
-
   @GetMapping("/download")
   public ResponseEntity<ByteArrayResource> download(@RequestParam("id") String id) throws Exception {
     Optional<FileUpload> upload = uploadService.findById(id);
-    return upload.map(this::transformToByteArrayResource)
+    return upload.map(FileUpload::transform)
+                 .map(this::transformToByteArrayResource)
                  .orElseGet(ResponseEntity.notFound()::build);
   }
 
-  private ResponseEntity<ByteArrayResource> transformToByteArrayResource(FileUpload upload) {
-    return Optional.ofNullable(upload)
+  private ResponseEntity<ByteArrayResource> transformToByteArrayResource(FileEvent event) {
+    return Optional.ofNullable(event)
                    .map(u -> ResponseEntity.ok()
                                            .contentType(MediaType.parseMediaType(u.getContentType()))
                                            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + u.getOriginalFilename() + "\"")
@@ -66,9 +54,9 @@ public class FileUploadController {
   }
 
   @PostMapping
-  public FileUpload upload(@RequestParam("file") MultipartFile file,
-                           @RequestParam(value = "fileUploadType",
-                                         defaultValue = "SHARED_FILE") FileUploadType fileUploadType) throws Exception {
+  public FileEvent upload(@RequestParam("file") MultipartFile file,
+                          @RequestParam(value = "fileUploadType",
+                                        defaultValue = "SHARED_FILE") FileEventType fileUploadType) throws Exception {
     return uploadService.upload(file, fileUploadType);
   }
 

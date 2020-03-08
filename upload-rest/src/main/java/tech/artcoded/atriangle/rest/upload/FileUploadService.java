@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.upload;
+package tech.artcoded.atriangle.rest.upload;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import tech.artcoded.atriangle.api.kafka.FileEvent;
+import tech.artcoded.atriangle.api.kafka.FileEventType;
 import tech.artcoded.atriangle.core.database.CrudService;
 
 import javax.inject.Inject;
@@ -43,16 +45,16 @@ public class FileUploadService implements CrudService<String, FileUpload> {
   }
 
   @Transactional
-  public FileUpload upload(MultipartFile file, FileUploadType uploadType) throws Exception {
+  public FileEvent upload(MultipartFile file, FileEventType uploadType) throws Exception {
     File upload = new File(getDirectory(), UUID.randomUUID()
                                                .toString() + "_" + file.getOriginalFilename());
     file.transferTo(upload);
     FileUpload apUpload = FileUpload.newUpload(file, uploadType, upload.getAbsolutePath());
-    return repository.save(apUpload);
+    return FileUpload.transform(repository.save(apUpload));
   }
 
   @Transactional
-  public FileUpload upload(String contentType, String filename, FileUploadType uploadType,
+  public FileUpload upload(String contentType, String filename, FileEventType uploadType,
                            byte[] file) throws IOException {
     File upload = new File(getDirectory(), UUID.randomUUID()
                                                .toString() + '_' + filename);
@@ -66,19 +68,19 @@ public class FileUploadService implements CrudService<String, FileUpload> {
     return repository.findAllByCreatedBy(author, pageable);
   }
 
-  public Page<FileUpload> findAllByUploadType(FileUploadType uploadType, Pageable pageable) {
+  public Page<FileUpload> findAllByUploadType(FileEventType uploadType, Pageable pageable) {
     return repository.findAllByUploadType(uploadType, pageable);
   }
 
-  public List<FileUpload> findAllByUploadType(FileUploadType uploadType) {
+  public List<FileUpload> findAllByUploadType(FileEventType uploadType) {
     return repository.findAllByUploadType(uploadType);
   }
 
-  public File uploadToFile(FileUpload upload) {
+  public File uploadToFile(FileEvent upload) {
     return new File(upload.getPathToFile());
   }
 
-  public byte[] uploadToByteArray(FileUpload upload) {
+  public byte[] uploadToByteArray(FileEvent upload) {
     try {
       return FileUtils.readFileToByteArray(uploadToFile(upload));
     }

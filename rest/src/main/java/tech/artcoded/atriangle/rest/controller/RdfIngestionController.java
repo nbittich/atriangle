@@ -23,6 +23,7 @@ import tech.artcoded.atriangle.api.kafka.EventType;
 import tech.artcoded.atriangle.api.kafka.KafkaEvent;
 import tech.artcoded.atriangle.api.kafka.RestEvent;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
+import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 
 import javax.inject.Inject;
 import java.io.InputStream;
@@ -35,7 +36,7 @@ import static tech.artcoded.atriangle.core.rest.util.RestUtil.FILE_TO_JSON;
 @RequestMapping("/api/rdf-ingest")
 @ApiOperation("Rdf Ingestion")
 @Slf4j
-public class RdfIngestionController {
+public class RdfIngestionController implements PingControllerTrait {
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectMapperWrapper objectMapperWrapper;
 
