@@ -106,7 +106,7 @@ services:
       ELASTICSEARCH_HOSTNAME: "elasticsearch"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
-      APPLICATION_BASE_PATH: "/usr/app/file-upload"
+      APPLICATION_BASE_PATH: "/usr/app/fileupload"
       JPA_DDL_STRATEGY: "create-drop"
     volumes:
       - upload-rest-storage:/user/app
