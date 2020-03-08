@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.rest.annotation;
+package tech.artcoded.atriangle.core.rest.annotation;
 
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;

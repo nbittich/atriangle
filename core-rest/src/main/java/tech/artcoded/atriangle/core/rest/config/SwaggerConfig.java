@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.rest.config;
+package tech.artcoded.atriangle.core.rest.config;
 
 import com.fasterxml.classmate.TypeResolver;
 import org.springframework.context.annotation.Bean;

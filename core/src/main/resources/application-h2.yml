@@ -1,0 +1,23 @@
+application:
+  basePath: ${APPLICATION_BASE_PATH:/tmp/${random.uuid}} # todo do not forget to override on docker compose
+spring:
+  data:
+    web:
+      pageable:
+        default-page-size: 10
+  datasource:
+    driver-class-name: ${DATASOURCE_DRIVER_CLASS_NAME:org.h2.Driver}
+    url: ${DATASOURCE_URL:jdbc:h2:file:/${application.basePath}/database}
+    username: ${DATASOURCE_USERNAME:sa}
+    password: ${DATASOURCE_PASSWORD:}
+  jpa:
+    database: ${JPA_DATABASE_TYPE:h2}
+    generate-ddl: ${JPA_GENERATE_DDL:true}
+    hibernate:
+      ddl-auto: ${JPA_DDL_STRATEGY:create-drop} #todo do not forget to override on docker compose
+    properties:
+      hibernate:
+        dialect: ${JPA_DIALECT:org.hibernate.dialect.H2Dialect}
+        temp:
+          use_jdbc_metadata_defaults: false
+    show-sql: ${JPA_SHOW_SQL:false}

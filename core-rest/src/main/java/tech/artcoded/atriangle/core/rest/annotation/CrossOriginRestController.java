@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.rest.annotation;
+package tech.artcoded.atriangle.core.rest.annotation;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RestController;

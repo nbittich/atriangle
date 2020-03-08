@@ -1,0 +1,24 @@
+application:
+  basePath: ${UPLOAD_BASE_PATH:/tmp/upload-rest} # todo do not forget to override on docker compose
+  filePath: ${application.basePath}/uploads
+server:
+  port: 0
+spring:
+  resources:
+    add-mappings: true
+  servlet:
+    multipart:
+      max-request-size: ${MAX_REQUEST_SIZE:500MB}
+      max-file-size:  ${MAX_FILE_SIZE:500MB}
+  application:
+    name: FileRestPublicEndpoint
+  profiles:
+    include: kafka, zookeeper, h2
+  kafka:
+    template:
+      default-topic: event-sink-file-rest
+
+management:
+  health:
+    elasticsearch:
+      enabled: false

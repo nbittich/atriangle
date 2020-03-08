@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.rest.util;
+package tech.artcoded.atriangle.core.rest.util;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
