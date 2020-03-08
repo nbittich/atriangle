@@ -101,7 +101,7 @@ services:
       atriangle:
         aliases:
           - uploadrest
-    image: atriangle/log-sink
+    image: atriangle/upload-rest
     environment:
       ELASTICSEARCH_HOSTNAME: "elasticsearch"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
