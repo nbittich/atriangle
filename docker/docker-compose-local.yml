@@ -1,6 +1,20 @@
 version: '3'
 
 services:
+  atriangleneo4j:
+    image: neo4j
+    restart: always
+    environment:
+      NEO4J_AUTH: neo4j/admin
+    networks:
+      atrianglelocal:
+        aliases:
+          - neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j-storage:/data
   atrianglemongolocal:
     image: mongo
     restart: always
@@ -92,6 +106,7 @@ services:
 volumes:
   virtuoso-storage-local:
   mongodb-storage:
+  neo4j-storage:
 
 networks:
   atrianglelocal:
