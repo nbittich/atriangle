@@ -1,6 +1,35 @@
 version: '3'
 
 services:
+  atrianglemongolocal:
+    image: mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: root
+    networks:
+      atrianglelocal:
+        aliases:
+          - mongo
+    ports:
+      - "27017:27017"
+  atrianglemongoexpresslocal:
+    image: mongo-express
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: 'true'
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: root
+      ME_CONFIG_MONGODB_SERVER: mongo
+      ME_CONFIG_MONGODB_PORT: 27017
+      ME_CONFIG_BASICAUTH_USERNAME: test
+      ME_CONFIG_BASICAUTH_PASSWORD: test
+    ports:
+      - "8081:8081"
+    networks:
+      atrianglelocal:
+        aliases:
+          - mongoexpress
   atrianglevirtuosolocal:
     restart: always
     container_name: virtuosolocal
