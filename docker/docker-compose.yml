@@ -4,6 +4,8 @@ services:
   atrianglemongo:
     image: mongo
     restart: always
+    volumes:
+      - mongodb-storage:/data/db
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: root
@@ -28,8 +30,7 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: root
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_MONGODB_PORT: 27017
-      ME_CONFIG_BASICAUTH_USERNAME: test
-      ME_CONFIG_BASICAUTH_PASSWORD: test
+      ME_CONFIG_SITE_BASEURL: /proxy/mongo/
   atrianglevirtuoso:
     restart: always
     container_name: virtuoso
@@ -209,6 +210,7 @@ volumes:
   event-dispatcher-storage:
   rest-storage:
   upload-rest-storage:
+  mongodb-storage:
 
 networks:
   atriangle:

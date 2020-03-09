@@ -6,6 +6,9 @@ zuul:
     elasticsearch:
       path: /proxy/elasticsearch/**
       url: ${elasticsearch.scheme}://${elasticsearch.hostname}:${elasticsearch.port}
+    mongoexpress:
+      path: /proxy/mongo/**
+      url: http://${mongoexpress.host}:${mongoexpress.port}/proxy/mongo/
     virtuoso:
       path: /proxy/virtuoso/**
       url: ${virtuoso.scheme}://${virtuoso.hostname}:${virtuoso.port}/sparql

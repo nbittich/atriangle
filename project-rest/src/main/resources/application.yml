@@ -6,4 +6,11 @@ spring:
   application:
     name: ProjectRestPublicEndpoint
   profiles:
-    include: kafka, zookeeper, database, rest
+    include: kafka, zookeeper, rest, mongodb
+  data:
+    mongodb:
+      host: ${MONGO_DB_HOST:192.168.99.101}
+      port: ${MONGO_DB_PORT:27017}
+      username: ${MONGO_DB_USERNAME:root}
+      password: ${MONGO_DB_USERNAME:root}
+      database: ${spring.application.name:DEFAULT_COLLECTION}

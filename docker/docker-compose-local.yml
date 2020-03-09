@@ -13,6 +13,8 @@ services:
           - mongo
     ports:
       - "27017:27017"
+    volumes:
+      - mongodb-storage:/data/db
   atrianglemongoexpresslocal:
     image: mongo-express
     restart: always
@@ -22,8 +24,7 @@ services:
       ME_CONFIG_MONGODB_ADMINPASSWORD: root
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_MONGODB_PORT: 27017
-      ME_CONFIG_BASICAUTH_USERNAME: test
-      ME_CONFIG_BASICAUTH_PASSWORD: test
+      ME_CONFIG_SITE_BASEURL: /proxy/mongo/
     ports:
       - "8081:8081"
     networks:
@@ -90,6 +91,7 @@ services:
 
 volumes:
   virtuoso-storage-local:
+  mongodb-storage:
 
 networks:
   atrianglelocal:
