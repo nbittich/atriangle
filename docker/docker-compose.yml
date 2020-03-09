@@ -198,6 +198,7 @@ services:
       VIRTUOSO_HOSTNAME: "virtuoso"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
+      MONGO_EXPRESS_HOST: "mongoexpress"
     volumes:
       - rest-storage:/user/app
 
