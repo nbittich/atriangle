@@ -71,7 +71,8 @@ public interface SparqlService {
 
   default void delete(String graphUri) {
     try {
-      var factory = UpdateExecutionFactory.createRemote(UpdateFactory.create(CLEAR_GRAPH_QUERY.apply(graphUri)), params().getSparqlEndpointUrl(), params().getHttpClient());
+      var factory = UpdateExecutionFactory.createRemote(UpdateFactory.create(CLEAR_GRAPH_QUERY.apply(graphUri)), params().getSparqlEndpointUrl(), params()
+        .getHttpClient());
       factory.execute();
     }
     catch (Exception e) {
@@ -119,7 +120,7 @@ public interface SparqlService {
     conn.getOutputStream()
         .write(data);
 
-    if ((conn.getResponseCode() / 100) != 2){
+    if ((conn.getResponseCode() / 100) != 2) {
       LOGGER.info("an error occurred, response code: {}, response message: {}", conn.getResponseCode(), conn.getResponseMessage());
       throw new RuntimeException("Not 2xx as answer: " + conn.getResponseCode() + " " + conn.getResponseMessage());
     }

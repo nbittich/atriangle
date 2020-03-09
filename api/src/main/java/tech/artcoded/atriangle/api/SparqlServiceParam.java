@@ -15,5 +15,4 @@ public class SparqlServiceParam {
   private String password;
 
 
-
 }

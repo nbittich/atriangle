@@ -66,8 +66,10 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
           throw new RuntimeException("could not delete index");
         }
       }
-      CreateIndexResponse response = elasticSearchRdfService.createIndex(index, createIndexRequest -> createIndexRequest.settings(event.getSettings(), XContentType.JSON)
-                                                                                                                        .mapping(event.getMappings(), XContentType.JSON));
+      CreateIndexResponse response = elasticSearchRdfService.createIndex(index, createIndexRequest -> createIndexRequest.settings(event
+                                                                                                                                    .getSettings(), XContentType.JSON)
+                                                                                                                        .mapping(event
+                                                                                                                                   .getMappings(), XContentType.JSON));
       log.info("acknowledge of index creation {}", response.isAcknowledged());
 
     }

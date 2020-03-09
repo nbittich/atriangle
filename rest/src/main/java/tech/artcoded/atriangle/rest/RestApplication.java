@@ -9,8 +9,7 @@ import tech.artcoded.atriangle.core.config.KafkaConfig;
 import tech.artcoded.atriangle.core.rest.config.SwaggerConfig;
 
 @SpringBootApplication
-@Import({KafkaConfig.class,
-          SwaggerConfig.class})
+@Import({KafkaConfig.class, SwaggerConfig.class})
 @EnableZuulProxy
 @EnableDiscoveryClient
 public class RestApplication {

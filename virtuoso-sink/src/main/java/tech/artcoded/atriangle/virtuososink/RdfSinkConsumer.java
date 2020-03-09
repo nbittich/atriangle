@@ -26,7 +26,7 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
   private final SparqlService sparqlService;
 
   @Getter
-  private final KafkaTemplate<String,String> kafkaTemplate;
+  private final KafkaTemplate<String, String> kafkaTemplate;
 
   private final ObjectMapperWrapper mapperWrapper;
 

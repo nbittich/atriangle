@@ -28,13 +28,15 @@ public abstract class Auditable<U> {
 
   @CreatedDate
   @Temporal(TemporalType.TIMESTAMP)
-  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
+              timezone = "Europe/Brussels")
   protected Date creationDate;
 
 
   @LastModifiedDate
   @Temporal(TemporalType.TIMESTAMP)
-  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
+              timezone = "Europe/Brussels")
   protected Date lastModifiedDate;
 
   public U getCreatedBy() {

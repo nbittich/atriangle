@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class KafkaEvent implements IKafkaEvent{
+public class KafkaEvent implements IKafkaEvent {
   private String id;
   private String json;
   private EventType eventType;

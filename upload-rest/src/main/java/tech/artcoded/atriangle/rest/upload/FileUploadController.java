@@ -22,7 +22,7 @@ import java.util.Optional;
 @ApiOperation("File Upload")
 @Slf4j
 public class FileUploadController implements FileUploadControllerTrait,
-  PingControllerTrait {
+                                             PingControllerTrait {
   private final FileUploadService uploadService;
   private final LoggerAction loggerAction;
 
@@ -46,7 +46,8 @@ public class FileUploadController implements FileUploadControllerTrait,
     Optional<FileUpload> upload = uploadService.findById(id);
     return upload.map(FileUpload::transform)
                  .stream()
-                 .peek(event -> loggerAction.info(event::getId, "Download request: %s, name: %s, content-type: %s, event type: %s ", event.getId(), event.getName(), event.getContentType(), event.getEventType()))
+                 .peek(event -> loggerAction.info(event::getId, "Download request: %s, name: %s, content-type: %s, event type: %s ", event
+                   .getId(), event.getName(), event.getContentType(), event.getEventType()))
                  .map(event -> RestUtil.transformToByteArrayResource(event, uploadService.uploadToByteArray(event)))
                  .findFirst()
                  .orElseGet(ResponseEntity.notFound()::build);
@@ -59,7 +60,8 @@ public class FileUploadController implements FileUploadControllerTrait,
                                                         defaultValue = "SHARED_FILE") FileEventType fileUploadType) throws Exception {
     return Optional.of(uploadService.upload(file, fileUploadType))
                    .stream()
-                   .peek(event -> loggerAction.info(event::getId, "Upload request: %s, name: %s, content-type: %s, event type: %s ", event.getId(), event.getName(), event.getContentType(), event.getEventType()))
+                   .peek(event -> loggerAction.info(event::getId, "Upload request: %s, name: %s, content-type: %s, event type: %s ", event
+                     .getId(), event.getName(), event.getContentType(), event.getEventType()))
                    .map(ResponseEntity::ok)
                    .findFirst()
                    .orElseGet(ResponseEntity.notFound()::build)
@@ -71,7 +73,8 @@ public class FileUploadController implements FileUploadControllerTrait,
   public Map.Entry<String, String> delete(@RequestParam("id") String id) {
     FileUpload byId = uploadService.findById(id)
                                    .stream()
-                                   .peek(upload -> loggerAction.info(upload::getId, "Delete request: %s, name: %s", upload.getId(), upload.getName()))
+                                   .peek(upload -> loggerAction.info(upload::getId, "Delete request: %s, name: %s", upload.getId(), upload
+                                     .getName()))
                                    .findFirst()
                                    .orElseThrow(() -> new RuntimeException("Upload not found on disk"));
     uploadService.deleteOnDisk(byId);

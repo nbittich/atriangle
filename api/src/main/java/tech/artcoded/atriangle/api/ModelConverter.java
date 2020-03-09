@@ -19,7 +19,7 @@ public interface ModelConverter {
     if (model.isEmpty()) throw new RuntimeException("model cannot be empty");
 
     StringWriter sw = new StringWriter();
-    model.write(sw,lang.getLabel());
+    model.write(sw, lang.getLabel());
     return sw.toString();
   }
 

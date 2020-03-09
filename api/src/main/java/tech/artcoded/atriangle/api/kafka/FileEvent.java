@@ -21,9 +21,11 @@ public class FileEvent {
   private String pathToFile;
   private long size;
 
-  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
+              timezone = "Europe/Brussels")
   private Date creationDate;
 
-  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
+              timezone = "Europe/Brussels")
   private Date lastModifiedDate;
 }

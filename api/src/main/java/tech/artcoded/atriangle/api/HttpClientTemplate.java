@@ -60,7 +60,8 @@ public interface HttpClientTemplate {
                                         Function<HttpRequest.Builder, HttpRequest> customRequest) {
     return customRequest.apply(HttpRequest.newBuilder()
                                           .uri(URI.create(urlFor(relativePath)))
-                                          .method(httpMethod.toUpperCase(), isEmpty(body) ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(body)))
+                                          .method(httpMethod.toUpperCase(), isEmpty(body) ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers
+                                            .ofString(body)))
       ;
   }
 
@@ -72,7 +73,8 @@ public interface HttpClientTemplate {
                                         Function<HttpRequest.Builder, HttpRequest> customRequest) {
     return customRequest.apply(HttpRequest.newBuilder()
                                           .uri(URI.create(serverUrl + relativePath))
-                                          .method(httpMethod.toUpperCase(), isEmpty(body) ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(body)))
+                                          .method(httpMethod.toUpperCase(), isEmpty(body) ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers
+                                            .ofString(body)))
       ;
   }
 
@@ -81,7 +83,8 @@ public interface HttpClientTemplate {
                                         String body) {
     return HttpRequest.newBuilder()
                       .uri(URI.create(urlFor(relativePath)))
-                      .method(httpMethod.toUpperCase(), isEmpty(body) ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers.ofString(body))
+                      .method(httpMethod.toUpperCase(), isEmpty(body) ? HttpRequest.BodyPublishers.noBody() : HttpRequest.BodyPublishers
+                        .ofString(body))
                       .build();
 
   }

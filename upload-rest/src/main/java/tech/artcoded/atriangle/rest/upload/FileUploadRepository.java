@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public interface FileUploadRepository extends JpaRepository<FileUpload, String> {
-  Page<FileUpload> findAllByCreatedBy(String author, Pageable pageable);
+    Page<FileUpload> findAllByCreatedBy(String author, Pageable pageable);
 
   Page<FileUpload> findAllByUploadType(FileEventType uploadType, Pageable pageable);
 

@@ -55,7 +55,8 @@ public class RdfIngestionController implements PingControllerTrait {
   @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<String> ingest(@RequestParam("graphUri") String graphUri,
                                        @RequestParam(value = "elasticIndex") String elasticIndex,
-                                       @RequestParam(value = "createIndex", defaultValue = "false") boolean createIndex,
+                                       @RequestParam(value = "createIndex",
+                                                     defaultValue = "false") boolean createIndex,
                                        @RequestParam("rdfFile") MultipartFile rdfFile,
                                        @RequestParam(value = "elasticSettings",
                                                      required = false) MultipartFile settingsFile,
@@ -66,7 +67,8 @@ public class RdfIngestionController implements PingControllerTrait {
   ) {
     Model inputModel = ModelConverter.inputStreamToModel(requireNonNull(getExtension(rdfFile.getOriginalFilename())), rdfFile::getInputStream);
     Optional<Model> validationErrors = Optional.ofNullable(shaclModel)
-                                               .flatMap(shaclFile -> ShaclValidator.validateModel(inputModel, shaclEnabled, getExtension(shaclFile.getOriginalFilename()), shaclFile::getInputStream));
+                                               .flatMap(shaclFile -> ShaclValidator.validateModel(inputModel, shaclEnabled, getExtension(shaclFile
+                                                                                                                                           .getOriginalFilename()), shaclFile::getInputStream));
 
     if (validationErrors.isPresent()) {
       return ResponseEntity.badRequest()

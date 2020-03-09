@@ -12,8 +12,8 @@ import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 
 @SpringBootApplication
 @Import({KafkaConfig.class,
-          JpaAuditingConfiguration.class,
-          SwaggerConfig.class})
+         JpaAuditingConfiguration.class,
+         SwaggerConfig.class})
 @EnableDiscoveryClient
 @EnableFeignClients(basePackageClasses = {FileRestFeignClient.class})
 public class ProjectRestApplicaton {
