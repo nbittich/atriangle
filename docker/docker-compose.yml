@@ -42,23 +42,6 @@ services:
       ME_CONFIG_MONGODB_SERVER: mongo
       ME_CONFIG_MONGODB_PORT: 27017
       ME_CONFIG_SITE_BASEURL: /proxy/mongo/
-  #  atrianglevirtuoso:
-  #    restart: always
-  #    container_name: virtuoso
-  #    image: tenforce/virtuoso:1.3.2-virtuoso7.2.5.1
-  #    environment:
-  #      SPARQL_UPDATE: "true"
-  #      DEFAULT_GRAPH: "https://www.artcoded.tech/default-graph"
-  #      DBA_PASSWORD: "dba"
-  #    volumes:
-  #      - virtuoso-storage:/data
-  #    ports:
-  #      - "8890"
-  #      - "1111"
-  #    networks:
-  #      atriangle:
-  #        aliases:
-  #          - virtuoso
   atriangleelasticsearch:
     restart: always
     container_name: atriangle_elasticsearch
@@ -175,7 +158,7 @@ services:
           - rdfsink
     image: atriangle/rdf-sink
     environment:
-      SPARQL_ENDPOINT_URL: "http://blazegraph:8080/bigdata/namespace/kb/sparql"
+      SPARQL_ENDPOINT_URL: "http://blazegraph:8080/bigdata"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
       - rdf-sink-storage:/user/app
