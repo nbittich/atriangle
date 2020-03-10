@@ -1,52 +1,55 @@
 package tech.artcoded.atriangle.api;
 
+import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
-import org.apache.jena.ontology.OntModel;
-import org.apache.jena.ontology.OntModelSpec;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.riot.RDFDataMgr;
-import org.apache.jena.util.FileManager;
 import org.elasticsearch.common.Strings;
+import org.openrdf.model.Model;
+import org.openrdf.model.Statement;
+import org.openrdf.model.impl.TreeModel;
+import org.openrdf.rio.RDFFormat;
+import org.openrdf.rio.RDFParser;
+import org.openrdf.rio.RDFWriter;
+import org.openrdf.rio.Rio;
+import org.openrdf.rio.helpers.StatementCollector;
 
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 
 public interface ModelConverter {
-  static String modelToLang(Model model, Lang lang) {
+
+  @SneakyThrows
+  static String modelToLang(Model model, RDFFormat lang) {
     if (model.isEmpty()) throw new RuntimeException("model cannot be empty");
 
     StringWriter sw = new StringWriter();
-    model.write(sw, lang.getLabel());
+    RDFWriter writer = Rio.createWriter(lang, sw);
+    CheckedConsumer<Statement> handleStatement = writer::handleStatement;
+
+    writer.startRDF();
+    model.forEach(handleStatement::safeConsume);
+    writer.endRDF();
     return sw.toString();
   }
 
-  static Model toModel(String value, Lang lang) {
+  static Model toModel(String value, RDFFormat lang) {
     if (Strings.isEmpty(value)) throw new RuntimeException("model cannot be empty");
     return toModel(() -> IOUtils.toInputStream(value, StandardCharsets.UTF_8), lang);
   }
 
-  static Model toModel(CheckedSupplier<InputStream> is, Lang lang) {
-    Model defaultModel = ModelFactory.createDefaultModel();
-    defaultModel.read(is.safeGet(), null, lang.getLabel());
-    return defaultModel;
+  @SneakyThrows
+  static Model toModel(CheckedSupplier<InputStream> is, RDFFormat lang) {
+    try (var stream = is.safeGet()) {
+      RDFParser parser = Rio.createParser(lang);
+      Model graph = new TreeModel();
+      StatementCollector collector = new StatementCollector(graph);
+      parser.setRDFHandler(collector);
+      parser.parse(stream, "");
+      return graph;
+    }
   }
 
-  static OntModel createOntModel(String filePath, Lang lang) {
-    OntModel ontoModel = ModelFactory.createOntologyModel(OntModelSpec.OWL_MEM, null);
-    try (InputStream in = FileManager.get()
-                                     .open(filePath)) {
-      RDFDataMgr.read(ontoModel, in, lang);
-    }
-    catch (Exception je) {
-      throw new RuntimeException(je);
-    }
-    return ontoModel;
-  }
-
-  static String inputStreamToLang(String fileExtension, CheckedSupplier<InputStream> file, Lang lang) {
+  static String inputStreamToLang(String fileExtension, CheckedSupplier<InputStream> file, RDFFormat lang) {
 
     return modelToLang(inputStreamToModel(fileExtension, file), lang);
   }
@@ -54,13 +57,15 @@ public interface ModelConverter {
   static Model inputStreamToModel(String fileExtension, CheckedSupplier<InputStream> file) {
     switch (fileExtension) {
       case "ttl":
-        return toModel(file, Lang.TURTLE);
+        return toModel(file, RDFFormat.TURTLE);
       case "rdf":
-        return toModel(file, Lang.RDFXML);
+        return toModel(file, RDFFormat.RDFXML);
       case "trig":
-        return toModel(file, Lang.TRIG);
+        return toModel(file, RDFFormat.TRIG);
+      case "n3":
+        return toModel(file, RDFFormat.N3);
       case "json":
-        return toModel(file, Lang.JSONLD);
+        return toModel(file, RDFFormat.JSONLD);
       default:
         throw new RuntimeException("Lang not supported yet");
     }

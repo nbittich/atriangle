@@ -1,80 +1,127 @@
 package tech.artcoded.atriangle.api;
 
-import org.apache.jena.query.QuerySolution;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.rdfconnection.RDFConnection;
-import org.apache.jena.riot.Lang;
-import org.apache.jena.update.UpdateFactory;
-import org.apache.jena.update.UpdateRequest;
+import com.bigdata.rdf.sail.webapp.SD;
+import com.bigdata.rdf.sail.webapp.client.ConnectOptions;
+import com.bigdata.rdf.sail.webapp.client.JettyResponseListener;
+import com.bigdata.rdf.sail.webapp.client.RemoteRepository;
+import com.bigdata.rdf.sail.webapp.client.RemoteRepositoryManager;
+import lombok.SneakyThrows;
+import org.openrdf.model.Statement;
+import org.openrdf.query.GraphQueryResult;
+import org.openrdf.query.TupleQueryResult;
+import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
-import java.util.function.Consumer;
-import java.util.function.Function;
+import java.io.InputStream;
+import java.util.Properties;
+import java.util.UUID;
 
 public interface SimpleSparqlService {
-  RDFConnection rdfConnection();
+  String getServiceUrl();
+
+  RemoteRepositoryManager getRemoteRepositoryManager();
+
 
   Logger LOGGER = LoggerFactory.getLogger(SimpleSparqlService.class);
 
-  Function<String, String> CLEAR_GRAPH_QUERY = graphUri -> String.format("CLEAR GRAPH <%s>", graphUri);
-  Function<String, String> ASK_GRAPH_QUERY = graphUri -> String.format("ask where {graph <%s> {?s ?p ?o }}", graphUri);
 
-  default Model construct(String query) {
-    return delegateTransformer(conn -> conn.queryConstruct(query));
+  @SneakyThrows
+  default void createNamespace(String namespace) {
+    if (!namespaceExists(namespace)) {
+      final Properties properties = new Properties();
+      properties.setProperty("com.bigdata.rdf.sail.namespace", namespace);
+      LOGGER.info("Create namespace {}...", namespace);
+      getRemoteRepositoryManager().createRepository(namespace, properties);
+      LOGGER.info("Create namespace {} done", namespace);
+    }
+    else {
+      LOGGER.info("Namespace {} already exists", namespace);
+    }
   }
 
-  default void select(String query, Consumer<QuerySolution> rowAction) {
-    delegateConsumer(conn -> conn.querySelect(query, rowAction));
+  @SneakyThrows
+  default TupleQueryResult tupleQuery(String namespace, String query) {
+    return getRemoteRepositoryManager().getRepositoryForNamespace(namespace)
+                                       .prepareTupleQuery(query)
+                                       .evaluate();
   }
 
-  default void update(String query) {
-    delegateConsumer(conn -> conn.update(query));
+  @SneakyThrows
+  default boolean booleanQuery(String namespace, String query) {
+    return getRemoteRepositoryManager().getRepositoryForNamespace(namespace)
+                                       .prepareBooleanQuery(query)
+                                       .evaluate();
   }
 
-  default void update(UpdateRequest updateRequest) {
-    delegateConsumer(conn -> conn.update(updateRequest));
+  @SneakyThrows
+  default GraphQueryResult graphQuery(String namespace, String query, UUID uuid) {
+    return getRemoteRepositoryManager().getRepositoryForNamespace(namespace)
+                                       .prepareGraphQuery(query)
+                                       .evaluate();
   }
 
-  default boolean ask(String query) {
-    return delegateTransformer(conn -> conn.queryAsk(query));
+  @SneakyThrows
+  default void deleteNamespace(String namespace) {
+    if (namespaceExists(namespace)) {
+      LOGGER.info("Delete namespace {}...", namespace);
+      getRemoteRepositoryManager().deleteRepository(namespace);
+    }
+    else {
+      LOGGER.info("Namespace {} does not exist", namespace);
+    }
   }
 
-  default void deleteGraph(String graphUri) {
-    delegateConsumer(conn -> conn.delete(graphUri));
+  default void close() throws Exception {
+    getRemoteRepositoryManager().close();
   }
 
-  default void load(String graphUri, Model model) {
-    delegateConsumer(conn -> conn.load(graphUri, model));
+  @SneakyThrows
+  default JettyResponseListener getNamespaceProperties(String namespace) {
+
+    final ConnectOptions opts = new ConnectOptions(getServiceUrl() + "/namespace/"
+                                                   + namespace + "/properties");
+    opts.method = "GET";
+    return getRemoteRepositoryManager().doConnect(opts);
+
   }
 
-  default boolean askForGraph(String graphUri) {
-    return ask(ASK_GRAPH_QUERY.apply(graphUri));
+  @SneakyThrows
+  default boolean namespaceExists(String namespace) {
+    final GraphQueryResult res = getRemoteRepositoryManager().getRepositoryDescriptions();
+    try {
+      while (res.hasNext()) {
+        final Statement stmt = res.next();
+        if (stmt.getPredicate()
+                .toString()
+                .equals(SD.KB_NAMESPACE.stringValue())) {
+          if (namespace.equals(stmt.getObject().stringValue())) {
+            return true;
+          }
+        }
+      }
+    }
+    finally {
+      res.close();
+    }
+    return false;
   }
 
-  default <T> T delegateTransformer(CheckedFunction<RDFConnection, T> delegateMethod) {
-    return delegateMethod.safeExecute(rdfConnection());
+  @SneakyThrows
+  default void load(String namespace, InputStream resource, RDFFormat rdfFormat) {
+    try (resource) {
+      if (!namespaceExists(namespace)) {
+        createNamespace(namespace);
+      }
+      getRemoteRepositoryManager().getRepositoryForNamespace(namespace).add(new RemoteRepository.AddOp(resource, rdfFormat));
+    }
   }
 
-  default void delegateConsumer(CheckedConsumer<RDFConnection> delegateMethod) {
-    delegateMethod.safeConsume(rdfConnection());
-  }
+  default JettyResponseListener getStatus()
+    throws Exception {
+    final ConnectOptions opts = new ConnectOptions(getServiceUrl() + "/status");
+    opts.method = "GET";
+    return getRemoteRepositoryManager().doConnect(opts);
 
-  default UpdateRequest updateRequest(String... queries) {
-    var updateRequest = UpdateFactory.create();
-    Arrays.stream(queries)
-          .filter(String::isEmpty)
-          .forEach(updateRequest::add);
-    return updateRequest;
-  }
-
-  default void close() {
-    rdfConnection().close();
-  }
-
-  default void ping() {
-    Model model = this.construct("select distinct ?Concept where {[] a ?Concept} LIMIT 1");
-    LOGGER.info("Virtuoso running test result: {}", ModelConverter.modelToLang(model, Lang.JSONLD));
   }
 }

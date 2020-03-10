@@ -2,9 +2,9 @@ package tech.artcoded.atriangle.rest.controller;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.riot.Lang;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.openrdf.model.Model;
+import org.openrdf.rio.RDFFormat;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,7 +16,6 @@ import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ModelConverter;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.ShaclValidator;
 import tech.artcoded.atriangle.api.kafka.EventType;
 import tech.artcoded.atriangle.api.kafka.KafkaEvent;
 import tech.artcoded.atriangle.api.kafka.RestEvent;
@@ -24,7 +23,6 @@ import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 
 import javax.inject.Inject;
-import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.FilenameUtils.getExtension;
@@ -60,25 +58,12 @@ public class RdfIngestionController implements PingControllerTrait {
                                        @RequestParam("rdfFile") MultipartFile rdfFile,
                                        @RequestParam(value = "elasticSettings",
                                                      required = false) MultipartFile settingsFile,
-                                       @RequestParam(value = "shaclModel",
-                                                     required = false) MultipartFile shaclModel,
                                        @RequestParam(value = "elasticMappings",
                                                      required = false) MultipartFile mappingsFile
   ) {
     Model inputModel = ModelConverter.inputStreamToModel(requireNonNull(getExtension(rdfFile.getOriginalFilename())), rdfFile::getInputStream);
-    Optional<Model> validationErrors = Optional.ofNullable(shaclModel)
-                                               .flatMap(shaclFile -> ShaclValidator.validateModel(inputModel, shaclEnabled, getExtension(shaclFile
-                                                                                                                                           .getOriginalFilename()), shaclFile::getInputStream));
 
-    if (validationErrors.isPresent()) {
-      return ResponseEntity.badRequest()
-                           .body(ModelConverter.modelToLang(validationErrors.get(), Lang.JSONLD));
-    }
-    else {
-      log.info("model valid or shacl disabled or shacl config file not provided");
-    }
-
-    String json = ModelConverter.modelToLang(inputModel, Lang.JSONLD);
+    String json = ModelConverter.modelToLang(inputModel, RDFFormat.JSONLD);
 
     log.info("request payload in json '{}'", json);
 

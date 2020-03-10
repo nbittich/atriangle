@@ -2,13 +2,12 @@ package tech.artcoded.atriangle.rdfsink;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.riot.Lang;
+import org.apache.commons.io.IOUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
+import org.openrdf.rio.RDFFormat;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-import tech.artcoded.atriangle.api.ModelConverter;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.SimpleSparqlService;
 import tech.artcoded.atriangle.api.kafka.KafkaEvent;
@@ -16,6 +15,7 @@ import tech.artcoded.atriangle.api.kafka.RdfEvent;
 import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
 
 import javax.inject.Inject;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -55,12 +55,12 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
 
     log.info("converting to model");
 
-    Model model = ModelConverter.toModel(kafkaEvent.getJson(), Lang.JSONLD);
-    model.write(System.out, Lang.TURTLE.getLabel());
-
     log.info("saving to triplestore");
-    sparqlService.load(event.getGraphUri(), model);
+
+    sparqlService.load(event.getGraphUri(), IOUtils.toInputStream(kafkaEvent.getJson(), StandardCharsets.UTF_8), RDFFormat.JSONLD);
+
     log.info("saved to triplestore");
+
     return Map.of(UUID.randomUUID()
                       .toString(), mapperWrapper.serialize(Map.of("ack", "true",
                                                                   "id", kafkaEvent.getId())));

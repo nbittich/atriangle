@@ -2,8 +2,6 @@ package tech.artcoded.atriangle.api;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
-import org.apache.jena.rdf.model.Model;
-import org.apache.jena.riot.Lang;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
@@ -27,6 +25,8 @@ import org.elasticsearch.index.reindex.ReindexRequest;
 import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.script.mustache.SearchTemplateRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
+import org.openrdf.model.Model;
+import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -127,7 +127,7 @@ public interface ElasticSearchRdfService {
   }
 
   default IndexResponse index(String index, String id, Model model) {
-    return index(index, id, modelToLang(model, Lang.JSONLD));
+    return index(index, id, modelToLang(model, RDFFormat.JSONLD));
   }
 
   default IndexResponse index(String index, String id, String body) {
@@ -135,7 +135,7 @@ public interface ElasticSearchRdfService {
   }
 
   default void indexAsync(String index, String id, Model model) {
-    indexAsync(index, id, modelToLang(model, Lang.JSONLD));
+    indexAsync(index, id, modelToLang(model, RDFFormat.JSONLD));
   }
 
   default void indexAsync(String index, String id, String body) {

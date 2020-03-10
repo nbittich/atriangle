@@ -1,7 +1,7 @@
 package tech.artcoded.atriangle.core.config;
 
+import com.bigdata.rdf.sail.webapp.client.RemoteRepositoryManager;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.jena.rdfconnection.RDFConnectionFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +21,12 @@ public class SparqlConfig {
   @Bean(destroyMethod = "close")
   @Named(SIMPLE_SPARQL_SERVICE)
   public SimpleSparqlService simpleSparqlService() {
-    return () -> RDFConnectionFactory.connect(sparqlEndpointUrl, sparqlEndpointUrl, sparqlEndpointUrl);
+    return new SimpleSparqlServiceImpl(sparqlEndpointUrl, new RemoteRepositoryManager(sparqlEndpointUrl, true));
+  }
+
+  @lombok.Value
+  static class SimpleSparqlServiceImpl implements SimpleSparqlService {
+    private String serviceUrl;
+    private RemoteRepositoryManager remoteRepositoryManager;
   }
 }
