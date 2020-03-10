@@ -197,7 +197,7 @@ services:
       - rest-storage:/user/app
 
 volumes:
-  virtuoso-storage:
+  #virtuoso-storage:
   elastic-sink-storage:
   rdf-sink-storage:
   rest-sink-storage:
