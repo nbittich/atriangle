@@ -1,20 +1,17 @@
 version: '3'
 
 services:
-  atriangleneo4j:
-    image: neo4j
+  atriangleblazegraph:
+    build: blazegraph/2.1.5/.
     restart: always
-    environment:
-      NEO4J_AUTH: neo4j/admin
+    volumes:
+      - blazegraph-storage:/usr/local
     networks:
       atriangle:
         aliases:
-          - neo4j
+          - blazegraph
     ports:
-      - 7474
-      - 7687
-    volumes:
-      - neo4j-storage:/data
+      - 8080
   atrianglemongo:
     image: mongo
     restart: always
@@ -226,7 +223,7 @@ volumes:
   rest-storage:
   upload-rest-storage:
   mongodb-storage:
-  neo4j-storage:
+  blazegraph-storage:
 
 networks:
   atriangle:
