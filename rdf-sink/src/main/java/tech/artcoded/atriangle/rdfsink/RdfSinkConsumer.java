@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.virtuososink;
+package tech.artcoded.atriangle.rdfsink;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.ModelConverter;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.SparqlService;
+import tech.artcoded.atriangle.api.SimpleSparqlService;
 import tech.artcoded.atriangle.api.kafka.KafkaEvent;
 import tech.artcoded.atriangle.api.kafka.RdfEvent;
 import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
@@ -23,7 +23,7 @@ import java.util.UUID;
 @Component
 @Slf4j
 public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
-  private final SparqlService sparqlService;
+  private final SimpleSparqlService sparqlService;
 
   @Getter
   private final KafkaTemplate<String, String> kafkaTemplate;
@@ -35,7 +35,7 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
   private String outTopic;
 
   @Inject
-  public RdfSinkConsumer(SparqlService sparqlService,
+  public RdfSinkConsumer(SimpleSparqlService sparqlService,
                          KafkaTemplate<String, String> kafkaTemplate,
                          ObjectMapperWrapper mapperWrapper) {
     this.sparqlService = sparqlService;
@@ -59,7 +59,7 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
     model.write(System.out, Lang.TURTLE.getLabel());
 
     log.info("saving to triplestore");
-    sparqlService.upload(event.getGraphUri(), model);
+    sparqlService.load(event.getGraphUri(), model);
     log.info("saved to triplestore");
     return Map.of(UUID.randomUUID()
                       .toString(), mapperWrapper.serialize(Map.of("ack", "true",

@@ -9,9 +9,9 @@ zuul:
     mongoexpress:
       path: /proxy/mongo/**
       url: http://${mongoexpress.host}:${mongoexpress.port}/proxy/mongo/
-    virtuoso:
-      path: /proxy/virtuoso/**
-      url: ${virtuoso.scheme}://${virtuoso.hostname}:${virtuoso.port}/sparql
+    sparql:
+      path: /proxy/sparql/**
+      url: ${sparql.endpoint.url}
   host:
     connect-timeout-millis: 30000
     socket-timeout-millis: 30000

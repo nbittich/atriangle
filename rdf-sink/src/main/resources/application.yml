@@ -2,7 +2,7 @@ out:
   topic: event-sink-rdf-out
 spring:
   profiles:
-    include: kafka,virtuoso
+    include: kafka, sparql
   kafka:
     template:
       default-topic: event-sink-rdf

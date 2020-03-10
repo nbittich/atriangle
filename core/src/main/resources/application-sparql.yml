@@ -1,0 +1,4 @@
+# deprecated
+sparql:
+  endpoint:
+    url: ${SPARQL_ENDPOINT_URL:http://192.168.99.101:8889/bigdata/sparql}

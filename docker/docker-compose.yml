@@ -175,7 +175,7 @@ services:
           - rdfsink
     image: atriangle/rdf-sink
     environment:
-      VIRTUOSO_HOSTNAME: "virtuoso"
+      SPARQL_ENDPOINT_URL: "http://blazegraph:8080/bigdata/sparql"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
       - rdf-sink-storage:/user/app
@@ -206,7 +206,7 @@ services:
       - "8088:8088"
     environment:
       ELASTICSEARCH_HOSTNAME: "elasticsearch"
-      VIRTUOSO_HOSTNAME: "virtuoso"
+      SPARQL_ENDPOINT_URL: "http://blazegraph:8080/bigdata/sparql"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
       MONGO_EXPRESS_HOST: "mongoexpress"
