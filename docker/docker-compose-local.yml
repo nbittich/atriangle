@@ -42,23 +42,23 @@ services:
       atrianglelocal:
         aliases:
           - mongoexpress
-  atrianglevirtuosolocal:
-    restart: always
-    container_name: virtuosolocal
-    image: tenforce/virtuoso:1.3.2-virtuoso7.2.5.1
-    environment:
-      SPARQL_UPDATE: "true"
-      DEFAULT_GRAPH: "https://www.artcoded.tech/default-graph"
-      DBA_PASSWORD: "dba"
-    volumes:
-      - virtuoso-storage-local:/data
-    ports:
-      - "8890:8890"
-      - "1111:1111"
-    networks:
-      atrianglelocal:
-        aliases:
-          - virtuoso
+  #  atrianglevirtuosolocal:
+  #    restart: always
+  #    container_name: virtuosolocal
+  #    image: tenforce/virtuoso:1.3.2-virtuoso7.2.5.1
+  #    environment:
+  #      SPARQL_UPDATE: "true"
+  #      DEFAULT_GRAPH: "https://www.artcoded.tech/default-graph"
+  #      DBA_PASSWORD: "dba"
+  #    volumes:
+  #      - virtuoso-storage-local:/data
+  #    ports:
+  #      - "8890:8890"
+  #      - "1111:1111"
+  #    networks:
+  #      atrianglelocal:
+  #        aliases:
+  #          - virtuoso
   atriangleelasticsearchlocal:
     restart: always
     container_name: elasticsearch_local
@@ -101,7 +101,7 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
 
 volumes:
-  virtuoso-storage-local:
+  #  virtuoso-storage-local:
   mongodb-storage:
   blazegraph-storage-local:
 
