@@ -14,6 +14,6 @@ public class RestEvent {
   private boolean createIndex;
   private String elasticMappingsJson;
   private String elasticSettingsJson;
-  private String graphUri;
+  private String namespace;
   private String shaclModel;
 }

@@ -1,5 +1,6 @@
 package tech.artcoded.atriangle.core.config;
 
+import com.bigdata.rdf.sail.webapp.client.JettyResponseListener;
 import com.bigdata.rdf.sail.webapp.client.RemoteRepositoryManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,8 +21,11 @@ public class SparqlConfig {
 
   @Bean(destroyMethod = "close")
   @Named(SIMPLE_SPARQL_SERVICE)
-  public SimpleSparqlService simpleSparqlService() {
-    return new SimpleSparqlServiceImpl(sparqlEndpointUrl, new RemoteRepositoryManager(sparqlEndpointUrl, false));
+  public SimpleSparqlService simpleSparqlService() throws Exception {
+    SimpleSparqlServiceImpl simpleSparqlService = new SimpleSparqlServiceImpl(sparqlEndpointUrl, new RemoteRepositoryManager(sparqlEndpointUrl, false));
+    JettyResponseListener status = simpleSparqlService.getStatus();
+    log.info("status for sparql endpoint {}, response body {}", status.getStatus(), status.getResponseBody());
+    return simpleSparqlService;
   }
 
   @lombok.Value

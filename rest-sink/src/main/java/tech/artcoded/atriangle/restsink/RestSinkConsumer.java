@@ -54,7 +54,7 @@ public class RestSinkConsumer implements ATriangleConsumer<String, String> {
     String elasticSinkEventId = UUID_SUPPLIER.get();
 
     RdfEvent rdfSinkEvent = RdfEvent.builder()
-                                    .graphUri(event.getGraphUri())
+                                    .namespace(event.getNamespace())
                                     .build();
 
     KafkaEvent kafkaEventForRdf = KafkaEvent.builder()

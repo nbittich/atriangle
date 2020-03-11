@@ -51,7 +51,7 @@ public class RdfIngestionController implements PingControllerTrait {
   private String topicProducer;
 
   @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> ingest(@RequestParam("graphUri") String graphUri,
+  public ResponseEntity<String> ingest(@RequestParam("namespace") String namespace,
                                        @RequestParam(value = "elasticIndex") String elasticIndex,
                                        @RequestParam(value = "createIndex",
                                                      defaultValue = "false") boolean createIndex,
@@ -68,7 +68,7 @@ public class RdfIngestionController implements PingControllerTrait {
     log.info("request payload in json '{}'", json);
 
     RestEvent restEvent = RestEvent.builder()
-                                   .graphUri(graphUri)
+                                   .namespace(namespace)
                                    .elasticIndex(elasticIndex)
                                    .createIndex(createIndex)
                                    .elasticSettingsJson(FILE_TO_JSON.apply(settingsFile))

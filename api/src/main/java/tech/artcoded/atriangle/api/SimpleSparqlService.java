@@ -14,8 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.UUID;
 
 public interface SimpleSparqlService {
@@ -31,10 +31,12 @@ public interface SimpleSparqlService {
   default void createNamespace(String namespace) {
     if (!namespaceExists(namespace)) {
       LOGGER.info("namespace {} does not exist", namespace);
-      final Properties properties = new Properties();
-      properties.setProperty("com.bigdata.rdf.sail.namespace", namespace);
+      PropertyStore store = () -> Map.of("com.bigdata.rdf.sail.namespace", namespace,
+                                         "com.bigdata.rdf.sail.truthMaintenance", true,
+                                         "com.bigdata.rdf.store.AbstractTripleStore.textIndex", true,
+                                         "com.bigdata.search.FullTextIndex.fieldsEnabled", true);
       LOGGER.info("Create namespace {}...", namespace);
-      getRemoteRepositoryManager().createRepository(namespace, properties);
+      getRemoteRepositoryManager().createRepository(namespace, store.toProperties());
       LOGGER.info("Create namespace {} done", namespace);
     }
     else {

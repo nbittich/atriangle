@@ -57,7 +57,7 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
 
     log.info("saving to triplestore");
 
-    sparqlService.load(event.getGraphUri(), IOUtils.toInputStream(kafkaEvent.getJson(), StandardCharsets.UTF_8), RDFFormat.JSONLD);
+    sparqlService.load(event.getNamespace(), IOUtils.toInputStream(kafkaEvent.getJson(), StandardCharsets.UTF_8), RDFFormat.JSONLD);
 
     log.info("saved to triplestore");
 
