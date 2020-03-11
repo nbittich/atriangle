@@ -3,11 +3,12 @@
     <parent>
         <groupId>tech.artcoded</groupId>
         <artifactId>atriangle</artifactId>
-        <version>0.1.0_STARHOPPER</version>
+        <version>0.1.1-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>atriangle-core-elastic</artifactId>
+  <version> 0.1.1-SNAPSHOT</version>
 
     <name>A Triangle - CORE-ELASTIC</name>
 
