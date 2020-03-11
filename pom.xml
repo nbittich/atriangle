@@ -210,18 +210,14 @@
         </pluginManagement>
     </build>
     <modules>
-        <module>shared-config</module>
         <module>api</module>
+        <module>shared-config</module>
         <module>core</module>
-        <module>elastic-sink</module>
-        <module>rdf-sink</module>
+        <module>sink</module>
         <module>event-dispatcher</module>
-        <module>rest-sink</module>
         <module>rest</module>
-        <module>log-sink</module>
         <module>upload-rest</module>
         <module>project-rest</module>
-        <module>mongodb-sink</module>
     </modules>
 </project>
 

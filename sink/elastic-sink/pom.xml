@@ -2,14 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>atriangle</artifactId>
+        <artifactId>atriangle-sink</artifactId>
         <groupId>tech.artcoded</groupId>
         <version>0.1.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
-    <name>A Triangle - REST-SINK</name>
+    <name>A Triangle - ELASTIC-SINK</name>
 
-    <artifactId>atriangle-rest-sink</artifactId>
+    <artifactId>atriangle-elastic-sink</artifactId>
     <version>0.1.1-SNAPSHOT</version>
 
     <dependencies>
@@ -23,12 +23,16 @@
         </dependency>
         <dependency>
             <groupId>tech.artcoded</groupId>
+            <artifactId>atriangle-core-elastic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tech.artcoded</groupId>
             <artifactId>atriangle-shared-config</artifactId>
         </dependency>
     </dependencies>
 
     <build>
-        <finalName>atriangle-rest-sink</finalName>
+        <finalName>atriangle-elastic-sink</finalName>
         <plugins>
             <plugin>
                 <groupId>org.springframework.boot</groupId>
