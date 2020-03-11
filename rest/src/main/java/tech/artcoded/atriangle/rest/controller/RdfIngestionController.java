@@ -23,6 +23,8 @@ import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 
 import javax.inject.Inject;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 
 import static java.util.Objects.requireNonNull;
 import static org.apache.commons.io.FilenameUtils.getExtension;
@@ -51,43 +53,52 @@ public class RdfIngestionController implements PingControllerTrait {
   private String topicProducer;
 
   @PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<String> ingest(@RequestParam("namespace") String namespace,
-                                       @RequestParam(value = "elasticIndex") String elasticIndex,
-                                       @RequestParam(value = "createIndex",
-                                                     defaultValue = "false") boolean createIndex,
-                                       @RequestParam("rdfFile") MultipartFile rdfFile,
-                                       @RequestParam(value = "elasticSettings",
-                                                     required = false) MultipartFile settingsFile,
-                                       @RequestParam(value = "elasticMappings",
-                                                     required = false) MultipartFile mappingsFile
+  public ResponseEntity<Map<String, String>> ingest(@RequestParam("namespace") String namespace,
+                                                    @RequestParam(value = "elasticIndex") String elasticIndex,
+                                                    @RequestParam(value = "createIndex",
+                                                                  defaultValue = "false") boolean createIndex,
+                                                    @RequestParam("rdfFile") MultipartFile rdfFile,
+                                                    @RequestParam(value = "elasticSettings",
+                                                                  required = false) MultipartFile settingsFile,
+                                                    @RequestParam(value = "elasticMappings",
+                                                                  required = false) MultipartFile mappingsFile
   ) {
-    Model inputModel = ModelConverter.inputStreamToModel(requireNonNull(getExtension(rdfFile.getOriginalFilename())), rdfFile::getInputStream);
+    asyncSendEvent(namespace, elasticIndex, createIndex, rdfFile, settingsFile, mappingsFile);
+    return ResponseEntity.accepted().body(Map.of("message", "RDF will be processed"));
+  }
 
-    String json = ModelConverter.modelToLang(inputModel, RDFFormat.JSONLD);
+  private void asyncSendEvent(String namespace,
+                              String elasticIndex,
+                              boolean createIndex,
+                              MultipartFile rdfFile,
+                              MultipartFile settingsFile,
+                              MultipartFile mappingsFile) {
+    CompletableFuture.runAsync(() -> {
+      Model inputModel = ModelConverter.inputStreamToModel(requireNonNull(getExtension(rdfFile.getOriginalFilename())), rdfFile::getInputStream);
 
-    log.info("request payload in json '{}'", json);
+      String json = ModelConverter.modelToLang(inputModel, RDFFormat.JSONLD);
 
-    RestEvent restEvent = RestEvent.builder()
-                                   .namespace(namespace)
-                                   .elasticIndex(elasticIndex)
-                                   .createIndex(createIndex)
-                                   .elasticSettingsJson(FILE_TO_JSON.apply(settingsFile))
-                                   .elasticMappingsJson(FILE_TO_JSON.apply(mappingsFile))
-                                   .build();
+      log.debug("request payload in json '{}'", json);
 
-    KafkaEvent kafkaEvent = KafkaEvent.builder()
-                                      .eventType(EventType.REST_SINK)
-                                      .id(IdGenerators.UUID_SUPPLIER.get())
-                                      .json(json)
-                                      .event(objectMapperWrapper.serialize(restEvent))
-                                      .build();
+      RestEvent restEvent = RestEvent.builder()
+                                     .namespace(namespace)
+                                     .elasticIndex(elasticIndex)
+                                     .createIndex(createIndex)
+                                     .elasticSettingsJson(FILE_TO_JSON.apply(settingsFile))
+                                     .elasticMappingsJson(FILE_TO_JSON.apply(mappingsFile))
+                                     .build();
 
-    ProducerRecord<String, String> restRecord = new ProducerRecord<>(topicProducer, kafkaEvent.getId(), objectMapperWrapper.serialize(kafkaEvent));
+      KafkaEvent kafkaEvent = KafkaEvent.builder()
+                                        .eventType(EventType.REST_SINK)
+                                        .id(IdGenerators.UUID_SUPPLIER.get())
+                                        .json(json)
+                                        .event(objectMapperWrapper.serialize(restEvent))
+                                        .build();
 
-    kafkaTemplate.send(restRecord);
+      ProducerRecord<String, String> restRecord = new ProducerRecord<>(topicProducer, kafkaEvent.getId(), objectMapperWrapper.serialize(kafkaEvent));
 
-    return ResponseEntity.accepted()
-                         .body(json);
+      kafkaTemplate.send(restRecord);
+    });
   }
 
 }
