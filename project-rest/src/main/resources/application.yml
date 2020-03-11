@@ -1,5 +1,5 @@
 application:
-  basePath: ${PROJECT_BASE_PATH:/tmp/project-rest} # todo do not forget to override on docker compose
+  basePath: ${PROJECT_BASE_PATH:/${user.home}/project-rest}
 server:
   port: 0
 spring:
@@ -7,10 +7,3 @@ spring:
     name: ProjectRestPublicEndpoint
   profiles:
     include: kafka, zookeeper, rest, mongodb
-  data:
-    mongodb:
-      host: ${MONGO_DB_HOST:192.168.99.101}
-      port: ${MONGO_DB_PORT:27017}
-      username: ${MONGO_DB_USERNAME:root}
-      password: ${MONGO_DB_USERNAME:root}
-      database: ${spring.application.name:DEFAULT_COLLECTION}

@@ -1,5 +1,5 @@
 application:
-  basePath: ${UPLOAD_BASE_PATH:/tmp/upload-rest} # todo do not forget to override on docker compose
+  basePath: ${UPLOAD_BASE_PATH:/${user.home}/upload-rest}
   filePath: ${application.basePath}/uploads
 server:
   port: 0
