@@ -10,8 +10,8 @@ zuul:
       path: /proxy/mongo/**
       url: http://${mongoexpress.host}:${mongoexpress.port}/proxy/mongo/
     sparql:
-      path: /proxy/sparql
-      url: ${sparql.endpoint.url}
+      path: /proxy/sparql/**
+      url: ${sparql.endpoint.proxy.url}
   host:
     connect-timeout-millis: 30000
     socket-timeout-millis: 30000

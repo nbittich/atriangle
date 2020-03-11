@@ -7,7 +7,7 @@ VOLUME /usr/local
 ENV BLAZEGRAPH_NAME=bigdata \
     BLAZEGRAPH_RW_PATH=/RWStore.properties \
     BLAZEGRAPH_VERSION=2_1_5 \
-    JAVA_OPTS="-Xmx1g" \
+    JAVA_OPTS="-Xmx2g" \
     JETTY_WEBAPPS=/var/lib/jetty/webapps \
     BLAZEGRAPH_UID=888 \
     BLAZEGRAPH_GID=888

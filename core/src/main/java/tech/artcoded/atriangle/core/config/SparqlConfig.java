@@ -21,7 +21,7 @@ public class SparqlConfig {
   @Bean(destroyMethod = "close")
   @Named(SIMPLE_SPARQL_SERVICE)
   public SimpleSparqlService simpleSparqlService() {
-    return new SimpleSparqlServiceImpl(sparqlEndpointUrl, new RemoteRepositoryManager(sparqlEndpointUrl, true));
+    return new SimpleSparqlServiceImpl(sparqlEndpointUrl, new RemoteRepositoryManager(sparqlEndpointUrl, false));
   }
 
   @lombok.Value

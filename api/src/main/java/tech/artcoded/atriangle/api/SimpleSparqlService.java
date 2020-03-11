@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.InputStream;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -29,6 +30,7 @@ public interface SimpleSparqlService {
   @SneakyThrows
   default void createNamespace(String namespace) {
     if (!namespaceExists(namespace)) {
+      LOGGER.info("namespace {} does not exist", namespace);
       final Properties properties = new Properties();
       properties.setProperty("com.bigdata.rdf.sail.namespace", namespace);
       LOGGER.info("Create namespace {}...", namespace);
@@ -88,8 +90,9 @@ public interface SimpleSparqlService {
 
   @SneakyThrows
   default boolean namespaceExists(String namespace) {
-    final GraphQueryResult res = getRemoteRepositoryManager().getRepositoryDescriptions();
+    GraphQueryResult res = null;
     try {
+      res = getRemoteRepositoryManager().getRepositoryDescriptions();
       while (res.hasNext()) {
         final Statement stmt = res.next();
         if (stmt.getPredicate()
@@ -101,8 +104,12 @@ public interface SimpleSparqlService {
         }
       }
     }
+    catch (Exception e) {
+      LOGGER.error("error", e);
+      return false;
+    }
     finally {
-      res.close();
+      Optional.ofNullable(res).ifPresent(CheckedConsumer.toConsumer(GraphQueryResult::close));
     }
     return false;
   }
@@ -113,7 +120,8 @@ public interface SimpleSparqlService {
       if (!namespaceExists(namespace)) {
         createNamespace(namespace);
       }
-      getRemoteRepositoryManager().getRepositoryForNamespace(namespace).add(new RemoteRepository.AddOp(resource, rdfFormat));
+      getRemoteRepositoryManager().getRepositoryForNamespace(namespace)
+                                  .add(new RemoteRepository.AddOp(resource, rdfFormat));
     }
   }
 
