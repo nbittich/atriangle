@@ -43,9 +43,9 @@ public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
 
   @Override
   public Map<String, String> consume(ConsumerRecord<String, String> record) {
-    String elasticEvent = record.value();
+    String mongoEvent = record.value();
 
-    Optional<KafkaEvent> optionalKafkaEvent = mapperWrapper.deserialize(elasticEvent, KafkaEvent.class);
+    Optional<KafkaEvent> optionalKafkaEvent = mapperWrapper.deserialize(mongoEvent, KafkaEvent.class);
     KafkaEvent kafkaEvent = optionalKafkaEvent.orElseThrow(() -> new RuntimeException("event could not be parsed"));
     Optional<MongoEvent> optionalMongoEvent = mapperWrapper.deserialize(kafkaEvent.getEvent(), MongoEvent.class);
     MongoEvent event = optionalMongoEvent.orElseThrow(() -> new RuntimeException("event could not be parsed"));

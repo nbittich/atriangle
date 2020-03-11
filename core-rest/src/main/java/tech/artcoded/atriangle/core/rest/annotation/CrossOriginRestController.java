@@ -11,6 +11,8 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE, ElementType.METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @RestController
-@CrossOrigin(value = "*", allowedHeaders = "*", exposedHeaders = "x-auth-token")
+@CrossOrigin(value = "*",
+             allowedHeaders = "*",
+             exposedHeaders = "x-auth-token")
 public @interface CrossOriginRestController {
 }

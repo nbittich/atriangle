@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RdfEvent {
-    private String namespace;
+  private String namespace;
 }

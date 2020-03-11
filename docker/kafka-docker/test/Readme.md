@@ -1,31 +1,37 @@
 Tests
-=====
+  =====
 
-This directory contains some basic tests to validate functionality after building.
+  This directory contains some basic tests to validate functionality after building.
 
-To execute
-----------
+  To execute
+  ----------
 
-```
-cd test
-docker-compose up -d zookeeper kafka_1 kafka_2
-./runAllTests.sh
-```
+  ```
+  cd test
+  docker-compose up -d zookeeper kafka_1 kafka_2
+  ./runAllTests.sh
+  ```
 
-Run selected tests
-------------------
+  Run selected tests
+  ------------------
 
-### Kafka
+  ### Kafka
 
-```
-docker-compose run --rm kafkatest <testname pattern>
-```
+  ```
+  docker-compose run --rm kafkatest
+<testname pattern>
+  ```
 
-### Kafkacat
+  ### Kafkacat
 
-```
-BROKER_LIST=$(./internal-broker-list.sh) [KAFKA_VERSION=<version>] docker-compose run --rm kafkacattest <testname pattern>
-```
+  ```
+  BROKER_LIST=$(./internal-broker-list.sh) [KAFKA_VERSION=
+  <version>] docker-compose run --rm kafkacattest
+    <testname pattern>
+      ```
 
--	`<version>` is the kafka version that the tests are targeting. Normally this environment variable should not need to be specified. The default should be the latest image version. Added for CI support.
--	`<testname pattern>` can be an individual filename, or a pattern such as `'0.0/test.start-kafka*.kafka.sh'`
+      - `
+      <version>` is the kafka version that the tests are targeting. Normally this environment variable should not need to be specified. The default should be the latest image version. Added for CI
+        support.
+        - `
+        <testname pattern>` can be an individual filename, or a pattern such as `'0.0/test.start-kafka*.kafka.sh'`

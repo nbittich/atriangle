@@ -7,8 +7,11 @@ import org.openrdf.model.Model;
 import org.openrdf.model.impl.TreeModel;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
-import org.openrdf.rio.RDFWriter;
 import org.openrdf.rio.Rio;
+import org.openrdf.rio.RioConfig;
+import org.openrdf.rio.WriterConfig;
+import org.openrdf.rio.helpers.JSONLDMode;
+import org.openrdf.rio.helpers.JSONLDSettings;
 import org.openrdf.rio.helpers.StatementCollector;
 
 import java.io.InputStream;
@@ -22,11 +25,10 @@ public interface ModelConverter {
     if (model.isEmpty()) throw new RuntimeException("model cannot be empty");
 
     StringWriter sw = new StringWriter();
-    RDFWriter writer = Rio.createWriter(lang, sw);
+    WriterConfig writerConfig = new WriterConfig();
 
-    writer.startRDF();
-    model.forEach(CheckedConsumer.toConsumer(writer::handleStatement));
-    writer.endRDF();
+    config(writerConfig, lang);
+    Rio.write(model, sw, lang, writerConfig);
     return sw.toString();
   }
 
@@ -38,17 +40,29 @@ public interface ModelConverter {
   @SneakyThrows
   static Model toModel(CheckedSupplier<InputStream> is, RDFFormat lang) {
     try (var stream = is.safeGet()) {
-      RDFParser parser = Rio.createParser(lang);
+
       Model graph = new TreeModel();
       StatementCollector collector = new StatementCollector(graph);
+      RDFParser parser = Rio.createParser(lang);
+      config(parser.getParserConfig(), lang);
       parser.setRDFHandler(collector);
+
       parser.parse(stream, "");
       return graph;
     }
   }
 
-  static String inputStreamToLang(String fileExtension, CheckedSupplier<InputStream> file, RDFFormat lang) {
+  static void config(RioConfig config, RDFFormat lang) {
+    if (lang.equals(RDFFormat.JSONLD)) {
+      config.set(JSONLDSettings.COMPACT_ARRAYS, true);
+      //config.set(JSONLDSettings.OPTIMIZE, true);
+      //config.set(JSONLDSettings.USE_NATIVE_TYPES, false);
+      //config.set(JSONLDSettings.USE_RDF_TYPE, false);
+      config.set(JSONLDSettings.JSONLD_MODE, JSONLDMode.COMPACT);
+    }
+  }
 
+  static String inputStreamToLang(String fileExtension, CheckedSupplier<InputStream> file, RDFFormat lang) {
     return modelToLang(inputStreamToModel(fileExtension, file), lang);
   }
 

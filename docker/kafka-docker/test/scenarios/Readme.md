@@ -1,27 +1,27 @@
 Scenarios (end-to-end tests)
-============================
+  ============================
 
-These tests are supposed to test the configuration of indivdiual features
+  These tests are supposed to test the configuration of indivdiual features
 
-TODO:
------
+  TODO:
+  -----
 
--	SSL (Client + Broker)
--	Security
+  -  SSL (Client + Broker)
+  -  Security
 
-Done:
------
+  Done:
+  -----
 
--	JMX
+  -  JMX
 
-Executing tests
----------------
+  Executing tests
+  ---------------
 
-These tests should spin up required containers for full end-to-end testing and exercise required code paths, returing zero exit code for success and non-zero exit code for failure.
+  These tests should spin up required containers for full end-to-end testing and exercise required code paths, returing zero exit code for success and non-zero exit code for failure.
 
-### JMX
+  ### JMX
 
-```
-cd test/scenarios
-./runJmxScenario.sh
-```
+  ```
+  cd test/scenarios
+  ./runJmxScenario.sh
+  ```
