@@ -55,9 +55,7 @@ public interface ModelConverter {
   static void config(RioConfig config, RDFFormat lang) {
     if (lang.equals(RDFFormat.JSONLD)) {
       config.set(JSONLDSettings.COMPACT_ARRAYS, true);
-      //config.set(JSONLDSettings.OPTIMIZE, true);
-      //config.set(JSONLDSettings.USE_NATIVE_TYPES, false);
-      //config.set(JSONLDSettings.USE_RDF_TYPE, false);
+      config.set(JSONLDSettings.OPTIMIZE, true);
       config.set(JSONLDSettings.JSONLD_MODE, JSONLDMode.COMPACT);
     }
   }
