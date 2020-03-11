@@ -17,8 +17,14 @@ import java.io.InputStream;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Function;
 
 public interface SimpleSparqlService {
+
+  Function<String, PropertyStore> CREATE_NAMESPACE_PROPERTIES = ns -> () -> Map.of("com.bigdata.rdf.sail.namespace", ns,
+                                                                                   "com.bigdata.rdf.sail.truthMaintenance", "true",
+                                                                                   "com.bigdata.rdf.store.AbstractTripleStore.textIndex", "true");
+
   String getServiceUrl();
 
   RemoteRepositoryManager getRemoteRepositoryManager();
@@ -31,12 +37,8 @@ public interface SimpleSparqlService {
   default void createNamespace(String namespace) {
     if (!namespaceExists(namespace)) {
       LOGGER.info("namespace {} does not exist", namespace);
-      PropertyStore store = () -> Map.of("com.bigdata.rdf.sail.namespace", namespace,
-                                         "com.bigdata.rdf.sail.truthMaintenance", true,
-                                         "com.bigdata.rdf.store.AbstractTripleStore.textIndex", true,
-                                         "com.bigdata.search.FullTextIndex.fieldsEnabled", true);
       LOGGER.info("Create namespace {}...", namespace);
-      getRemoteRepositoryManager().createRepository(namespace, store.toProperties());
+      getRemoteRepositoryManager().createRepository(namespace, CREATE_NAMESPACE_PROPERTIES.apply(namespace).toProperties());
       LOGGER.info("Create namespace {} done", namespace);
     }
     else {
