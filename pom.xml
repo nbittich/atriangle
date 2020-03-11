@@ -214,10 +214,7 @@
         <module>shared-config</module>
         <module>core</module>
         <module>sink</module>
-        <module>event-dispatcher</module>
-        <module>rest</module>
-        <module>upload-rest</module>
-        <module>project-rest</module>
+        <module>webservice</module>
     </modules>
 </project>
 

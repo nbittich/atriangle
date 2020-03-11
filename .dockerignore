@@ -1,5 +1,6 @@
 **/.git
 **/.idea
+**/target
 **/.mvn
 **/.classpath
 **/.project

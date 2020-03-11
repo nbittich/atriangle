@@ -1,13 +1,18 @@
 #!/usr/bin/env bash
+
+echo "deleting old build_package"
 mvn clean install
-docker build -t atriangle/elastic-sink -f docker/elastic-sink/Dockerfile . --no-cache
-docker build -t atriangle/mongodb-sink -f docker/mongodb-sink/Dockerfile . --no-cache
-docker build -t atriangle/rdf-sink -f docker/rdf-sink/Dockerfile . --no-cache
-docker build -t atriangle/upload-rest -f docker/upload-rest/Dockerfile . --no-cache
-docker build -t atriangle/log-sink -f docker/log-sink/Dockerfile . --no-cache
-docker build -t atriangle/event-dispatcher -f docker/event-dispatcher/Dockerfile . --no-cache
-docker build -t atriangle/rest-sink -f docker/rest-sink/Dockerfile . --no-cache
-docker build -t atriangle/rest -f docker/rest/Dockerfile . --no-cache
+
+echo "running sink install"
+cd sink
+sh install.sh
+cd ..
+
+echo "running webservice install"
+cd webservice
+sh install.sh
+cd ..
+
 cd docker
 docker-compose stop
 docker-compose rm -f
