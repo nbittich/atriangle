@@ -21,6 +21,10 @@
             <groupId>tech.artcoded</groupId>
             <artifactId>atriangle-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>tech.artcoded</groupId>
+            <artifactId>atriangle-core-elastic</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

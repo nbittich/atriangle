@@ -37,6 +37,11 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
+                <artifactId>atriangle-core-elastic</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
                 <artifactId>atriangle-core-database</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -187,6 +192,7 @@
     <modules>
         <module>api</module>
         <module>core</module>
+        <module>core-elastic</module>
         <module>core-rest</module>
         <module>core-database</module>
         <module>core-feign-clients</module>

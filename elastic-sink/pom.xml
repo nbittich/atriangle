@@ -20,20 +20,10 @@
         <dependency>
             <groupId>tech.artcoded</groupId>
             <artifactId>atriangle-core</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.lucene</groupId>
-                    <artifactId>lucene-core</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.lucene</groupId>
-                    <artifactId>lucene-analyzers-common</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.lucene</groupId>
-                    <artifactId>lucene-analyzers-smartcn</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>tech.artcoded</groupId>
+            <artifactId>atriangle-core-elastic</artifactId>
         </dependency>
     </dependencies>
 

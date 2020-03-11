@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.core.config;
+package tech.artcoded.atriangle.core.elastic;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpHost;
@@ -8,14 +8,11 @@ import org.elasticsearch.client.core.MainResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import tech.artcoded.atriangle.api.ElasticSearchRdfService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 
-import static tech.artcoded.atriangle.core.config.NamedBean.ELASTIC_CLIENT;
-import static tech.artcoded.atriangle.core.config.NamedBean.ELASTIC_SEARCH_RDF_SERVICE;
 
 @Configuration
 @Slf4j
@@ -29,7 +26,7 @@ public class ElasticConfig {
   private String scheme;
 
   @Bean(destroyMethod = "close")
-  @Named(ELASTIC_CLIENT)
+  @Named("coreRdfRestHighLevelClient")
   public RestHighLevelClient restHighLevelClient() {
     log.info("hostname {}, port {}, scheme {}", hostname, port, scheme);
     return new RestHighLevelClient(
@@ -40,9 +37,9 @@ public class ElasticConfig {
 
   @Bean
   @Inject
-  @Named(ELASTIC_SEARCH_RDF_SERVICE)
+  @Named("coreElasticSearchRdfService")
   public ElasticSearchRdfService elasticSearchRdfService(
-    @Named(ELASTIC_CLIENT) RestHighLevelClient client) throws IOException {
+    @Named("coreRdfRestHighLevelClient") RestHighLevelClient client) throws IOException {
     ElasticSearchRdfService elasticSearchRdfService = () -> client;
     log.info("elasticsearch ping result: {}", elasticSearchRdfService.ping());
     MainResponse info = elasticSearchRdfService.info();

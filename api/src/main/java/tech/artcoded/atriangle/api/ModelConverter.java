@@ -2,7 +2,7 @@ package tech.artcoded.atriangle.api;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
-import org.elasticsearch.common.Strings;
+import org.apache.commons.lang3.StringUtils;
 import org.openrdf.model.Model;
 import org.openrdf.model.impl.TreeModel;
 import org.openrdf.rio.RDFFormat;
@@ -33,7 +33,7 @@ public interface ModelConverter {
   }
 
   static Model toModel(String value, RDFFormat lang) {
-    if (Strings.isEmpty(value)) throw new RuntimeException("model cannot be empty");
+    if (StringUtils.isEmpty(value)) throw new RuntimeException("model cannot be empty");
     return toModel(() -> IOUtils.toInputStream(value, StandardCharsets.UTF_8), lang);
   }
 
