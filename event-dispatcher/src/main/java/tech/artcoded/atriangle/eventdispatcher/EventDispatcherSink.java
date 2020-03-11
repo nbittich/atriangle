@@ -28,6 +28,8 @@ public class EventDispatcherSink {
   private String elsticSinkTopic;
   @Value("${event.dispatcher.rdf-sink-topic}")
   private String rdfSinkTopic;
+  @Value("${event.dispatcher.mongodb-sink-topic}")
+  private String mongoSinkTopic;
 
 
   @Inject
@@ -39,7 +41,9 @@ public class EventDispatcherSink {
     this.mapperWrapper = mapperWrapper;
   }
 
-  @KafkaListener(topics = {"${event.dispatcher.elastic-sink-topic-out}", "${event.dispatcher.rdf-sink-topic-out}"})
+  @KafkaListener(topics = {"${event.dispatcher.elastic-sink-topic-out}",
+                           "${event.dispatcher.mongodb-sink-topic-out}",
+                           "${event.dispatcher.rdf-sink-topic-out}"})
   public void logOutput(ConsumerRecord<String, String> event) throws Exception {
     loggerAction.info(event::key, "receiving key %s, value %s", event.key(), event.value());
   }
@@ -57,6 +61,9 @@ public class EventDispatcherSink {
       switch (kafkaEvent.getEventType()) {
         case RDF_SINK:
           log.info("result of send event {}", sendEvent.apply(rdfSinkTopic));
+          break;
+        case MONGODB_SINK:
+          log.info("result of send event {}", sendEvent.apply(mongoSinkTopic));
           break;
         case ELASTIC_SINK:
           log.info("result of send event {}", sendEvent.apply(elsticSinkTopic));

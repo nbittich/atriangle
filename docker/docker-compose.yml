@@ -162,6 +162,21 @@ services:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
       - rdf-sink-storage:/user/app
+  atrianglemongodbsink:
+    restart: always
+    depends_on:
+      - atrianglemongo
+      - atrianglekafka
+    networks:
+      atriangle:
+        aliases:
+          - mongodbsink
+    image: atriangle/mongodb-sink
+    environment:
+      MONGO_DB_HOST: "mongo"
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
+    volumes:
+      - mongodb-sink-storage:/user/app
   atriangleeventdispatcher:
     depends_on:
       - atrianglekafka
@@ -199,6 +214,7 @@ services:
 volumes:
   elastic-sink-storage:
   rdf-sink-storage:
+  mongodb-sink-storage:
   rest-sink-storage:
   log-sink-storage:
   event-dispatcher-storage:

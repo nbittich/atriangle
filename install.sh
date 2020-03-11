@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 mvn clean install
 docker build -t atriangle/elastic-sink -f docker/elastic-sink/Dockerfile . --no-cache
+docker build -t atriangle/mongodb-sink -f docker/mongodb-sink/Dockerfile . --no-cache
 docker build -t atriangle/rdf-sink -f docker/rdf-sink/Dockerfile . --no-cache
 docker build -t atriangle/upload-rest -f docker/upload-rest/Dockerfile . --no-cache
 docker build -t atriangle/log-sink -f docker/log-sink/Dockerfile . --no-cache
@@ -20,6 +21,7 @@ echo "ready to use! Containers will restart until they are up, but check the con
 echo "docker ps"
 echo "docker logs -f docker_atrianglerestsink_1"
 echo "docker logs -f docker_atrianglelogsink_1"
+echo "docker logs -f docker_atrianglemongodbsink_1"
 echo "docker logs -f docker_atrianglerdfsink_1"
 echo "docker logs -f docker_atriangleeventdispatcher_1"
 echo "docker logs -f docker_atrianglerest_1"

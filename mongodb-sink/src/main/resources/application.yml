@@ -1,0 +1,9 @@
+out:
+  topic: event-sink-mongodb-out
+
+spring:
+  profiles:
+    include: kafka, mongodb
+  kafka:
+    template:
+      default-topic: event-sink-mongodb

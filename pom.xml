@@ -198,6 +198,7 @@
         <module>log-sink</module>
         <module>upload-rest</module>
         <module>project-rest</module>
+        <module>mongodb-sink</module>
     </modules>
 </project>
 
