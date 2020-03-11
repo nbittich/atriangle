@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.api;
+package tech.artcoded.atriangle.core.sparql;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;

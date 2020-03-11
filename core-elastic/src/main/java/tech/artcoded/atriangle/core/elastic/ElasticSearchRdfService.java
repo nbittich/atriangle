@@ -25,8 +25,6 @@ import org.elasticsearch.index.reindex.ReindexRequest;
 import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.script.mustache.SearchTemplateRequest;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
-import org.openrdf.model.Model;
-import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +32,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
-import java.util.UUID;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import static tech.artcoded.atriangle.api.ModelConverter.modelToLang;
 
 
 public interface ElasticSearchRdfService {
@@ -126,26 +122,13 @@ public interface ElasticSearchRdfService {
     }
   }
 
-  default IndexResponse index(String index, String id, Model model) {
-    return index(index, id, modelToLang(model, RDFFormat.JSONLD));
-  }
 
   default IndexResponse index(String index, String id, String body) {
     return index(index, this.defaultIndexRequest(id, body));
   }
 
-  default void indexAsync(String index, String id, Model model) {
-    indexAsync(index, id, modelToLang(model, RDFFormat.JSONLD));
-  }
-
   default void indexAsync(String index, String id, String body) {
     indexAsync(index, id, body);
-  }
-
-  @SneakyThrows
-  default IndexResponse indexWithRandomId(String index, Model model) {
-    return index(index, UUID.randomUUID()
-                            .toString(), model);
   }
 
   @SneakyThrows

@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.SimpleSparqlService;
 import tech.artcoded.atriangle.api.kafka.KafkaEvent;
 import tech.artcoded.atriangle.api.kafka.RdfEvent;
 import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
+import tech.artcoded.atriangle.core.sparql.SimpleSparqlService;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;

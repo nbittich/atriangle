@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.api;
+package tech.artcoded.atriangle.core.sparql;
 
 import com.bigdata.rdf.sail.webapp.SD;
 import com.bigdata.rdf.sail.webapp.client.ConnectOptions;
@@ -12,6 +12,8 @@ import org.openrdf.query.TupleQueryResult;
 import org.openrdf.rio.RDFFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import tech.artcoded.atriangle.api.CheckedConsumer;
+import tech.artcoded.atriangle.api.PropertyStore;
 
 import java.io.InputStream;
 import java.util.Map;

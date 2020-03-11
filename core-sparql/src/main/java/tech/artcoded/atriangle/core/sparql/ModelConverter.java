@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.api;
+package tech.artcoded.atriangle.core.sparql;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
@@ -13,6 +13,7 @@ import org.openrdf.rio.WriterConfig;
 import org.openrdf.rio.helpers.JSONLDMode;
 import org.openrdf.rio.helpers.JSONLDSettings;
 import org.openrdf.rio.helpers.StatementCollector;
+import tech.artcoded.atriangle.api.CheckedSupplier;
 
 import java.io.InputStream;
 import java.io.StringWriter;

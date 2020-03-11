@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.core.config;
+package tech.artcoded.atriangle.core.sparql;
 
 import com.bigdata.rdf.sail.webapp.client.JettyResponseListener;
 import com.bigdata.rdf.sail.webapp.client.RemoteRepositoryManager;
@@ -7,12 +7,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import tech.artcoded.atriangle.api.SimpleSparqlService;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static tech.artcoded.atriangle.core.config.NamedBean.SIMPLE_SPARQL_SERVICE;
 
 @Configuration
 @Slf4j
@@ -25,7 +23,7 @@ public class SparqlConfig {
   private ConfigurableApplicationContext ctx;
 
   @Bean(destroyMethod = "close")
-  @Named(SIMPLE_SPARQL_SERVICE)
+  @Named("coreSimpleSparqlService")
   public SimpleSparqlService simpleSparqlService() {
     try {
       SimpleSparqlServiceImpl simpleSparqlService = new SimpleSparqlServiceImpl(sparqlEndpointUrl, new RemoteRepositoryManager(sparqlEndpointUrl, false));
