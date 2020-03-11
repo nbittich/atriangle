@@ -23,6 +23,14 @@
         <elasticsearch.version>7.6.0</elasticsearch.version>
         <spring.cloud.version>Hoxton.SR3</spring.cloud.version>
     </properties>
+
+    <scm>
+        <connection>
+            scm:git:https://github.com/naterivah/atriangle.git
+        </connection>
+        <tag>HEAD</tag>
+    </scm>
+
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -32,12 +40,17 @@
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
-                <artifactId>atriangle-core</artifactId>
+                <artifactId>atriangle-core-kafka</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>atriangle-core-elastic</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>atriangle-shared-config</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -195,8 +208,9 @@
         </pluginManagement>
     </build>
     <modules>
+        <module>shared-config</module>
         <module>api</module>
-        <module>core</module>
+        <module>core-kafka</module>
         <module>core-sparql</module>
         <module>core-elastic</module>
         <module>core-rest</module>

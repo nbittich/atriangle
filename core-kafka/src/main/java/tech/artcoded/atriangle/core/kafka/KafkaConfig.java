@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.core.config;
+package tech.artcoded.atriangle.core.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -7,13 +7,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.core.KafkaTemplate;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.core.kafka.LoggerAction;
 
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static tech.artcoded.atriangle.core.config.NamedBean.LOGGER_ACTION;
-import static tech.artcoded.atriangle.core.config.NamedBean.OBJECT_MAPPER_WRAPPER;
+import static tech.artcoded.atriangle.core.kafka.NamedBean.LOGGER_ACTION;
+import static tech.artcoded.atriangle.core.kafka.NamedBean.OBJECT_MAPPER_WRAPPER;
 
 @Configuration
 @Slf4j

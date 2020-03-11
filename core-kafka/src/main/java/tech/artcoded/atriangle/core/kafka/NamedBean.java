@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.core.config;
+package tech.artcoded.atriangle.core.kafka;
 
 public interface NamedBean {
   String OBJECT_MAPPER_WRAPPER = "coreObjectMapperWrapper";

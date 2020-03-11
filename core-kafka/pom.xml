@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>atriangle-core</artifactId>
-    <name>A Triangle - CORE</name>
+    <artifactId>atriangle-core-kafka</artifactId>
+    <name>A Triangle - CORE-KAFKA</name>
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
