@@ -10,6 +10,7 @@ import org.springframework.kafka.support.SendResult;
 import tech.artcoded.atriangle.api.CheckedFunction;
 
 import java.util.Map;
+import java.util.function.Function;
 
 public interface ATriangleConsumer<K, V> {
   Logger LOGGER = LoggerFactory.getLogger(ATriangleConsumer.class);
@@ -20,9 +21,10 @@ public interface ATriangleConsumer<K, V> {
 
   Map<K, V> consume(ConsumerRecord<K, V> record);
 
-  default CheckedFunction<Map.Entry<K, V>, SendResult<K, V>> sendKafkaMessageForEachEntries() {
-    return (var response) -> getKafkaTemplate().send(new ProducerRecord<>(getOutTopic(), response.getKey(), response.getValue()))
-                                               .get();
+  default Function<Map.Entry<K, V>, SendResult<K, V>> sendKafkaMessageForEachEntries() {
+    return CheckedFunction.toFunction((var response) -> getKafkaTemplate().send(new ProducerRecord<>(getOutTopic(), response.getKey(), response
+      .getValue()))
+                                                                          .get());
   }
 
   @KafkaListener(topics = "${spring.kafka.template.default-topic}")
@@ -31,7 +33,7 @@ public interface ATriangleConsumer<K, V> {
     Map<K, V> responses = consume(record);
     responses.entrySet()
              .stream()
-             .map(this.sendKafkaMessageForEachEntries()::safeExecute)
+             .map(this.sendKafkaMessageForEachEntries())
              .forEach(result -> LOGGER.info("result {}", result.toString()));
   }
 

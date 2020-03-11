@@ -15,6 +15,7 @@ import tech.artcoded.atriangle.core.kafka.LoggerAction;
 
 import javax.inject.Inject;
 import java.util.Optional;
+import java.util.function.Function;
 
 @Component
 @Slf4j
@@ -45,21 +46,20 @@ public class EventDispatcherSink {
 
   @KafkaListener(topics = "${spring.kafka.template.default-topic}")
   public void dispatch(ConsumerRecord<String, String> event) throws Exception {
-
-    CheckedFunction<String, SendResult<String, String>> sendEvent = (topic) ->
-      kafkaTemplate.send(new ProducerRecord<>(topic, event.key(), event.value()))
-                   .get();
-
+    Function<String, SendResult<String, String>> sendEvent = CheckedFunction.toFunction((topic) ->
+                                                                                          kafkaTemplate.send(new ProducerRecord<>(topic, event
+                                                                                            .key(), event.value()))
+                                                                                                       .get());
     String value = event.value();
     Optional<KafkaEvent> optionalKafkaEvent = mapperWrapper.deserialize(value, KafkaEvent.class);
 
     optionalKafkaEvent.ifPresent(kafkaEvent -> {
       switch (kafkaEvent.getEventType()) {
         case RDF_SINK:
-          log.info("result of send event {}", sendEvent.safeExecute(rdfSinkTopic));
+          log.info("result of send event {}", sendEvent.apply(rdfSinkTopic));
           break;
         case ELASTIC_SINK:
-          log.info("result of send event {}", sendEvent.safeExecute(elsticSinkTopic));
+          log.info("result of send event {}", sendEvent.apply(elsticSinkTopic));
           break;
         default:
           throw new RuntimeException("not supported yet");

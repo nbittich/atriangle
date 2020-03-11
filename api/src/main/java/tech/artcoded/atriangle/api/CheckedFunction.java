@@ -2,12 +2,18 @@ package tech.artcoded.atriangle.api;
 
 import lombok.SneakyThrows;
 
+import java.util.function.Function;
+
 @FunctionalInterface
 public interface CheckedFunction<I, O> {
-  O get(I input) throws Exception;
+  static <I, O> Function<I, O> toFunction(CheckedFunction<I, O> hack) {
+    return hack::safeApply;
+  }
+
+  O apply(I input) throws Exception;
 
   @SneakyThrows
-  default O safeExecute(I input) {
-    return get(input);
+  default O safeApply(I input) {
+    return apply(input);
   }
 }

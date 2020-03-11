@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.common.Strings;
 import org.openrdf.model.Model;
-import org.openrdf.model.Statement;
 import org.openrdf.model.impl.TreeModel;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFParser;
@@ -24,10 +23,9 @@ public interface ModelConverter {
 
     StringWriter sw = new StringWriter();
     RDFWriter writer = Rio.createWriter(lang, sw);
-    CheckedConsumer<Statement> handleStatement = writer::handleStatement;
 
     writer.startRDF();
-    model.forEach(handleStatement::safeConsume);
+    model.forEach(CheckedConsumer.toConsumer(writer::handleStatement));
     writer.endRDF();
     return sw.toString();
   }
