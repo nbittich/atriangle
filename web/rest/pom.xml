@@ -3,13 +3,13 @@
     <parent>
         <artifactId>atriangle-web</artifactId>
         <groupId>tech.artcoded</groupId>
-        <version>0.1.1_STARHOPPER</version>
+        <version>0.1.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <name>A Triangle - REST</name>
 
     <artifactId>atriangle-rest</artifactId>
-    <version>0.1.1_STARHOPPER</version>
+    <version>0.1.2-SNAPSHOT</version>
     <properties>
         <docker.image.name>atriangle/rest</docker.image.name>
     </properties>

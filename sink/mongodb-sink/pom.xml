@@ -3,13 +3,13 @@
     <parent>
         <artifactId>atriangle-sink</artifactId>
         <groupId>tech.artcoded</groupId>
-        <version>0.1.1_STARHOPPER</version>
+        <version>0.1.2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <name>A Triangle - MONGODB-SINK</name>
 
     <artifactId>atriangle-mongodb-sink</artifactId>
-    <version>0.1.1_STARHOPPER</version>
+    <version>0.1.2-SNAPSHOT</version>
     <properties>
         <docker.image.name>atriangle/mongodb-sink</docker.image.name>
     </properties>
