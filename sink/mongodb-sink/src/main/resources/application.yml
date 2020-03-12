@@ -2,6 +2,8 @@ out:
   topic: event-sink-mongodb-out
 
 spring:
+  application:
+    name: RDF_COLLECTION
   profiles:
     include: kafka, mongodb
   kafka:

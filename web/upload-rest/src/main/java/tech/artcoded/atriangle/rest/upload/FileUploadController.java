@@ -6,6 +6,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -34,16 +35,16 @@ public class FileUploadController implements PingControllerTrait {
     this.loggerAction = loggerAction;
   }
 
-  @GetMapping("/by-id")
-  public ResponseEntity<FileEvent> findById(@RequestParam("id") String id) {
+  @GetMapping("/by-id/{id}")
+  public ResponseEntity<FileEvent> findById(@PathVariable("id") String id) {
     return uploadService.findOneById(id)
                         .map(FileUpload::transform)
                         .map(ResponseEntity.ok()::body)
                         .orElseGet(ResponseEntity.notFound()::build);
   }
 
-  @GetMapping("/download")
-  public ResponseEntity<ByteArrayResource> download(@RequestParam("id") String id) throws Exception {
+  @GetMapping("/download/{id}")
+  public ResponseEntity<ByteArrayResource> download(@PathVariable("id") String id) throws Exception {
     Optional<FileUpload> upload = uploadService.findById(id);
     return upload.map(FileUpload::transform)
                  .stream()
@@ -65,7 +66,7 @@ public class FileUploadController implements PingControllerTrait {
                      .getId(), event.getName(), event.getContentType(), event.getEventType()))
                    .map(ResponseEntity::ok)
                    .findFirst()
-                   .orElseGet(ResponseEntity.notFound()::build)
+                   .orElseGet(ResponseEntity.badRequest()::build)
       ;
   }
 
