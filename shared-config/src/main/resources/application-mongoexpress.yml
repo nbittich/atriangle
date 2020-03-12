@@ -1,3 +1,3 @@
 mongoexpress:
-  host: ${MONGO_EXPRESS_HOST:192.168.99.101}
+  host: ${MONGO_EXPRESS_HOST:192.168.99.102}
   port: ${MONGO_EXPRESS_PORT:8081}

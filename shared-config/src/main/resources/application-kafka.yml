@@ -1,4 +1,5 @@
 spring:
+
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER:192.168.99.102}:9092
     consumer:

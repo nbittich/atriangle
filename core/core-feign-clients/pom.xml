@@ -30,7 +30,7 @@
 
         <dependency>
             <groupId>tech.artcoded</groupId>
-            <artifactId>atriangle-core-rest</artifactId>
+            <artifactId>atriangle-api</artifactId>
         </dependency>
 
     </dependencies>

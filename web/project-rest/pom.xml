@@ -16,6 +16,10 @@
     <dependencies>
         <dependency>
             <groupId>tech.artcoded</groupId>
+            <artifactId>atriangle-core-rest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>tech.artcoded</groupId>
             <artifactId>atriangle-core-kafka</artifactId>
         </dependency>
         <dependency>

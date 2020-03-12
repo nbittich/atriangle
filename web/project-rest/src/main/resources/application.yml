@@ -6,4 +6,4 @@ spring:
   application:
     name: ProjectRestPublicEndpoint
   profiles:
-    include: kafka, zookeeper, rest, mongodb
+    include: kafka, zookeeper, rest, mongodb, feign

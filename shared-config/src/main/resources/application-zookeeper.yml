@@ -6,7 +6,7 @@ spring:
     zookeeper:
       discovery:
         enabled: true
-      connect-string: ${ZOOKEEPER_URL:192.168.99.101:2181}
+      connect-string: ${ZOOKEEPER_URL:192.168.99.102:2181}
 logging:
   level:
     org.apache.zookeeper.ClientCnxn: WARN
