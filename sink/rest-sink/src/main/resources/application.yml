@@ -2,7 +2,7 @@ out:
   topic: event-dispatcher
 spring:
   profiles:
-    include: kafka
+    include: kafka, feign
   kafka:
     template:
       default-topic: event-sink-rest
