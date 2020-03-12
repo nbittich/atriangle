@@ -4,4 +4,6 @@ feign:
 
 endpoint:
   file:
-    url: ${FILE_ENDPOINT_ENDPOINT_URL:http://192.168.99.102:8088/api/upload}
+    url: ${FILE_ENDPOINT_URL:http://192.168.99.102:8088/api/upload}
+  project:
+    url: ${PROJECT_ENDPOINT_URL:http://192.168.99.102:8088/api/project}
