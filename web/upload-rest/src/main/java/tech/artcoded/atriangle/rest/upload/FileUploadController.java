@@ -4,13 +4,15 @@ import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.kafka.FileEvent;
 import tech.artcoded.atriangle.api.kafka.FileEventType;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
-import tech.artcoded.atriangle.core.rest.controller.FileUploadControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.core.rest.util.RestUtil;
 
@@ -21,8 +23,7 @@ import java.util.Optional;
 @CrossOriginRestController
 @ApiOperation("File Upload")
 @Slf4j
-public class FileUploadController implements FileUploadControllerTrait,
-                                             PingControllerTrait {
+public class FileUploadController implements PingControllerTrait {
   private final FileUploadService uploadService;
   private final LoggerAction loggerAction;
 
@@ -33,7 +34,7 @@ public class FileUploadController implements FileUploadControllerTrait,
     this.loggerAction = loggerAction;
   }
 
-  @Override
+  @GetMapping("/by-id")
   public ResponseEntity<FileEvent> findById(@RequestParam("id") String id) {
     return uploadService.findOneById(id)
                         .map(FileUpload::transform)
@@ -41,7 +42,7 @@ public class FileUploadController implements FileUploadControllerTrait,
                         .orElseGet(ResponseEntity.notFound()::build);
   }
 
-  @Override
+  @GetMapping("/download")
   public ResponseEntity<ByteArrayResource> download(@RequestParam("id") String id) throws Exception {
     Optional<FileUpload> upload = uploadService.findById(id);
     return upload.map(FileUpload::transform)
@@ -54,7 +55,7 @@ public class FileUploadController implements FileUploadControllerTrait,
   }
 
 
-  @Override
+  @PostMapping
   public ResponseEntity<FileEvent> upload(@RequestParam("file") MultipartFile file,
                                           @RequestParam(value = "fileUploadType",
                                                         defaultValue = "SHARED_FILE") FileEventType fileUploadType) throws Exception {
@@ -69,7 +70,7 @@ public class FileUploadController implements FileUploadControllerTrait,
   }
 
 
-  @Override
+  @DeleteMapping
   public Map.Entry<String, String> delete(@RequestParam("id") String id) {
     FileUpload byId = uploadService.findById(id)
                                    .stream()
