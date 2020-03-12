@@ -240,7 +240,7 @@
         <module>shared-config</module>
         <module>core</module>
         <module>sink</module>
-        <module>webservice</module>
+        <module>web</module>
     </modules>
 </project>
 

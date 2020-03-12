@@ -9,8 +9,8 @@
         <version>0.1.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>atriangle-webservice</artifactId>
-    <name>A Triangle WebService root</name>
+    <artifactId>atriangle-web</artifactId>
+    <name>A Triangle Web root</name>
 
     <packaging>pom</packaging>
     <modules>

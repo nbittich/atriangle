@@ -1,6 +1,18 @@
 version: '3'
 
 services:
+  portainer:
+    restart: always
+    image: portainer/portainer:latest
+    ports:
+      - "9000:9000"
+    networks:
+      atriangle:
+        aliases:
+          - portainer
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - portainer-storage:/data
   blazegraph:
     build: blazegraph/2.1.5/.
     restart: always
@@ -222,6 +234,7 @@ volumes:
   upload-rest-storage:
   mongodb-storage:
   blazegraph-storage:
+  portainer-storage:
 
 networks:
   atriangle:
