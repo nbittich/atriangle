@@ -1,6 +1,6 @@
 spring:
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER:192.168.99.101}:9092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVER:192.168.99.102}:9092
     consumer:
       auto-offset-reset: earliest
       group-id: atriangle-client

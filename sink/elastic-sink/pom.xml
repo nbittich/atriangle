@@ -11,7 +11,9 @@
 
     <artifactId>atriangle-elastic-sink</artifactId>
     <version>0.1.1-SNAPSHOT</version>
-
+    <properties>
+        <docker.image.name>atriangle/elastic-sink</docker.image.name>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -30,7 +32,24 @@
             <artifactId>atriangle-shared-config</artifactId>
         </dependency>
     </dependencies>
-
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <activation>
+                <property>
+                    <name>docker</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <build>
         <finalName>atriangle-elastic-sink</finalName>
         <plugins>

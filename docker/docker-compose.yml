@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  atriangleblazegraph:
+  blazegraph:
     build: blazegraph/2.1.5/.
     restart: always
     volumes:
@@ -65,7 +65,7 @@ services:
       atriangle:
         aliases:
           - zookeeper
-  atrianglekafka:
+  kafkaserver:
     restart: always
     build: kafka-docker/.
     depends_on:
@@ -90,7 +90,7 @@ services:
     restart: always
     depends_on:
       - atriangleelasticsearch
-      - atrianglekafka
+      - kafkaserver
     networks:
       atriangle:
         aliases:
@@ -105,7 +105,7 @@ services:
     restart: always
     depends_on:
       - atriangleelasticsearch
-      - atrianglekafka
+      - kafkaserver
     networks:
       atriangle:
         aliases:
@@ -119,7 +119,7 @@ services:
   atriangleuploadrest:
     restart: always
     depends_on:
-      - atrianglekafka
+      - kafkaserver
       - atrianglezookeeper
     networks:
       atriangle:
@@ -137,7 +137,7 @@ services:
   atrianglerestsink:
     restart: always
     depends_on:
-      - atrianglekafka
+      - kafkaserver
     networks:
       atriangle:
         aliases:
@@ -150,8 +150,8 @@ services:
   atrianglerdfsink:
     restart: always
     depends_on:
-      - atriangleblazegraph
-      - atrianglekafka
+      - blazegraph
+      - kafkaserver
     networks:
       atriangle:
         aliases:
@@ -166,7 +166,7 @@ services:
     restart: always
     depends_on:
       - atrianglemongo
-      - atrianglekafka
+      - kafkaserver
     networks:
       atriangle:
         aliases:
@@ -179,7 +179,7 @@ services:
       - mongodb-sink-storage:/user/app
   atriangleeventdispatcher:
     depends_on:
-      - atrianglekafka
+      - kafkaserver
     networks:
       atriangle:
         aliases:
@@ -192,8 +192,8 @@ services:
   atrianglerest:
     restart: always
     depends_on:
-      - atrianglekafka
-      - atriangleblazegraph
+      - kafkaserver
+      - blazegraph
       - atriangleelasticsearch
     networks:
       atriangle:

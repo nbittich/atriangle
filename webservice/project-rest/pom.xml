@@ -11,7 +11,9 @@
 
     <artifactId>atriangle-project-rest</artifactId>
     <version>0.1.1-SNAPSHOT</version>
-
+    <properties>
+        <docker.image.name>atriangle/project-rest</docker.image.name>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>tech.artcoded</groupId>
@@ -34,7 +36,24 @@
             <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
     </dependencies>
-
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <activation>
+                <property>
+                    <name>docker</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
     <build>
         <finalName>atriangle-project-rest</finalName>
         <plugins>

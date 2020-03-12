@@ -11,7 +11,9 @@
 
     <artifactId>atriangle-upload-rest</artifactId>
     <version>0.1.1-SNAPSHOT</version>
-
+    <properties>
+        <docker.image.name>atriangle/upload-rest</docker.image.name>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>tech.artcoded</groupId>
@@ -43,7 +45,6 @@
             <scope>runtime</scope>
         </dependency>
     </dependencies>
-
     <build>
         <finalName>atriangle-upload-rest</finalName>
         <plugins>
@@ -53,4 +54,22 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <activation>
+                <property>
+                    <name>docker</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

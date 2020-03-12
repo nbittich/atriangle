@@ -1,26 +1,14 @@
 #!/usr/bin/env bash
 
-echo "deleting old build_package"
-mvn clean install
-
-echo "running sink install"
-cd sink
-sh install.sh
-cd ..
-
-echo "running webservice install"
-cd webservice
-sh install.sh
-cd ..
-
-cd docker
-docker-compose stop
-docker-compose rm -f
+docker-compose -f docker/docker-compose.yml stop
+docker-compose -f docker/docker-compose.yml rm -y
 docker system prune -f
 docker volume prune -f
 docker network prune -f
-docker-compose up -d --force-recreate
 
+mvn clean install -Ddocker
+
+docker-compose -f docker/docker-compose.yml up -d --force-recreate
 
 echo "ready to use! Containers will restart until they are up, but check the containers using: "
 echo "docker ps"
@@ -32,6 +20,7 @@ echo "docker logs -f docker_atriangleeventdispatcher_1"
 echo "docker logs -f docker_atrianglerest_1"
 echo "docker logs -f docker_atriangleelasticsink_1"
 echo "docker logs -f docker_atriangleuploadrest_1"
+
 
 
 

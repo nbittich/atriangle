@@ -11,7 +11,9 @@
 
     <artifactId>atriangle-rest</artifactId>
     <version>0.1.1-SNAPSHOT</version>
-
+    <properties>
+        <docker.image.name>atriangle/rest</docker.image.name>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>tech.artcoded</groupId>
@@ -48,4 +50,22 @@
             </plugin>
         </plugins>
     </build>
+    <profiles>
+        <profile>
+            <id>docker</id>
+            <activation>
+                <property>
+                    <name>docker</name>
+                </property>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

@@ -182,7 +182,6 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
-
     <build>
         <pluginManagement>
             <plugins>
@@ -203,6 +202,33 @@
                             <goals>
                                 <goal>repackage</goal>
                             </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.codehaus.mojo</groupId>
+                    <artifactId>exec-maven-plugin</artifactId>
+                    <version>1.6.0</version>
+                    <executions>
+                        <execution>
+                            <id>docker-package</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>exec</goal>
+                            </goals>
+                            <configuration>
+                                <executable>docker</executable>
+                                <workingDirectory>${project.basedir}</workingDirectory>
+                                <arguments>
+                                    <argument>build</argument>
+                                    <argument>.</argument>
+                                    <argument>-t</argument>
+                                    <argument>${docker.image.name}</argument>
+                                    <argument>--no-cache</argument>
+                                    <argument>--build-arg</argument>
+                                    <argument>JAR_FILE=target/${project.build.finalName}.jar</argument>
+                                </arguments>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>

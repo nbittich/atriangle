@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      host: ${MONGO_DB_HOST:192.168.99.101}
+      host: ${MONGO_DB_HOST:192.168.99.102}
       port: ${MONGO_DB_PORT:27017}
       username: ${MONGO_DB_USERNAME:root}
       password: ${MONGO_DB_USERNAME:root}
