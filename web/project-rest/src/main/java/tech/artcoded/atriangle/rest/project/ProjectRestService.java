@@ -1,6 +1,5 @@
 package tech.artcoded.atriangle.rest.project;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -51,7 +50,7 @@ public class ProjectRestService {
   }
 
   public Optional<ProjectEvent> findById(String projectId) {
-    return Optional.ofNullable(mongoTemplate.findById(new ObjectId(projectId), ProjectEvent.class));
+    return Optional.ofNullable(mongoTemplate.findById(projectId, ProjectEvent.class));
   }
 
   public List<ProjectEvent> findAll() {
@@ -59,16 +58,26 @@ public class ProjectRestService {
   }
 
   public Optional<ProjectEvent> findByName(String name) {
-    Query query = new Query();
-    query.addCriteria(Criteria.where("name").is(name));
+    Query query = new Query().addCriteria(Criteria.where("name").is(name));
     return Optional.ofNullable(mongoTemplate.findOne(query, ProjectEvent.class));
+  }
+
+  public void deleteByName(String name) {
+    Query query = new Query().addCriteria(Criteria.where("name").is(name));
+    mongoTemplate.remove(query);
+  }
+
+  public void deleteById(String id) {
+    mongoTemplate.remove(id);
   }
 
   public Optional<ProjectEvent> addFile(String projectId, MultipartFile file) {
     return findById(projectId)
       .stream()
       .map(projectEvent -> {
-        ResponseEntity<FileEvent> fileEvent = CheckedSupplier.toSupplier(() -> fileRestFeignClient.upload(file, FileEventType.PROJECT_FILE))
+        ResponseEntity<FileEvent> fileEvent = CheckedSupplier.toSupplier(() -> {
+          return fileRestFeignClient.upload(file, FileEventType.PROJECT_FILE);
+        })
                                                              .get();
         if (!HttpStatus.OK.equals(fileEvent.getStatusCode()) || !fileEvent.hasBody()) {
           throw new RuntimeException("upload failed with status " + fileEvent.getStatusCode());

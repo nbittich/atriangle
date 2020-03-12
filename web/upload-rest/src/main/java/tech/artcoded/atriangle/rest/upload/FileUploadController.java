@@ -3,6 +3,7 @@ package tech.artcoded.atriangle.rest.upload;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,7 +57,7 @@ public class FileUploadController implements PingControllerTrait {
   }
 
 
-  @PostMapping
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<FileEvent> upload(@RequestParam("file") MultipartFile file,
                                           @RequestParam(value = "fileUploadType",
                                                         defaultValue = "SHARED_FILE") FileEventType fileUploadType) throws Exception {

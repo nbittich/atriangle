@@ -2,6 +2,7 @@ package tech.artcoded.atriangle.rest.upload;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,8 +48,8 @@ public class FileUploadService implements CrudService<String, FileUpload> {
   @Transactional
   public FileEvent upload(MultipartFile file, FileEventType uploadType) throws Exception {
     File upload = new File(getDirectory(), UUID.randomUUID()
-                                               .toString() + "_" + file.getOriginalFilename());
-    file.transferTo(upload);
+                                               .toString() + "_" + FilenameUtils.normalize(file.getOriginalFilename()));
+    FileUtils.writeByteArrayToFile(upload, file.getBytes());
     FileUpload apUpload = FileUpload.newUpload(file, uploadType, upload.getAbsolutePath());
     return FileUpload.transform(repository.save(apUpload));
   }

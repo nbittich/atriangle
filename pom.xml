@@ -21,6 +21,7 @@
         <spring-kafka.version>2.4.3.RELEASE</spring-kafka.version>
         <elasticsearch.version>7.6.0</elasticsearch.version>
         <spring.cloud.version>Hoxton.SR3</spring.cloud.version>
+        <feign-form.version>3.8.0</feign-form.version>
     </properties>
 
     <scm>
@@ -65,9 +66,18 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>atriangle-api</artifactId>
-                <version>0.1.2-SNAPSHOT</version>
+                <version>${project.parent.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>io.github.openfeign.form</groupId>
+                <artifactId>feign-form</artifactId>
+                <version>${feign-form.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.openfeign.form</groupId>
+                <artifactId>feign-form-spring</artifactId>
+                <version>${feign-form.version}</version>
+            </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>atriangle-shared-config</artifactId>
