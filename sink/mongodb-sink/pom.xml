@@ -9,7 +9,6 @@
     <name>A Triangle - MONGODB-SINK</name>
 
     <artifactId>atriangle-mongodb-sink</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
     <properties>
         <docker.image.name>atriangle/mongodb-sink</docker.image.name>
     </properties>

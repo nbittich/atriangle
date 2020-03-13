@@ -9,7 +9,6 @@
     <name>A Triangle - EVENT-DISPATCHER</name>
 
     <artifactId>atriangle-event-dispatcher</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
     <properties>
         <docker.image.name>atriangle/event-dispatcher</docker.image.name>
     </properties>

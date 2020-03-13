@@ -9,7 +9,6 @@
     <name>A Triangle - RDF-SINK</name>
 
     <artifactId>atriangle-rdf-sink</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
     <properties>
         <docker.image.name>atriangle/rdf-sink</docker.image.name>
     </properties>

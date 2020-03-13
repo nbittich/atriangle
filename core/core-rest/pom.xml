@@ -9,7 +9,6 @@
     <name>A Triangle - CORE-REST</name>
 
     <artifactId>atriangle-core-rest</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
 
     <dependencies>
 

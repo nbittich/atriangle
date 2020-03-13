@@ -9,7 +9,6 @@
     <name>A Triangle - CORE-FEIGN-CLIENTS</name>
 
     <artifactId>atriangle-core-feign-clients</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
 
     <dependencies>
         <dependency>

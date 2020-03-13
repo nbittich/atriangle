@@ -81,7 +81,7 @@
             <dependency>
                 <groupId>${project.groupId}</groupId>
                 <artifactId>atriangle-shared-config</artifactId>
-                <version>0.1.2-SNAPSHOT</version>
+                <version>${project.parent.version}</version>
             </dependency>
 
             <dependency>

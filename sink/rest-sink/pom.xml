@@ -9,7 +9,6 @@
     <name>A Triangle - REST-SINK</name>
 
     <artifactId>atriangle-rest-sink</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
     <properties>
         <docker.image.name>atriangle/rest-sink</docker.image.name>
     </properties>

@@ -1,7 +1,6 @@
 package tech.artcoded.atriangle.rest.project;
 
 import io.swagger.annotations.ApiOperation;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,6 @@ import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.kafka.ProjectEvent;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
-import tech.artcoded.atriangle.core.rest.util.ATriangleByteArrayMultipartFile;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -38,19 +36,9 @@ public class ProjectRestController implements PingControllerTrait {
 
   @PutMapping(path = "/add-file",
               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @SneakyThrows
   public ResponseEntity<ProjectEvent> addFile(@RequestParam("file") MultipartFile multipartFile,
                                               @RequestParam("id") String projectId) {
-
-
-    ATriangleByteArrayMultipartFile copyMultipart = ATriangleByteArrayMultipartFile
-      .builder()
-      .bytes(multipartFile.getBytes())
-      .contentType(multipartFile.getContentType())
-      .name(multipartFile.getName())
-      .originalFilename(multipartFile.getOriginalFilename())
-      .build();
-    return projectRestService.addFile(projectId, copyMultipart).map(ResponseEntity::ok)
+    return projectRestService.addFile(projectId, multipartFile).map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
 

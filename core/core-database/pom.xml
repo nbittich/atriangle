@@ -9,7 +9,6 @@
     <name>A Triangle - CORE-DATABASE</name>
 
     <artifactId>atriangle-core-database</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
 
     <dependencies>
         <dependency>

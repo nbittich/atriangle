@@ -9,7 +9,6 @@
     <name>A Triangle - REST</name>
 
     <artifactId>atriangle-rest</artifactId>
-    <version>0.1.2-SNAPSHOT</version>
     <properties>
         <docker.image.name>atriangle/rest</docker.image.name>
     </properties>
