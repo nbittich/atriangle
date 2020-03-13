@@ -162,6 +162,22 @@ services:
       MONGO_DB_HOST: "mongo"
     volumes:
       - project-rest-storage:/user/app
+  atriangleshaclrest:
+    restart: always
+    depends_on:
+      - kafkaserver
+      - atrianglezookeeper
+    networks:
+      atriangle:
+        aliases:
+          - shaclrest
+    image: atriangle/shacl-rest
+    environment:
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
+      ZOOKEEPER_URL: "zookeeper:2181"
+      APPLICATION_BASE_PATH: "/usr/app/shacl"
+    volumes:
+      - shacl-rest-storage:/user/app
   atrianglerestsink:
     restart: always
     depends_on:
@@ -249,6 +265,7 @@ volumes:
   rest-storage:
   upload-rest-storage:
   project-rest-storage:
+  shacl-rest-storage:
   mongodb-storage:
   blazegraph-storage:
   portainer-storage:

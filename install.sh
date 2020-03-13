@@ -26,6 +26,7 @@ echo "docker logs -f docker_atrianglerest_1"
 echo "docker logs -f docker_atriangleelasticsink_1"
 echo "docker logs -f docker_atriangleuploadrest_1"
 echo "docker logs -f docker_atriangleprojectrest_1"
+echo "docker logs -f docker_atriangleshaclrest_1"
 
 
 
