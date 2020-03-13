@@ -2,6 +2,7 @@ package tech.artcoded.atriangle.rest.project;
 
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -46,6 +47,12 @@ public class ProjectRestController implements PingControllerTrait {
   public ResponseEntity<ProjectEvent> findByName(@PathVariable("name") String name) {
     return projectRestService.findByName(name).map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.notFound()::build);
+  }
+
+  @GetMapping("/{projectId}/download/{fileId}")
+  public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable("projectId") String projectId,
+                                                        @PathVariable("fileId") String fileId) {
+    return projectRestService.downloadFile(projectId, fileId);
   }
 
   @DeleteMapping("/by-name/{name}")

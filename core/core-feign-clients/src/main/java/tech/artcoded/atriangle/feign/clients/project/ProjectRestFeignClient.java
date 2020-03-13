@@ -1,5 +1,6 @@
 package tech.artcoded.atriangle.feign.clients.project;
 
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,6 +35,10 @@ public interface ProjectRestFeignClient {
   ResponseEntity<ProjectEvent> addFile(@RequestPart("file") File file,
                                        @RequestParam("id") String projectId);
 
+
+  @GetMapping("/{projectId}/download/{fileId}")
+  ResponseEntity<ByteArrayResource> downloadFile(@PathVariable("projectId") String projectId,
+                                                 @PathVariable("fileId") String fileId);
 
   @DeleteMapping("/by-name/{name}")
   void deleteByName(@PathVariable("name") String name);

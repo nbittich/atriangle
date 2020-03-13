@@ -1,5 +1,6 @@
 package tech.artcoded.atriangle.rest.project;
 
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
@@ -7,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.CheckedSupplier;
 import tech.artcoded.atriangle.api.kafka.FileEvent;
 import tech.artcoded.atriangle.api.kafka.FileEventType;
@@ -69,6 +71,13 @@ public class ProjectRestService {
 
   public void deleteById(String id) {
     mongoTemplate.remove(id);
+  }
+
+  public ResponseEntity<ByteArrayResource> downloadFile(String projectId, String fileEventId) {
+    Optional<ProjectEvent> projectEvent = findById(projectId);
+    return projectEvent.flatMap(p -> p.getFileEvents().stream().filter(file -> file.getId().equals(fileEventId)).findFirst())
+                       .map(CheckedFunction.toFunction(f -> fileRestFeignClient.download(f.getId())))
+                       .orElseGet(ResponseEntity.notFound()::build);
   }
 
   public Optional<ProjectEvent> addFile(String projectId, MultipartFile file) {
