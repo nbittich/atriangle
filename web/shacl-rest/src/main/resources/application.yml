@@ -1,0 +1,9 @@
+application:
+  basePath: ${PROJECT_BASE_PATH:/${user.home}/shacl-rest}
+server:
+  port: 0
+spring:
+  application:
+    name: ShaclRestPublicEndpoint
+  profiles:
+    include: kafka, zookeeper, rest, feign

@@ -50,7 +50,7 @@ public class ProjectRestController implements PingControllerTrait {
                              .orElseGet(ResponseEntity.notFound()::build);
   }
 
-  @GetMapping("/{projectId}/download/{fileId}")
+  @GetMapping("/{projectId}/download-file/{fileId}")
   public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable("projectId") String projectId,
                                                         @PathVariable("fileId") String fileId) {
     return projectRestService.downloadFile(projectId, fileId);

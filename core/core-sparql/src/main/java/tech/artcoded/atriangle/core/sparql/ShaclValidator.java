@@ -2,24 +2,26 @@ package tech.artcoded.atriangle.core.sparql;
 
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
+import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.vocabulary.RDF4J;
 import org.eclipse.rdf4j.repository.RepositoryException;
 import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.repository.sail.SailRepositoryConnection;
 import org.eclipse.rdf4j.rio.RDFFormat;
+import org.eclipse.rdf4j.rio.Rio;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.eclipse.rdf4j.sail.shacl.ShaclSail;
 import org.eclipse.rdf4j.sail.shacl.ShaclSailValidationException;
-import org.eclipse.rdf4j.sail.shacl.results.ValidationReport;
 
 import java.io.InputStream;
+import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 public interface ShaclValidator {
 
   @SneakyThrows
-  default Optional<ValidationReport> validate(String turtleModel, String turtleShaclRules) {
+  static Optional<String> validate(String turtleModel, String turtleShaclRules) {
     ShaclSail shaclSail = new ShaclSail(new MemoryStore());
     SailRepository sailRepository = new SailRepository(shaclSail);
     sailRepository.init();
@@ -39,8 +41,11 @@ public interface ShaclValidator {
     catch (RepositoryException exception) {
       Throwable cause = exception.getCause();
       if (cause instanceof ShaclSailValidationException) {
-        ValidationReport validationReport = ((ShaclSailValidationException) cause).getValidationReport();
-        return Optional.of(validationReport);
+        Model validationReport = ((ShaclSailValidationException) cause).validationReportAsModel();
+        StringWriter writer = new StringWriter();
+        Rio.write(validationReport, writer, RDFFormat.TURTLE);
+
+        return Optional.of(writer.toString());
       }
       throw exception;
     }

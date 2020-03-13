@@ -13,9 +13,10 @@
 
     <packaging>pom</packaging>
     <modules>
-        <module>rest</module>
+        <module>shacl-rest</module>
         <module>upload-rest</module>
         <module>project-rest</module>
+        <module>rest</module>
     </modules>
 </project>
 

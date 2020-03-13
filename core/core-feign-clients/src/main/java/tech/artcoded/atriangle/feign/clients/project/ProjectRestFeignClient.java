@@ -36,7 +36,7 @@ public interface ProjectRestFeignClient {
                                        @RequestParam("id") String projectId);
 
 
-  @GetMapping("/{projectId}/download/{fileId}")
+  @GetMapping("/{projectId}/download-file/{fileId}")
   ResponseEntity<ByteArrayResource> downloadFile(@PathVariable("projectId") String projectId,
                                                  @PathVariable("fileId") String fileId);
 
