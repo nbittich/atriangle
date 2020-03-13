@@ -248,6 +248,7 @@ volumes:
   event-dispatcher-storage:
   rest-storage:
   upload-rest-storage:
+  project-rest-storage:
   mongodb-storage:
   blazegraph-storage:
   portainer-storage:

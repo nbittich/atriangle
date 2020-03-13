@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
+set -e # fail script on error
 
 docker-compose -f docker/docker-compose.yml stop
-docker-compose -f docker/docker-compose.yml rm -y
+docker-compose -f docker/docker-compose.yml rm --force
+
 docker system prune -f
 docker volume prune -f
 docker network prune -f
 
 mvn clean install -Ddocker
 
-docker-compose -f docker/docker-compose.yml up -d --force-recreate
+docker-compose -f docker/docker-compose.yml up -d --force-recreate --remove-orphans
 
 echo "ready to use! Containers will restart until they are up, but check the containers using: "
 
