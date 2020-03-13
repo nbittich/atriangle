@@ -6,6 +6,9 @@ zuul:
     projectrestupload:
       path: /api/project/**
       serviceId: ProjectRestPublicEndpoint
+    shaclrestupload:
+      path: /api/shacl/**
+      serviceId: ShaclRestPublicEndpoint
     elasticsearch:
       path: /proxy/elasticsearch/**
       url: ${elasticsearch.scheme}://${elasticsearch.hostname}:${elasticsearch.port}

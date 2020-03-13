@@ -36,6 +36,7 @@ public class ShaclRestController implements PingControllerTrait {
     this.fileRestFeignClient = fileRestFeignClient;
   }
 
+
   @PostMapping(path = "/validate",
                consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
                produces = "text/turtle")
@@ -54,6 +55,16 @@ public class ShaclRestController implements PingControllerTrait {
 
     Optional<String> report = ShaclValidator.validate(rdfTurtle, shaclTurtle);
 
+    return report.map(ResponseEntity.badRequest()::body).orElseGet(ResponseEntity.ok()::build);
+  }
+
+  @PostMapping(path = "/test",
+               consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+               produces = "text/turtle")
+  public ResponseEntity<String> test(@RequestParam("shaclTurtleRules") String shaclRules,
+                                     @RequestParam("sampleTurtleData") String sampleData) {
+
+    Optional<String> report = ShaclValidator.validate(sampleData, shaclRules);
     return report.map(ResponseEntity.badRequest()::body).orElseGet(ResponseEntity.ok()::build);
   }
 }
