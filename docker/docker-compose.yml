@@ -144,8 +144,24 @@ services:
       ZOOKEEPER_URL: "zookeeper:2181"
       APPLICATION_BASE_PATH: "/usr/app/fileupload"
       JPA_DDL_STRATEGY: "create-drop"
+  atriangleprojectrest:
+    restart: always
+    depends_on:
+      - kafkaserver
+      - atrianglezookeeper
+      - atrianglemongo
+    networks:
+      atriangle:
+        aliases:
+          - projectrest
+    image: atriangle/project-rest
+    environment:
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
+      ZOOKEEPER_URL: "zookeeper:2181"
+      APPLICATION_BASE_PATH: "/usr/app/atriangleproject"
+      MONGO_DB_HOST: "mongo"
     volumes:
-      - upload-rest-storage:/user/app
+      - project-rest-storage:/user/app
   atrianglerestsink:
     restart: always
     depends_on:
