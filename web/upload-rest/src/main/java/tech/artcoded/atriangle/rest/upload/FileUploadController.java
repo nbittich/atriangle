@@ -21,6 +21,7 @@ import tech.artcoded.atriangle.core.rest.util.RestUtil;
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 @CrossOriginRestController
 @ApiOperation("File Upload")
@@ -80,7 +81,7 @@ public class FileUploadController implements PingControllerTrait {
                                      .getName()))
                                    .findFirst()
                                    .orElseThrow(() -> new RuntimeException("Upload not found on disk"));
-    uploadService.deleteOnDisk(byId);
+    CompletableFuture.runAsync(() -> uploadService.deleteOnDisk(byId));
     return Map.entry("message", id + "file will be deleted");
   }
 }

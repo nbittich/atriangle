@@ -1,5 +1,6 @@
 package tech.artcoded.atriangle.rest.project;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -25,6 +26,7 @@ import java.util.stream.Stream;
 import static java.util.stream.Collectors.toList;
 
 @Service
+@Slf4j
 public class ProjectRestService {
   private final MongoTemplate mongoTemplate;
   private final FileRestFeignClient fileRestFeignClient;
@@ -69,15 +71,45 @@ public class ProjectRestService {
     mongoTemplate.remove(query);
   }
 
+  public void deleteFile(String projectId, String fileEventId) {
+    Optional<ProjectEvent> projectEvent = findById(projectId);
+    projectEvent.ifPresent((p) -> {
+      Optional<FileEvent> fileEvent = p.getFileEvents().stream().filter(file -> file.getId().equals(fileEventId)).findAny();
+      fileEvent.ifPresent(f -> {
+        loggerAction.info(p::getId, " file %s removed from project %s", f.getId(), p.getName());
+        fileRestFeignClient.delete(f.getId());
+        ProjectEvent newProject = p.toBuilder()
+                                   .fileEvents(p.getFileEvents()
+                                                .stream()
+                                                .filter(file -> !file.getId().equals(fileEventId))
+                                                .collect(toList()))
+                                   .build();
+        mongoTemplate.save(newProject);
+      });
+    });
+  }
+
   public void deleteById(String id) {
     mongoTemplate.remove(id);
   }
 
   public ResponseEntity<ByteArrayResource> downloadFile(String projectId, String fileEventId) {
+    try {
+      Optional<ProjectEvent> projectEvent = findById(projectId);
+      return projectEvent.flatMap(p -> p.getFileEvents().stream().filter(file -> file.getId().equals(fileEventId)).findFirst())
+                         .map(CheckedFunction.toFunction(f -> fileRestFeignClient.download(f.getId())))
+                         .orElseGet(ResponseEntity.notFound()::build);
+    }
+    catch (Exception e) {
+      log.error("error", e);
+      loggerAction.error(() -> projectId, "an error occured %s", e.getMessage());
+    }
+    return ResponseEntity.notFound().build();
+  }
+
+  public Optional<FileEvent> getFileMetadata(String projectId, String fileEventId) {
     Optional<ProjectEvent> projectEvent = findById(projectId);
-    return projectEvent.flatMap(p -> p.getFileEvents().stream().filter(file -> file.getId().equals(fileEventId)).findFirst())
-                       .map(CheckedFunction.toFunction(f -> fileRestFeignClient.download(f.getId())))
-                       .orElseGet(ResponseEntity.notFound()::build);
+    return projectEvent.flatMap(p -> p.getFileEvents().stream().filter(file -> file.getId().equals(fileEventId)).findFirst());
   }
 
   public Optional<ProjectEvent> addFile(String projectId, MultipartFile file) {

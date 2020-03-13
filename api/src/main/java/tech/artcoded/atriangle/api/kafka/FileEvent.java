@@ -1,6 +1,7 @@
 package tech.artcoded.atriangle.api.kafka;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,6 +19,7 @@ public class FileEvent {
   private FileEventType eventType;
   private String originalFilename;
   private String name;
+  @JsonIgnore
   private String pathToFile;
   private long size;
 

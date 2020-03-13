@@ -18,6 +18,7 @@ import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @CrossOriginRestController
 @ApiOperation("Project Rest")
@@ -53,6 +54,12 @@ public class ProjectRestController implements PingControllerTrait {
   public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable("projectId") String projectId,
                                                         @PathVariable("fileId") String fileId) {
     return projectRestService.downloadFile(projectId, fileId);
+  }
+
+  @DeleteMapping("/{projectId}/delete-file/{fileId}")
+  public void deleteFile(@PathVariable("projectId") String projectId,
+                         @PathVariable("fileId") String fileId) {
+    CompletableFuture.runAsync(() -> projectRestService.deleteFile(projectId, fileId));
   }
 
   @DeleteMapping("/by-name/{name}")

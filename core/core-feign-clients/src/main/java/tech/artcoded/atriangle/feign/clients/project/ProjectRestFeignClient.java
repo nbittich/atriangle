@@ -40,6 +40,10 @@ public interface ProjectRestFeignClient {
   ResponseEntity<ByteArrayResource> downloadFile(@PathVariable("projectId") String projectId,
                                                  @PathVariable("fileId") String fileId);
 
+  @DeleteMapping("/{projectId}/delete-file/{fileId}")
+  void deleteFile(@PathVariable("projectId") String projectId,
+                  @PathVariable("fileId") String fileId);
+
   @DeleteMapping("/by-name/{name}")
   void deleteByName(@PathVariable("name") String name);
 
