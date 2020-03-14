@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 import static java.util.Objects.requireNonNull;
-import static org.apache.commons.io.FilenameUtils.getExtension;
 import static tech.artcoded.atriangle.core.rest.util.RestUtil.FILE_TO_JSON;
 
 
@@ -74,7 +73,7 @@ public class RdfIngestionController implements PingControllerTrait {
                               MultipartFile settingsFile,
                               MultipartFile mappingsFile) {
     CompletableFuture.runAsync(() -> {
-      Model inputModel = ModelConverter.inputStreamToModel(requireNonNull(getExtension(rdfFile.getOriginalFilename())), rdfFile::getInputStream);
+      Model inputModel = ModelConverter.inputStreamToModel(requireNonNull(rdfFile.getOriginalFilename()), rdfFile::getInputStream);
 
       String json = ModelConverter.modelToLang(inputModel, RDFFormat.JSONLD);
 

@@ -16,12 +16,15 @@ import java.util.Optional;
 public interface ShaclValidationUtils {
 
   @SneakyThrows
-  static Optional<String> validate(String turtleModel, String turtleShaclRules) {
+  static Optional<String> validate(String dataModel,
+                                   Lang modelLang,
+                                   String shapesModel,
+                                   Lang shapesLang) {
     StringWriter writer = new StringWriter();
     Graph shapesGraph = GraphFactory.createDefaultGraph();
-    RDFParser.fromString(turtleShaclRules).base("").lang(Lang.TURTLE).build().parse(shapesGraph);
+    RDFParser.fromString(shapesModel).base("").lang(shapesLang).build().parse(shapesGraph);
     Graph dataGraph = GraphFactory.createDefaultGraph();
-    RDFParser.fromString(turtleModel).base("").lang(Lang.TURTLE).build().parse(dataGraph);
+    RDFParser.fromString(dataModel).base("").lang(modelLang).build().parse(dataGraph);
 
     Shapes shapes = Shapes.parse(shapesGraph);
 
@@ -31,7 +34,7 @@ public interface ShaclValidationUtils {
       return Optional.empty();
     }
 
-    RDFDataMgr.write(writer, report.getModel(), Lang.TTL);
+    RDFDataMgr.write(writer, report.getModel(), Lang.JSONLD);
     return Optional.of(writer.toString());
   }
 }

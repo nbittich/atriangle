@@ -61,24 +61,12 @@ public interface ModelConverter {
     }
   }
 
-  static String inputStreamToLang(String fileExtension, CheckedSupplier<InputStream> file, RDFFormat lang) {
-    return modelToLang(inputStreamToModel(fileExtension, file), lang);
+  static String inputStreamToLang(String filename, CheckedSupplier<InputStream> file, RDFFormat lang) {
+    return modelToLang(inputStreamToModel(filename, file), lang);
   }
 
-  static Model inputStreamToModel(String fileExtension, CheckedSupplier<InputStream> file) {
-    switch (fileExtension) {
-      case "ttl":
-        return toModel(file, RDFFormat.TURTLE);
-      case "rdf":
-        return toModel(file, RDFFormat.RDFXML);
-      case "trig":
-        return toModel(file, RDFFormat.TRIG);
-      case "n3":
-        return toModel(file, RDFFormat.N3);
-      case "json":
-        return toModel(file, RDFFormat.JSONLD);
-      default:
-        throw new RuntimeException("Lang not supported yet");
-    }
+  static Model inputStreamToModel(String filename, CheckedSupplier<InputStream> file) {
+    RDFFormat rdfFormat = RDFFormat.forFileName(filename, RDFFormat.TURTLE);
+    return toModel(file, rdfFormat);
   }
 }

@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiOperation;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.apache.jena.riot.Lang;
+import org.apache.jena.riot.RDFLanguages;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -35,8 +37,7 @@ public class ShaclRestController implements PingControllerTrait {
 
 
   @PostMapping(path = "/validate",
-               consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-               produces = "text/turtle")
+               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @SneakyThrows
   public ResponseEntity<String> validate(@RequestParam("shaclFileEvent") FileEvent shaclFileEvent,
                                          @RequestParam("modelFileEvent") FileEvent modelFileEvent) {
@@ -48,7 +49,11 @@ public class ShaclRestController implements PingControllerTrait {
     CheckedSupplier<String> modelFile = () -> IOUtils.toString(requireNonNull(modelDownload.getBody()).getInputStream(), StandardCharsets.UTF_8);
 
 
-    Optional<String> report = ShaclValidationUtils.validate(modelFile.safeGet(), shaclFile.safeGet());
+    Optional<String> report = ShaclValidationUtils.validate(modelFile.safeGet(),
+                                                            RDFLanguages.filenameToLang(modelFileEvent.getOriginalFilename()),
+                                                            shaclFile.safeGet(),
+                                                            RDFLanguages.filenameToLang(shaclFileEvent.getOriginalFilename())
+    );
 
     return report.map(ResponseEntity.badRequest()::body).orElseGet(ResponseEntity.ok()::build);
   }
@@ -59,7 +64,7 @@ public class ShaclRestController implements PingControllerTrait {
   public ResponseEntity<String> test(@RequestParam("shaclTurtleRules") String shaclRules,
                                      @RequestParam("sampleTurtleData") String sampleData) {
 
-    Optional<String> report = ShaclValidationUtils.validate(sampleData, shaclRules);
+    Optional<String> report = ShaclValidationUtils.validate(sampleData, Lang.TURTLE, shaclRules, Lang.TURTLE);
     return report.map(ResponseEntity.badRequest()::body).orElseGet(ResponseEntity.ok()::build);
   }
 }
