@@ -3,7 +3,7 @@ package tech.artcoded.atriangle.rest.shacl;
 import io.swagger.annotations.ApiOperation;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.openrdf.rio.RDFFormat;
+import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,16 +13,13 @@ import tech.artcoded.atriangle.api.CheckedSupplier;
 import tech.artcoded.atriangle.api.kafka.FileEvent;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
-import tech.artcoded.atriangle.core.sparql.ModelConverter;
-import tech.artcoded.atriangle.core.sparql.ShaclValidator;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 
 import javax.inject.Inject;
-import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
-import static org.apache.commons.io.FilenameUtils.getExtension;
 
 
 @CrossOriginRestController
@@ -47,13 +44,11 @@ public class ShaclRestController implements PingControllerTrait {
     ResponseEntity<ByteArrayResource> shaclDownload = fileRestFeignClient.download(shaclFileEvent.getId());
     ResponseEntity<ByteArrayResource> modelDownload = fileRestFeignClient.download(modelFileEvent.getId());
 
-    CheckedSupplier<InputStream> shaclFile = () -> requireNonNull(shaclDownload.getBody()).getInputStream();
-    CheckedSupplier<InputStream> modelFile = () -> requireNonNull(modelDownload.getBody()).getInputStream();
+    CheckedSupplier<String> shaclFile = () -> IOUtils.toString(requireNonNull(shaclDownload.getBody()).getInputStream(), StandardCharsets.UTF_8);
+    CheckedSupplier<String> modelFile = () -> IOUtils.toString(requireNonNull(modelDownload.getBody()).getInputStream(), StandardCharsets.UTF_8);
 
-    String shaclTurtle = ModelConverter.inputStreamToLang(requireNonNull(getExtension(shaclFileEvent.getOriginalFilename())), shaclFile, RDFFormat.TURTLE);
-    String rdfTurtle = ModelConverter.inputStreamToLang(requireNonNull(getExtension(modelFileEvent.getOriginalFilename())), modelFile, RDFFormat.TURTLE);
 
-    Optional<String> report = ShaclValidator.validate(rdfTurtle, shaclTurtle);
+    Optional<String> report = ShaclValidationUtils.validate(modelFile.safeGet(), shaclFile.safeGet());
 
     return report.map(ResponseEntity.badRequest()::body).orElseGet(ResponseEntity.ok()::build);
   }
@@ -64,7 +59,7 @@ public class ShaclRestController implements PingControllerTrait {
   public ResponseEntity<String> test(@RequestParam("shaclTurtleRules") String shaclRules,
                                      @RequestParam("sampleTurtleData") String sampleData) {
 
-    Optional<String> report = ShaclValidator.validate(sampleData, shaclRules);
+    Optional<String> report = ShaclValidationUtils.validate(sampleData, shaclRules);
     return report.map(ResponseEntity.badRequest()::body).orElseGet(ResponseEntity.ok()::build);
   }
 }

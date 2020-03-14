@@ -16,11 +16,6 @@
             <groupId>tech.artcoded</groupId>
             <artifactId>atriangle-api</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.eclipse.rdf4j</groupId>
-            <artifactId>rdf4j-shacl</artifactId>
-        </dependency>
         <dependency>
             <groupId>com.blazegraph</groupId>
             <artifactId>bigdata-core</artifactId>

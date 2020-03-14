@@ -27,8 +27,8 @@
             <artifactId>atriangle-core-kafka</artifactId>
         </dependency>
         <dependency>
-            <groupId>tech.artcoded</groupId>
-            <artifactId>atriangle-core-sparql</artifactId>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-shacl</artifactId>
         </dependency>
         <dependency>
             <groupId>tech.artcoded</groupId>
