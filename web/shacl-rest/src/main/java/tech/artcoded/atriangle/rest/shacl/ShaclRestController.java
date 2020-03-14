@@ -59,8 +59,7 @@ public class ShaclRestController implements PingControllerTrait {
   }
 
   @PostMapping(path = "/test",
-               consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-               produces = "text/turtle")
+               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<String> test(@RequestParam("shaclTurtleRules") String shaclRules,
                                      @RequestParam("sampleTurtleData") String sampleData) {
 

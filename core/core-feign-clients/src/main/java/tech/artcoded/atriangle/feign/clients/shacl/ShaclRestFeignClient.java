@@ -10,14 +10,12 @@ import tech.artcoded.atriangle.api.kafka.FileEvent;
 public interface ShaclRestFeignClient {
 
   @PostMapping(path = "/validate",
-               consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-               produces = "text/turtle")
+               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<String> validate(@RequestPart("shaclFileEvent") FileEvent shaclFileEvent,
                                   @RequestPart("modelFileEvent") FileEvent modelFileEvent);
 
   @PostMapping(path = "/test",
-               consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-               produces = "text/turtle")
+               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<String> test(@RequestParam("shaclTurtleRules") String shaclRules,
                               @RequestParam("sampleTurtleData") String sampleData);
 }
