@@ -245,8 +245,7 @@
         </pluginManagement>
     </build>
     <modules>
-        <module>api</module>
-        <module>shared-config</module>
+        <module>common</module>
         <module>core</module>
         <module>sink</module>
         <module>web</module>
