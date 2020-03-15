@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
-import tech.artcoded.atriangle.api.kafka.FileEvent;
 import tech.artcoded.atriangle.api.kafka.ProjectEvent;
 
 import java.io.File;
@@ -28,14 +27,14 @@ public interface ProjectRestFeignClient {
   @GetMapping("/by-name/{name}")
   ResponseEntity<ProjectEvent> findByName(@PathVariable("name") String name);
 
-  @GetMapping("/by-id/{id}")
-  ResponseEntity<ProjectEvent> findById(@PathVariable("id") String id);
+  @GetMapping("/by-id/{projectId}")
+  ResponseEntity<ProjectEvent> findById(@PathVariable("projectId") String projectId);
 
 
   @PutMapping(path = "/add-file",
               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<ProjectEvent> addFile(@RequestPart("file") File file,
-                                       @RequestParam("id") String projectId);
+                                       @RequestParam("projectId") String projectId);
 
 
   @GetMapping("/{projectId}/download-file/{fileId}")
@@ -49,8 +48,8 @@ public interface ProjectRestFeignClient {
   @DeleteMapping("/by-name/{name}")
   void deleteByName(@PathVariable("name") String name);
 
-  @DeleteMapping("/by-id/{id}")
-  void deleteById(@PathVariable("id") String id);
+  @DeleteMapping("/by-id/{projectId}")
+  void deleteById(@PathVariable("projectId") String projectId);
 
   @GetMapping("/{projectId}/shacl-validation")
   ResponseEntity<String> shaclValidation(@PathVariable("projectId") String projectId,
@@ -65,8 +64,8 @@ public interface ProjectRestFeignClient {
     @RequestParam("projectId") String projectId,
     @RequestParam(value = "labelSkosXl",
                   required = false) boolean labelSkosXl,
-    @RequestParam(value = "xlsFileEvent",
+    @RequestParam(value = "ignorePostTreatmentsSkos",
                   required = false) boolean ignorePostTreatmentsSkos,
-    @RequestParam("xlsFileEvent") FileEvent xlsFileEvent
+    @RequestParam("xlsFileEventId") String xlsFileEventId
   );
 }

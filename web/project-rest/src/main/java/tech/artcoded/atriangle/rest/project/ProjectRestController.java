@@ -78,13 +78,13 @@ public class ProjectRestController implements PingControllerTrait {
     projectRestService.deleteByName(name);
   }
 
-  @DeleteMapping("/by-id/{id}")
-  public void deleteById(@PathVariable("id") String id) {
+  @DeleteMapping("/by-id/{projectId}")
+  public void deleteById(@PathVariable("projectId") String id) {
     projectRestService.deleteById(id);
   }
 
-  @GetMapping("/by-id/{id}")
-  public ResponseEntity<ProjectEvent> findById(@PathVariable("id") String id) {
+  @GetMapping("/by-id/{projectId}")
+  public ResponseEntity<ProjectEvent> findById(@PathVariable("projectId") String id) {
     return projectRestService.findById(id).map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.notFound()::build);
   }
@@ -99,15 +99,19 @@ public class ProjectRestController implements PingControllerTrait {
     return projectRestService.skosPing();
   }
 
-  @PostMapping("/conversion/skos")
+  @PostMapping("/skos-conversion")
   public ResponseEntity<ProjectEvent> skosConversion(
     @RequestParam("projectId") String projectId,
     @RequestParam(value = "labelSkosXl",
-                  required = false) boolean labelSkosXl,
-    @RequestParam(value = "xlsFileEvent",
-                  required = false) boolean ignorePostTreatmentsSkos,
-    @RequestParam("xlsFileEvent") FileEvent xlsFileEvent
+                  required = false,
+                  defaultValue = "false") boolean labelSkosXl,
+    @RequestParam(value = "ignorePostTreatmentsSkos",
+                  required = false,
+                  defaultValue = "false") boolean ignorePostTreatmentsSkos,
+    @RequestParam("xlsFileEventId") String xlsFileEventId
   ) {
+    FileEvent xlsFileEvent = projectRestService.getFileMetadata(projectId, xlsFileEventId)
+                                               .orElseThrow(() -> new RuntimeException("file  not found"));
     if (!XLSX_MEDIA_TYPE.equals(xlsFileEvent.getContentType())) {
       log.error("only xlsx type supported, provided {}", xlsFileEvent.getContentType());
       return ResponseEntity.badRequest().build();
