@@ -43,7 +43,7 @@ public class ProjectRestController implements PingControllerTrait {
   @PutMapping(path = "/add-file",
               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<ProjectEvent> addFile(@RequestParam("file") MultipartFile multipartFile,
-                                              @RequestParam("id") String projectId) {
+                                              @RequestParam("projectId") String projectId) {
     return projectRestService.addFile(projectId, multipartFile).map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
