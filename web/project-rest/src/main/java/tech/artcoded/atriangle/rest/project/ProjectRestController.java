@@ -121,4 +121,19 @@ public class ProjectRestController implements PingControllerTrait {
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
 
+  @PostMapping("/{projectId}/sink")
+  public ResponseEntity<Void> sink(@PathVariable("projectId") String projectId,
+                                   @RequestParam(value = "sinkToElastic",
+                                                 required = false,
+                                                 defaultValue = "false") boolean sinkToElastic,
+                                   @RequestParam(value = "elasticSettingsFileEventId",
+                                                 required = false) String elasticSettingsFileEventId,
+                                   @RequestParam(value = "elasticMappingsFileEventId",
+                                                 required = false) String elasticMappingsFileEventId,
+                                   @RequestParam(value = "rdfFileEventId") String rdfFileEventId) {
+    projectRestService.sink(projectId, sinkToElastic, elasticSettingsFileEventId, elasticMappingsFileEventId, rdfFileEventId);
+    return ResponseEntity.accepted().build();
+  }
+
+
 }

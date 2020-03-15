@@ -195,4 +195,12 @@ public class ProjectRestService {
 
     return this.addFile(projectId, rdfOutput, FileEventType.SKOS_PLAY_CONVERTER_OUTPUT);
   }
+
+  public void sink(String projectId,
+                   boolean sinkToElastic,
+                   String elasticSettingsFileEventId,
+                   String elasticMappingsFileEventId,
+                   String rdfFileEventId) {
+
+  }
 }

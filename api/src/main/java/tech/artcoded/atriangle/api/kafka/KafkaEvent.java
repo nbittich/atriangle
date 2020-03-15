@@ -11,6 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class KafkaEvent implements IKafkaEvent {
   private String id;
+  private String correlationId;
   private String json;
   private EventType eventType;
   private String event;
