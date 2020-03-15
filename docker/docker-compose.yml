@@ -263,7 +263,7 @@ services:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
       MONGO_EXPRESS_HOST: "mongoexpress"
-      SKOS_PLAY_URL: "http://skosplay:8080/skos-rest"
+      SKOS_PLAY_URL: "http://skosplay:8080"
     volumes:
       - rest-storage:/user/app
 

@@ -1,2 +1,2 @@
 skosplay:
-  url: ${SKOS_PLAY_URL:http://192.168.1.102:8080/skos-rest}
+  url: ${SKOS_PLAY_URL:http://192.168.99.102:8080}
