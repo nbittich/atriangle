@@ -18,6 +18,9 @@ zuul:
     sparql:
       path: /proxy/sparql/**
       url: ${sparql.endpoint.proxy.url}
+    skosplay:
+      path: /api/skosplay/**
+      url: ${skosplay.url}
   host:
     connect-timeout-millis: 30000
     socket-timeout-millis: 30000

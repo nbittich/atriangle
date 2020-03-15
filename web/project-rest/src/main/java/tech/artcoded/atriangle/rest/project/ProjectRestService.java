@@ -16,6 +16,7 @@ import tech.artcoded.atriangle.api.kafka.FileEventType;
 import tech.artcoded.atriangle.api.kafka.ProjectEvent;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
+import tech.artcoded.atriangle.feign.clients.shacl.ShaclRestFeignClient;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -30,14 +31,17 @@ import static java.util.stream.Collectors.toList;
 public class ProjectRestService {
   private final MongoTemplate mongoTemplate;
   private final FileRestFeignClient fileRestFeignClient;
+  private final ShaclRestFeignClient shaclRestFeignClient;
   private final LoggerAction loggerAction;
 
   @Inject
   public ProjectRestService(MongoTemplate mongoTemplate,
                             FileRestFeignClient fileRestFeignClient,
+                            ShaclRestFeignClient shaclRestFeignClient,
                             LoggerAction loggerAction) {
     this.mongoTemplate = mongoTemplate;
     this.fileRestFeignClient = fileRestFeignClient;
+    this.shaclRestFeignClient = shaclRestFeignClient;
     this.loggerAction = loggerAction;
   }
 
@@ -132,5 +136,12 @@ public class ProjectRestService {
       })
       .map(mongoTemplate::save)
       .findFirst();
+  }
+
+  public ResponseEntity<String> shaclValidation(String projectId, String shapesFileId, String rdfModelFileId) {
+    FileEvent shaclFileEvent = getFileMetadata(projectId, shapesFileId).orElseThrow(() -> new RuntimeException("shacl not found in project"));
+    FileEvent rdfFileEvent = getFileMetadata(projectId, rdfModelFileId).orElseThrow(() -> new RuntimeException("rdf model not found in project"));
+    return shaclRestFeignClient.validate(shaclFileEvent, rdfFileEvent);
+
   }
 }

@@ -8,4 +8,6 @@ endpoint:
   project:
     url: ${PROJECT_ENDPOINT_URL:http://localhost:8088/api/project}
   shacl:
-    url: ${PROJECT_ENDPOINT_URL:http://localhost:8088/api/shacl}
+    url: ${SHACL_ENDPOINT_URL:http://localhost:8088/api/shacl}
+  skosplay:
+    url: ${SKOSPLAY_ENDPOINT_URL:http://localhost:8088/api/skosplay}

@@ -13,6 +13,17 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - portainer-storage:/data
+  skosplay:
+    build: skosplay/.
+    restart: always
+    volumes:
+      - skosplay-storage:/usr/app
+    networks:
+      atriangle:
+        aliases:
+          - skosplay
+    ports:
+      - 8080
   blazegraph:
     build: blazegraph/2.1.5/.
     restart: always
@@ -252,6 +263,7 @@ services:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
       MONGO_EXPRESS_HOST: "mongoexpress"
+      SKOS_PLAY_URL: "http://skosplay:8080/skos-rest"
     volumes:
       - rest-storage:/user/app
 
@@ -269,6 +281,7 @@ volumes:
   mongodb-storage:
   blazegraph-storage:
   portainer-storage:
+  skosplay-storage:
 
 networks:
   atriangle:

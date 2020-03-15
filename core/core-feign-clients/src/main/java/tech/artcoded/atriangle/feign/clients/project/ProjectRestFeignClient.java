@@ -49,4 +49,9 @@ public interface ProjectRestFeignClient {
 
   @DeleteMapping("/by-id/{id}")
   void deleteById(@PathVariable("id") String id);
+
+  @GetMapping("/{projectId}/shacl-validation")
+  ResponseEntity<String> shaclValidation(@PathVariable("projectId") String projectId,
+                                         @RequestParam("shapesFileId") String shapesFileId,
+                                         @RequestParam("rdfModelFileId") String rdfModelFileId);
 }

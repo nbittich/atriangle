@@ -56,6 +56,13 @@ public class ProjectRestController implements PingControllerTrait {
     return projectRestService.downloadFile(projectId, fileId);
   }
 
+  @GetMapping("/{projectId}/shacl-validation")
+  public ResponseEntity<String> shaclValidation(@PathVariable("projectId") String projectId,
+                                                @RequestParam("shapesFileId") String shapesFileId,
+                                                @RequestParam("rdfModelFileId") String rdfModelFileId) {
+    return projectRestService.shaclValidation(projectId, shapesFileId, rdfModelFileId);
+  }
+
   @DeleteMapping("/{projectId}/delete-file/{fileId}")
   public void deleteFile(@PathVariable("projectId") String projectId,
                          @PathVariable("fileId") String fileId) {

@@ -4,7 +4,7 @@ spring:
   application:
     name: RestPublicEndpoint
   profiles:
-    include: kafka, sparql, elasticsearch, zuul, zookeeper, rest, mongoexpress
+    include: kafka, sparql, elasticsearch, zuul, zookeeper, rest, mongoexpress, skosplay
   kafka:
     template:
       default-topic: event-sink-rest
