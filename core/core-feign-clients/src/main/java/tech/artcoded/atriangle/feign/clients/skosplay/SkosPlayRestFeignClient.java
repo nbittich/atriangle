@@ -2,6 +2,7 @@ package tech.artcoded.atriangle.feign.clients.skosplay;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,10 +29,10 @@ public interface SkosPlayRestFeignClient {
    * @throws Exception
    */
   @RequestMapping(value = "/rest/convert",
-                  method = RequestMethod.POST)
+                  method = RequestMethod.POST,
+                  consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<ByteArrayResource> convertRDF(
-    @RequestParam(value = "source",
-                  required = true) String sourceString, // FILE or URL
+    @RequestParam(value = "source") String sourceString, // FILE or URL
     @RequestPart(value = "file",
                  required = false) MultipartFile file,
     @RequestParam(value = "language",
