@@ -171,6 +171,7 @@ services:
       ZOOKEEPER_URL: "zookeeper:2181"
       APPLICATION_BASE_PATH: "/usr/app/atriangleproject"
       MONGO_DB_HOST: "mongo"
+      SKOSPLAY_ENDPOINT_URL: "http://skosplay:8080"
     volumes:
       - project-rest-storage:/user/app
   atriangleshaclrest:

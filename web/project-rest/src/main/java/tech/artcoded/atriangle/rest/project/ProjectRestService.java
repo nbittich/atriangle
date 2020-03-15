@@ -1,5 +1,6 @@
 package tech.artcoded.atriangle.rest.project;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -15,6 +16,7 @@ import tech.artcoded.atriangle.api.kafka.FileEvent;
 import tech.artcoded.atriangle.api.kafka.FileEventType;
 import tech.artcoded.atriangle.api.kafka.ProjectEvent;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
+import tech.artcoded.atriangle.core.rest.util.ATriangleByteArrayMultipartFile;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.shacl.ShaclRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.skosplay.SkosPlayRestFeignClient;
@@ -122,10 +124,14 @@ public class ProjectRestService {
   }
 
   public Optional<ProjectEvent> addFile(String projectId, MultipartFile file) {
+    return addFile(projectId, file, FileEventType.PROJECT_FILE);
+  }
+
+  public Optional<ProjectEvent> addFile(String projectId, MultipartFile file, FileEventType fileEventType) {
     return findById(projectId)
       .stream()
       .map(projectEvent -> {
-        ResponseEntity<FileEvent> fileEvent = CheckedSupplier.toSupplier(() -> fileRestFeignClient.upload(file, FileEventType.PROJECT_FILE))
+        ResponseEntity<FileEvent> fileEvent = CheckedSupplier.toSupplier(() -> fileRestFeignClient.upload(file, fileEventType))
                                                              .get();
         if (!HttpStatus.OK.equals(fileEvent.getStatusCode()) || !fileEvent.hasBody()) {
           throw new RuntimeException("upload failed with status " + fileEvent.getStatusCode());
@@ -151,5 +157,32 @@ public class ProjectRestService {
 
   public ResponseEntity<Map<String, String>> skosPing() {
     return skosPlayRestFeignClient.ping();
+  }
+
+  @SneakyThrows
+  public Optional<ProjectEvent> skosConversion(String projectId,
+                                               boolean labelSkosXl,
+                                               boolean ignorePostTreatmentsSkos,
+                                               FileEvent xlsFileEvent) {
+    ATriangleByteArrayMultipartFile xlsInput = ATriangleByteArrayMultipartFile.builder()
+                                                                              .contentType(xlsFileEvent.getContentType())
+                                                                              .name(xlsFileEvent.getName())
+                                                                              .originalFilename(xlsFileEvent.getName())
+                                                                              .bytes(downloadFile(projectId, xlsFileEvent.getId())
+                                                                                       .getBody()
+                                                                                       .getByteArray())
+                                                                              .build();
+    String contentType = "text/turtle";
+    ResponseEntity<ByteArrayResource> response = skosPlayRestFeignClient.convertRDF("file", xlsInput, "fr", null, contentType, labelSkosXl, false, false, ignorePostTreatmentsSkos);
+
+    ByteArrayResource body = response.getBody();
+
+    ATriangleByteArrayMultipartFile rdfOutput = ATriangleByteArrayMultipartFile.builder()
+                                                                               .contentType(contentType)
+                                                                               .name(xlsFileEvent.getName())
+                                                                               .originalFilename(xlsFileEvent.getName())
+                                                                               .bytes(body.getByteArray())
+                                                                               .build();
+    return this.addFile(projectId, rdfOutput, FileEventType.SKOS_PLAY_CONVERTER_OUTPUT);
   }
 }

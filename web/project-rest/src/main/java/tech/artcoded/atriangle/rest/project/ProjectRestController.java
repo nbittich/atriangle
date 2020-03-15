@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import tech.artcoded.atriangle.api.kafka.FileEvent;
 import tech.artcoded.atriangle.api.kafka.ProjectEvent;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
@@ -26,6 +27,8 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class ProjectRestController implements PingControllerTrait {
   private final ProjectRestService projectRestService;
+
+  private static final String XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
   @Inject
   public ProjectRestController(ProjectRestService projectRestService) {
@@ -94,6 +97,24 @@ public class ProjectRestController implements PingControllerTrait {
   @GetMapping("/ping-skos")
   public ResponseEntity<Map<String, String>> pingSkos() {
     return projectRestService.skosPing();
+  }
+
+  @PostMapping("/conversion/skos")
+  public ResponseEntity<ProjectEvent> skosConversion(
+    @RequestParam("projectId") String projectId,
+    @RequestParam(value = "labelSkosXl",
+                  required = false) boolean labelSkosXl,
+    @RequestParam(value = "xlsFileEvent",
+                  required = false) boolean ignorePostTreatmentsSkos,
+    @RequestParam("xlsFileEvent") FileEvent xlsFileEvent
+  ) {
+    if (!XLSX_MEDIA_TYPE.equals(xlsFileEvent.getContentType())) {
+      log.error("only xlsx type supported, provided {}", xlsFileEvent.getContentType());
+      return ResponseEntity.badRequest().build();
+    }
+    return projectRestService.skosConversion(projectId, labelSkosXl, ignorePostTreatmentsSkos, xlsFileEvent)
+                             .map(ResponseEntity::ok)
+                             .orElseGet(ResponseEntity.badRequest()::build);
   }
 
 }

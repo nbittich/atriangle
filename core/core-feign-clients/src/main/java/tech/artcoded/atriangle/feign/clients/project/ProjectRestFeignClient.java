@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
+import tech.artcoded.atriangle.api.kafka.FileEvent;
 import tech.artcoded.atriangle.api.kafka.ProjectEvent;
 
 import java.io.File;
 import java.util.List;
+import java.util.Map;
 
 public interface ProjectRestFeignClient {
   @PostMapping
@@ -54,4 +56,17 @@ public interface ProjectRestFeignClient {
   ResponseEntity<String> shaclValidation(@PathVariable("projectId") String projectId,
                                          @RequestParam("shapesFileId") String shapesFileId,
                                          @RequestParam("rdfModelFileId") String rdfModelFileId);
+
+  @GetMapping("/ping-skos")
+  ResponseEntity<Map<String, String>> pingSkos();
+
+  @PostMapping("/conversion/skos")
+  ResponseEntity<ProjectEvent> skosConversion(
+    @RequestParam("projectId") String projectId,
+    @RequestParam(value = "labelSkosXl",
+                  required = false) boolean labelSkosXl,
+    @RequestParam(value = "xlsFileEvent",
+                  required = false) boolean ignorePostTreatmentsSkos,
+    @RequestParam("xlsFileEvent") FileEvent xlsFileEvent
+  );
 }
