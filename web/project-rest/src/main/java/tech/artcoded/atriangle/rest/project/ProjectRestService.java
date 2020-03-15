@@ -2,6 +2,7 @@ package tech.artcoded.atriangle.rest.project;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -12,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.CheckedSupplier;
+import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.kafka.FileEvent;
 import tech.artcoded.atriangle.api.kafka.FileEventType;
 import tech.artcoded.atriangle.api.kafka.ProjectEvent;
@@ -33,6 +35,10 @@ import static java.util.stream.Collectors.toList;
 @Service
 @Slf4j
 public class ProjectRestService {
+
+  private static final String DERIVED_FILE_REGEX = "-derived-output-";
+  private static final String DERIVED_FILE_SKOS_REGEX = DERIVED_FILE_REGEX + "skos-";
+
   private final MongoTemplate mongoTemplate;
   private final FileRestFeignClient fileRestFeignClient;
   private final ShaclRestFeignClient shaclRestFeignClient;
@@ -177,12 +183,16 @@ public class ProjectRestService {
 
     ByteArrayResource body = response.getBody();
 
+    String baseFileName = FilenameUtils.removeExtension(xlsFileEvent.getName());
+    String outputFilename = baseFileName + DERIVED_FILE_SKOS_REGEX + IdGenerators.UUID_SUPPLIER.get() + ".ttl";
+
     ATriangleByteArrayMultipartFile rdfOutput = ATriangleByteArrayMultipartFile.builder()
                                                                                .contentType(contentType)
-                                                                               .name(xlsFileEvent.getName())
-                                                                               .originalFilename(xlsFileEvent.getName())
+                                                                               .name(outputFilename)
+                                                                               .originalFilename(outputFilename)
                                                                                .bytes(body.getByteArray())
                                                                                .build();
+
     return this.addFile(projectId, rdfOutput, FileEventType.SKOS_PLAY_CONVERTER_OUTPUT);
   }
 }
