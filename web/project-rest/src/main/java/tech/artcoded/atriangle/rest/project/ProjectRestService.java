@@ -3,29 +3,21 @@ package tech.artcoded.atriangle.rest.project;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.kafka.clients.producer.ProducerRecord;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.CheckedSupplier;
 import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.dto.EventType;
 import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.api.dto.FileEventType;
-import tech.artcoded.atriangle.api.dto.KafkaEvent;
 import tech.artcoded.atriangle.api.dto.ProjectEvent;
-import tech.artcoded.atriangle.api.dto.RestEvent;
-import tech.artcoded.atriangle.api.dto.SinkRequest;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.core.rest.util.ATriangleByteArrayMultipartFile;
 import tech.artcoded.atriangle.core.rest.util.RestUtil;
@@ -38,7 +30,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -53,27 +44,20 @@ public class ProjectRestService {
 
   private final MongoTemplate mongoTemplate;
   private final FileRestFeignClient fileRestFeignClient;
-  private final KafkaTemplate<String, String> kafkaTemplate;
-  private final ObjectMapperWrapper objectMapperWrapper;
   private final ShaclRestFeignClient shaclRestFeignClient;
   private final SkosPlayRestFeignClient skosPlayRestFeignClient;
   private final LoggerAction loggerAction;
 
-  @Value("${spring.kafka.template.default-topic}")
-  private String topicProducer;
 
   @Inject
   public ProjectRestService(MongoTemplate mongoTemplate,
                             FileRestFeignClient fileRestFeignClient,
-                            KafkaTemplate<String, String> kafkaTemplate,
                             ObjectMapperWrapper objectMapperWrapper,
                             ShaclRestFeignClient shaclRestFeignClient,
                             SkosPlayRestFeignClient skosPlayRestFeignClient,
                             LoggerAction loggerAction) {
     this.mongoTemplate = mongoTemplate;
     this.fileRestFeignClient = fileRestFeignClient;
-    this.kafkaTemplate = kafkaTemplate;
-    this.objectMapperWrapper = objectMapperWrapper;
     this.shaclRestFeignClient = shaclRestFeignClient;
     this.skosPlayRestFeignClient = skosPlayRestFeignClient;
     this.loggerAction = loggerAction;
@@ -218,37 +202,4 @@ public class ProjectRestService {
     return this.addFile(projectId, rdfOutput, FileEventType.SKOS_PLAY_CONVERTER_OUTPUT);
   }
 
-  public void sink(SinkRequest sinkRequest) {
-    CompletableFuture.runAsync(() -> {
-      String projectId = sinkRequest.getProjectId();
-      ProjectEvent projectEvent = findById(projectId).orElseThrow();
-      String ns = Optional.ofNullable(sinkRequest.getNamespace())
-                          .filter(StringUtils::isNotEmpty)
-                          .orElseGet(projectEvent::getName);
-
-      RestEvent restEvent = RestEvent.builder()
-                                     .namespace(ns)
-                                     .elasticIndex(ns)
-                                     .sinkToElastic(sinkRequest.isSinkToElastic())
-                                     .elasticSettingsJson(getFileMetadata(projectId, sinkRequest.getElasticSettingsFileEventId())
-                                                            .orElse(null))
-                                     .elasticMappingsJson(getFileMetadata(projectId, sinkRequest.getElasticMappingsFileEventId())
-                                                            .orElse(null))
-                                     .build();
-
-      KafkaEvent kafkaEvent = KafkaEvent.builder()
-                                        .eventType(EventType.RDF_SINK)
-                                        .correlationId(projectEvent.getId())
-                                        .id(IdGenerators.get())
-                                        .shaclModel(getFileMetadata(projectId, sinkRequest.getShaclFileEventId()).orElse(null))
-                                        .inputToSink(getFileMetadata(projectId, sinkRequest.getRdfFileEventId()).orElseThrow())
-                                        .event(objectMapperWrapper.serialize(restEvent))
-                                        .build();
-
-      ProducerRecord<String, String> restRecord = new ProducerRecord<>(topicProducer, kafkaEvent.getId(), objectMapperWrapper.serialize(kafkaEvent));
-
-      kafkaTemplate.send(restRecord);
-    });
-
-  }
 }

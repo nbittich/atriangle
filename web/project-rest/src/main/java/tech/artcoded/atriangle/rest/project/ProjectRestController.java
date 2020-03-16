@@ -29,12 +29,15 @@ import java.util.concurrent.CompletableFuture;
 @Slf4j
 public class ProjectRestController implements PingControllerTrait {
   private final ProjectRestService projectRestService;
+  private final ProjectSinkProducer projectSinkProducer;
 
   private static final String XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
 
   @Inject
-  public ProjectRestController(ProjectRestService projectRestService) {
+  public ProjectRestController(ProjectRestService projectRestService,
+                               ProjectSinkProducer projectSinkProducer) {
     this.projectRestService = projectRestService;
+    this.projectSinkProducer = projectSinkProducer;
   }
 
   @PostMapping
@@ -125,7 +128,7 @@ public class ProjectRestController implements PingControllerTrait {
 
   @PostMapping("/{projectId}/sink")
   public ResponseEntity<Void> sink(@RequestBody SinkRequest sinkRequest) {
-    projectRestService.sink(sinkRequest);
+    projectSinkProducer.sink(sinkRequest);
     return ResponseEntity.accepted().build();
   }
 

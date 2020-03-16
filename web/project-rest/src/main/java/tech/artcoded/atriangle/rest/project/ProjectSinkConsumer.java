@@ -13,13 +13,8 @@ import javax.inject.Inject;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-/**
- * Listen to kafka output topic sinks, then update the project with the sink responses
- * Goal is to make the sink part totally asynchronous, while the rest part will still have some synchronous
- * part like the sparna conversion
- */
 @Component
-public class ProjectRestSinkConsumer {
+public class ProjectSinkConsumer {
 
   private final ObjectMapperWrapper objectMapperWrapper;
   private final LoggerAction loggerAction;
@@ -27,10 +22,10 @@ public class ProjectRestSinkConsumer {
   private final MongoTemplate mongoTemplate;
 
   @Inject
-  public ProjectRestSinkConsumer(ObjectMapperWrapper objectMapperWrapper,
-                                 LoggerAction loggerAction,
-                                 ProjectRestService projectRestService,
-                                 MongoTemplate mongoTemplate) {
+  public ProjectSinkConsumer(ObjectMapperWrapper objectMapperWrapper,
+                             LoggerAction loggerAction,
+                             ProjectRestService projectRestService,
+                             MongoTemplate mongoTemplate) {
     this.objectMapperWrapper = objectMapperWrapper;
     this.loggerAction = loggerAction;
     this.projectRestService = projectRestService;

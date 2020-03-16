@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import tech.artcoded.atriangle.api.dto.ProjectEvent;
+import tech.artcoded.atriangle.api.dto.SinkRequest;
 
 import java.io.File;
 import java.util.List;
@@ -68,4 +70,7 @@ public interface ProjectRestFeignClient {
                   required = false) boolean ignorePostTreatmentsSkos,
     @RequestParam("xlsFileEventId") String xlsFileEventId
   );
+
+  @PostMapping("/{projectId}/sink")
+  ResponseEntity<Void> sink(@RequestBody SinkRequest sinkRequest);
 }
