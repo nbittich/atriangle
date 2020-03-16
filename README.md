@@ -2,6 +2,10 @@
 
   ![Screenshot](./docs/atriangle.png?raw=true)
 
+  ## Architecture Whatever Schema
+
+  ![Screenshot](./docs/architecture.png?raw=true)
+
   ## About
   work in progress...
 
