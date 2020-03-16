@@ -26,6 +26,8 @@ public class EventDispatcherSink {
   private String elsticSinkTopic;
   @Value("${event.dispatcher.rdf-sink-topic}")
   private String rdfSinkTopic;
+  @Value("${event.dispatcher.rdf-sink-topic-out}")
+  private String rdfSinkTopicOut;
   @Value("${event.dispatcher.mongodb-sink-topic}")
   private String mongoSinkTopic;
 
@@ -56,6 +58,9 @@ public class EventDispatcherSink {
           break;
         case ELASTIC_SINK:
           log.info("result of send event {}", sendEvent.apply(elsticSinkTopic));
+          break;
+        case RDF_SINK_OUT:
+          log.info("result of send event {}", sendEvent.apply(rdfSinkTopicOut));
           break;
         default:
           throw new RuntimeException("not supported yet");

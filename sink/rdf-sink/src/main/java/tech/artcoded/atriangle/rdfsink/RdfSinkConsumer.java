@@ -117,6 +117,13 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
                                             .responseType(EventType.RDF_SINK_OUT)
                                             .build();//todo think about failure..
 
+
+    KafkaEvent kafkaEventForSinkOut = kafkaEvent.toBuilder()
+                                                .id(mongoSinkEventId)
+                                                .eventType(EventType.RDF_SINK_OUT)
+                                                .event(mapperWrapper.serialize(sinkResponse))
+                                                .build();
+
     KafkaEvent kafkaEventForElastic = Optional.of(event).filter(RestEvent::isSinkToElastic)
                                               .map(e -> {
                                                 ElasticEvent elasticEvent = ElasticEvent.builder()
@@ -132,7 +139,7 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
                                                                  .build();
                                               }).orElse(null);
 
-    return Stream.of(Map.entry(IdGenerators.get(), mapperWrapper.serialize(sinkResponse)),
+    return Stream.of(Map.entry(IdGenerators.get(), mapperWrapper.serialize(kafkaEventForSinkOut)),
                      Map.entry(elasticSinkEventId, mapperWrapper.serialize(kafkaEventForElastic)),
                      Map.entry(mongoSinkEventId, mapperWrapper.serialize(kafkaEventForMongo)))
                  .filter(e -> e.getValue() != null)
