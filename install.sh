@@ -13,6 +13,8 @@ docker network prune -f
 
 mvn clean install -Ddocker
 
+# you must uncomment the next row in case of weird behavior
+# docker-compose -f docker/docker-compose.yml build  --no-cache
 docker-compose -f docker/docker-compose.yml up -d --force-recreate --remove-orphans
 
 echo "ready to use! Containers will restart until they are up, but check the containers using: "
