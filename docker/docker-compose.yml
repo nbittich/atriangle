@@ -122,6 +122,7 @@ services:
     environment:
       ELASTICSEARCH_HOSTNAME: "elasticsearch"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
+      FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
     volumes:
       - elastic-sink-storage:/user/app
   atrianglelogsink:
@@ -203,6 +204,8 @@ services:
     environment:
       SPARQL_ENDPOINT_URL: "http://blazegraph:8080/bigdata"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
+      SHACL_ENDPOINT_URL: "http://restgateway:8088/api/shacl"
+      FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
     volumes:
       - rdf-sink-storage:/user/app
   atrianglemongodbsink:
@@ -218,6 +221,7 @@ services:
     environment:
       MONGO_DB_HOST: "mongo"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
+      FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
     volumes:
       - mongodb-sink-storage:/user/app
   atriangleeventdispatcher:
