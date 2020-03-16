@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.dto.KafkaEvent;
-import tech.artcoded.atriangle.core.kafka.LoggerAction;
 
 import javax.inject.Inject;
 import java.util.Optional;
@@ -21,7 +20,6 @@ import java.util.function.Function;
 @Slf4j
 public class EventDispatcherSink {
   private final KafkaTemplate<String, String> kafkaTemplate;
-  private final LoggerAction loggerAction;
   private final ObjectMapperWrapper mapperWrapper;
 
   @Value("${event.dispatcher.elastic-sink-topic}")
@@ -34,14 +32,9 @@ public class EventDispatcherSink {
 
   @Inject
   public EventDispatcherSink(KafkaTemplate<String, String> kafkaTemplate,
-                             LoggerAction loggerAction,
                              ObjectMapperWrapper mapperWrapper) {
     this.kafkaTemplate = kafkaTemplate;
-    this.loggerAction = loggerAction;
     this.mapperWrapper = mapperWrapper;
-  }
-  public void logOutput(ConsumerRecord<String, String> event) throws Exception {
-    loggerAction.info(event::key, "receiving key %s, value %s", event.key(), event.value());
   }
 
   @KafkaListener(topics = "${spring.kafka.template.default-topic}")

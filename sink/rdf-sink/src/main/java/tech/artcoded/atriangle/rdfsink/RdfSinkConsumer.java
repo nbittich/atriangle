@@ -29,6 +29,8 @@ import javax.inject.Inject;
 import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Component
 @Slf4j
@@ -101,10 +103,8 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
     String mongoSinkEventId = IdGenerators.get();
     MongoEvent mongoEvent = MongoEvent.builder().collection(event.getNamespace()).build();
 
-    KafkaEvent kafkaEventForMongo = KafkaEvent.builder()
+    KafkaEvent kafkaEventForMongo = kafkaEvent.toBuilder()
                                               .id(mongoSinkEventId)
-                                              .correlationId(kafkaEvent.getCorrelationId())
-                                              .inputToSink(kafkaEvent.getInputToSink())
                                               .eventType(EventType.MONGODB_SINK)
                                               .event(mapperWrapper.serialize(mongoEvent))
                                               .build();
@@ -125,18 +125,18 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
                                                                                         .settings(e.getElasticSettingsJson())
                                                                                         .mappings(e.getElasticMappingsJson())
                                                                                         .build();
-                                                return KafkaEvent.builder()
+                                                return kafkaEvent.toBuilder()
                                                                  .id(elasticSinkEventId)
-                                                                 .correlationId(kafkaEvent.getCorrelationId())
-                                                                 .inputToSink(kafkaEvent.getInputToSink())
                                                                  .eventType(EventType.ELASTIC_SINK)
                                                                  .event(mapperWrapper.serialize(elasticEvent))
                                                                  .build();
                                               }).orElse(null);
 
-    return Map.of(IdGenerators.get(), mapperWrapper.serialize(sinkResponse),
-                  elasticSinkEventId, mapperWrapper.serialize(kafkaEventForElastic),
-                  mongoSinkEventId, mapperWrapper.serialize(kafkaEventForMongo));
+    return Stream.of(Map.entry(IdGenerators.get(), mapperWrapper.serialize(sinkResponse)),
+                     Map.entry(elasticSinkEventId, mapperWrapper.serialize(kafkaEventForElastic)),
+                     Map.entry(mongoSinkEventId, mapperWrapper.serialize(kafkaEventForMongo)))
+                 .filter(e -> e.getValue() != null)
+                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
 
