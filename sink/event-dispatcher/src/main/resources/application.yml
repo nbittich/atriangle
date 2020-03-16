@@ -1,11 +1,8 @@
 event:
   dispatcher:
     elastic-sink-topic: event-sink-elastic
-    elastic-sink-topic-out: event-sink-elastic-out
     mongodb-sink-topic: event-sink-mongodb
-    mongodb-sink-topic-out: event-sink-mongodb-out
     rdf-sink-topic: event-sink-rdf
-    rdf-sink-topic-out: event-sink-rdf-out
 spring:
   profiles:
     include: kafka

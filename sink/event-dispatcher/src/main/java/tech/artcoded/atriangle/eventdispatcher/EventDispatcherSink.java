@@ -40,10 +40,6 @@ public class EventDispatcherSink {
     this.loggerAction = loggerAction;
     this.mapperWrapper = mapperWrapper;
   }
-
-  @KafkaListener(topics = {"${event.dispatcher.elastic-sink-topic-out}",
-                           "${event.dispatcher.mongodb-sink-topic-out}",
-                           "${event.dispatcher.rdf-sink-topic-out}"})
   public void logOutput(ConsumerRecord<String, String> event) throws Exception {
     loggerAction.info(event::key, "receiving key %s, value %s", event.key(), event.value());
   }

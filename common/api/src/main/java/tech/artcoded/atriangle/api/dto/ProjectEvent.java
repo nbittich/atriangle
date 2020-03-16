@@ -18,4 +18,6 @@ public class ProjectEvent {
   private String name;
   @Builder.Default
   private List<FileEvent> fileEvents = List.of();
+  @Builder.Default
+  private List<SinkResponse> sinkResponses = List.of();
 }

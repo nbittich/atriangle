@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -13,7 +12,6 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -239,7 +237,7 @@ public class ProjectRestService {
                                      .build();
 
       KafkaEvent kafkaEvent = KafkaEvent.builder()
-                                        .eventType(EventType.REST_SINK)
+                                        .eventType(EventType.RDF_SINK)
                                         .correlationId(projectEvent.getId())
                                         .id(IdGenerators.get())
                                         .shaclModel(getFileMetadata(projectId, sinkRequest.getShaclFileEventId()).orElse(null))
@@ -252,10 +250,5 @@ public class ProjectRestService {
       kafkaTemplate.send(restRecord);
     });
 
-  }
-
-  @KafkaListener(topics = "")
-  public void sink(ConsumerRecord<String, String> record) throws Exception {
-    // TODO process result of sink
   }
 }

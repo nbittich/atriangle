@@ -16,7 +16,6 @@
         <module>event-dispatcher</module>
         <module>elastic-sink</module>
         <module>rdf-sink</module>
-        <module>rest-sink</module>
         <module>log-sink</module>
         <module>mongodb-sink</module>
     </modules>

@@ -1,5 +1,5 @@
 out:
-  topic: event-sink-rdf-out
+  topic: event-dispatcher
 spring:
   profiles:
     include: kafka, sparql

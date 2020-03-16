@@ -1,3 +1,8 @@
+event:
+  dispatcher:
+    elastic-sink-topic-out: event-sink-elastic-out
+    mongodb-sink-topic-out: event-sink-mongodb-out
+    rdf-sink-topic-out: event-sink-rdf-out
 application:
   basePath: ${PROJECT_BASE_PATH:/${user.home}/project-rest}
 server:
@@ -9,4 +14,4 @@ spring:
     include: kafka, zookeeper, rest, mongodb, feign
   kafka:
     template:
-      default-topic: event-sink-rest
+      default-topic: event-sink-rdf

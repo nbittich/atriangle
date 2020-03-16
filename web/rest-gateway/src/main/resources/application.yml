@@ -5,9 +5,6 @@ spring:
     name: RestPublicEndpoint
   profiles:
     include: kafka, sparql, elasticsearch, zuul, zookeeper, rest, mongoexpress, skosplay
-  kafka:
-    template:
-      default-topic: event-sink-rest
 
 elasticsearch:
   index: movies
