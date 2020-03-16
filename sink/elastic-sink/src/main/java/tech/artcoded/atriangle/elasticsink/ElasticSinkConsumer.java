@@ -19,13 +19,16 @@ import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.dto.ElasticEvent;
+import tech.artcoded.atriangle.api.dto.EventType;
 import tech.artcoded.atriangle.api.dto.KafkaEvent;
+import tech.artcoded.atriangle.api.dto.SinkResponse;
 import tech.artcoded.atriangle.core.elastic.ElasticSearchRdfService;
 import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
@@ -57,6 +60,9 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
 
   @Override
   public Map<String, String> consume(ConsumerRecord<String, String> record) throws Exception {
+    CheckedFunction<HttpEntity<ByteArrayResource>, String> inputStreamToString = entity -> entity == null || entity.getBody() == null ? null : IOUtils
+      .toString(entity.getBody().getInputStream(), StandardCharsets.UTF_8);
+
     String elasticEvent = record.value();
 
     Optional<KafkaEvent> optionalKafkaEvent = mapperWrapper.deserialize(elasticEvent, KafkaEvent.class);
@@ -81,8 +87,6 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
       ResponseEntity<ByteArrayResource> settings = fileRestFeignClient.download(event.getSettings().getId());
       ResponseEntity<ByteArrayResource> mappings = fileRestFeignClient.download(event.getMappings().getId());
 
-      CheckedFunction<HttpEntity<ByteArrayResource>, String> inputStreamToString = entity -> IOUtils.toString(entity.getBody()
-                                                                                                                    .getInputStream(), StandardCharsets.UTF_8);
 
       CreateIndexResponse response = elasticSearchRdfService.createIndex(index, createIndexRequest -> createIndexRequest.settings(inputStreamToString
                                                                                                                                     .safeApply(settings), XContentType.JSON)
@@ -104,8 +108,22 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
       throw new RuntimeException("could not index");
     }
 
-    return Map.of(IdGenerators.get(), String.format("indexing for kafka event id %s has result: status '%s', result '%s'", kafkaEvent
-      .getId(), response.status().getStatus(), response.toString()));
+    SinkResponse sinkResponse = SinkResponse.builder()
+                                            .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
+                                            .correlationId(kafkaEvent.getCorrelationId())
+                                            .finishedDate(new Date())
+                                            .response("rdf saved to the elastic search instance")
+                                            .responseType(EventType.ELASTIC_SINK_OUT)
+                                            .build();//todo think about failure..
+
+
+    KafkaEvent kafkaEventForSinkOut = kafkaEvent.toBuilder()
+                                                .id(IdGenerators.get())
+                                                .eventType(EventType.ELASTIC_SINK_OUT)
+                                                .event(mapperWrapper.serialize(sinkResponse))
+                                                .build();
+
+    return Map.of(IdGenerators.get(), mapperWrapper.serialize(kafkaEventForSinkOut));
   }
 
 

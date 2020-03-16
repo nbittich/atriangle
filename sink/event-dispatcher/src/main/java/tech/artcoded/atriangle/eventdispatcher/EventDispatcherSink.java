@@ -28,8 +28,12 @@ public class EventDispatcherSink {
   private String rdfSinkTopic;
   @Value("${event.dispatcher.rdf-sink-topic-out}")
   private String rdfSinkTopicOut;
+  @Value("${event.dispatcher.elastic-sink-topic-out}")
+  private String elasticSinkTopicOut;
   @Value("${event.dispatcher.mongodb-sink-topic}")
   private String mongoSinkTopic;
+  @Value("${event.dispatcher.mongodb-sink-topic-out}")
+  private String mongoSinkTopicOut;
 
 
   @Inject
@@ -51,16 +55,22 @@ public class EventDispatcherSink {
     optionalKafkaEvent.ifPresent(kafkaEvent -> {
       switch (kafkaEvent.getEventType()) {
         case RDF_SINK:
-          log.info("result of send event {}", sendEvent.apply(rdfSinkTopic));
+          log.info("result of send event: {}", sendEvent.apply(rdfSinkTopic));
           break;
         case MONGODB_SINK:
-          log.info("result of send event {}", sendEvent.apply(mongoSinkTopic));
+          log.info("result of send event: {}", sendEvent.apply(mongoSinkTopic));
           break;
         case ELASTIC_SINK:
-          log.info("result of send event {}", sendEvent.apply(elsticSinkTopic));
+          log.info("result of send event: {}", sendEvent.apply(elsticSinkTopic));
           break;
         case RDF_SINK_OUT:
-          log.info("result of send event {}", sendEvent.apply(rdfSinkTopicOut));
+          log.info("result of send event: {}", sendEvent.apply(rdfSinkTopicOut));
+          break;
+        case ELASTIC_SINK_OUT:
+          log.info("result of send event: {}", sendEvent.apply(elasticSinkTopicOut));
+          break;
+        case MONGODB_SINK_OUT:
+          log.info("result of send event: {}", sendEvent.apply(mongoSinkTopicOut));
           break;
         default:
           throw new RuntimeException("not supported yet");

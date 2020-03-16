@@ -119,7 +119,7 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
 
 
     KafkaEvent kafkaEventForSinkOut = kafkaEvent.toBuilder()
-                                                .id(mongoSinkEventId)
+                                                .id(IdGenerators.get())
                                                 .eventType(EventType.RDF_SINK_OUT)
                                                 .event(mapperWrapper.serialize(sinkResponse))
                                                 .build();

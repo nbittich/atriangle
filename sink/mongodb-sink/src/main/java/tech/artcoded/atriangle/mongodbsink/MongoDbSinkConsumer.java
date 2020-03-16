@@ -13,13 +13,16 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
+import tech.artcoded.atriangle.api.dto.EventType;
 import tech.artcoded.atriangle.api.dto.KafkaEvent;
 import tech.artcoded.atriangle.api.dto.MongoEvent;
+import tech.artcoded.atriangle.api.dto.SinkResponse;
 import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
+import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
 
@@ -69,7 +72,22 @@ public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
 
     log.info("saved {}", saved.toJson());
 
-    return Map.of(IdGenerators.get(), String.format("saved kafka event %s", kafkaEvent.getId()));
+    SinkResponse sinkResponse = SinkResponse.builder()
+                                            .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
+                                            .correlationId(kafkaEvent.getCorrelationId())
+                                            .finishedDate(new Date())
+                                            .response("rdf saved to the mongodb")
+                                            .responseType(EventType.MONGODB_SINK_OUT)
+                                            .build();//todo think about failure..
+
+
+    KafkaEvent kafkaEventForSinkOut = kafkaEvent.toBuilder()
+                                                .id(IdGenerators.get())
+                                                .eventType(EventType.MONGODB_SINK_OUT)
+                                                .event(mapperWrapper.serialize(sinkResponse))
+                                                .build();
+
+    return Map.of(IdGenerators.get(), mapperWrapper.serialize(kafkaEventForSinkOut));
   }
 
 

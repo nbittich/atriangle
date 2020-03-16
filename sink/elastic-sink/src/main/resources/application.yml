@@ -1,5 +1,5 @@
 out:
-  topic: event-sink-elastic-out
+  topic: event-dispatcher
 
 spring:
   profiles:
