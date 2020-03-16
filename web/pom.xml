@@ -16,7 +16,7 @@
         <module>shacl-rest</module>
         <module>upload-rest</module>
         <module>project-rest</module>
-        <module>rest</module>
+        <module>rest-gateway</module>
     </modules>
 </project>
 

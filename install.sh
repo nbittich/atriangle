@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -e # fail script on error
 
+docker-compose -f docker/docker-compose-local.yml stop
+docker-compose -f docker/docker-compose-local.yml stop
+
 docker-compose -f docker/docker-compose.yml stop
 docker-compose -f docker/docker-compose.yml rm --force
 
@@ -22,7 +25,7 @@ echo "docker logs -f docker_atrianglemongodbsink_1"
 echo "docker logs -f docker_atrianglerdfsink_1"
 echo "docker logs -f docker_atriangleeventdispatcher_1"
 
-echo "docker logs -f docker_atrianglerest_1"
+echo "docker logs -f docker_atrianglerestgateway_1"
 echo "docker logs -f docker_atriangleelasticsink_1"
 echo "docker logs -f docker_atriangleuploadrest_1"
 echo "docker logs -f docker_atriangleprojectrest_1"

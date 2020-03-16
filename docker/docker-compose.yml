@@ -245,7 +245,7 @@ services:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
     volumes:
       - event-dispatcher-storage:/user/app
-  atrianglerest:
+  atrianglerestgateway:
     restart: always
     depends_on:
       - kafkaserver
@@ -254,8 +254,8 @@ services:
     networks:
       atriangle:
         aliases:
-          - rest
-    image: atriangle/rest
+          - restgateway
+    image: atriangle/restgateway
     ports:
       - "8088:8088"
     environment:
