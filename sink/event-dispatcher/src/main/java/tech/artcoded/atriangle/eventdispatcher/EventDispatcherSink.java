@@ -10,7 +10,7 @@ import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.kafka.KafkaEvent;
+import tech.artcoded.atriangle.api.dto.KafkaEvent;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
 
 import javax.inject.Inject;

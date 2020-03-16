@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
-import tech.artcoded.atriangle.api.kafka.FileEvent;
-import tech.artcoded.atriangle.api.kafka.ProjectEvent;
+import tech.artcoded.atriangle.api.dto.FileEvent;
+import tech.artcoded.atriangle.api.dto.ProjectEvent;
+import tech.artcoded.atriangle.api.dto.SinkRequest;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 
@@ -122,16 +124,8 @@ public class ProjectRestController implements PingControllerTrait {
   }
 
   @PostMapping("/{projectId}/sink")
-  public ResponseEntity<Void> sink(@PathVariable("projectId") String projectId,
-                                   @RequestParam(value = "sinkToElastic",
-                                                 required = false,
-                                                 defaultValue = "false") boolean sinkToElastic,
-                                   @RequestParam(value = "elasticSettingsFileEventId",
-                                                 required = false) String elasticSettingsFileEventId,
-                                   @RequestParam(value = "elasticMappingsFileEventId",
-                                                 required = false) String elasticMappingsFileEventId,
-                                   @RequestParam(value = "rdfFileEventId") String rdfFileEventId) {
-    projectRestService.sink(projectId, sinkToElastic, elasticSettingsFileEventId, elasticMappingsFileEventId, rdfFileEventId);
+  public ResponseEntity<Void> sink(@RequestBody SinkRequest sinkRequest) {
+    projectRestService.sink(sinkRequest);
     return ResponseEntity.accepted().build();
   }
 

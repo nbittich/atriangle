@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.api.kafka;
+package tech.artcoded.atriangle.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
@@ -9,15 +9,18 @@ import lombok.NoArgsConstructor;
 import java.util.Date;
 
 @Data
-@Builder(toBuilder = true)
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class LogEvent {
+public class KafkaEvent implements IKafkaEvent {
+  private String id;
   private String correlationId;
-  private String message;
+  private EventType eventType;
+  private FileEvent inputToSink;
+  private FileEvent shaclModel;
   @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
               timezone = "Europe/Brussels")
   @Builder.Default
   private Date creationDate = new Date();
-  private LogEventType type;
+  private String event;
 }

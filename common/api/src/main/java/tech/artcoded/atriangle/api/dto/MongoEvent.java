@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.api.kafka;
+package tech.artcoded.atriangle.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RdfEvent {
-  private String namespace;
+public class MongoEvent {
+  private String collection;
 }

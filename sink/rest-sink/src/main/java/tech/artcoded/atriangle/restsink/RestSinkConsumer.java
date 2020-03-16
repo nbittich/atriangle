@@ -6,20 +6,19 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.kafka.ElasticEvent;
-import tech.artcoded.atriangle.api.kafka.EventType;
-import tech.artcoded.atriangle.api.kafka.KafkaEvent;
-import tech.artcoded.atriangle.api.kafka.MongoEvent;
-import tech.artcoded.atriangle.api.kafka.RdfEvent;
-import tech.artcoded.atriangle.api.kafka.RestEvent;
+import tech.artcoded.atriangle.api.dto.ElasticEvent;
+import tech.artcoded.atriangle.api.dto.EventType;
+import tech.artcoded.atriangle.api.dto.KafkaEvent;
+import tech.artcoded.atriangle.api.dto.MongoEvent;
+import tech.artcoded.atriangle.api.dto.RdfEvent;
+import tech.artcoded.atriangle.api.dto.RestEvent;
 import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
 
 import javax.inject.Inject;
 import java.util.Map;
 import java.util.Optional;
-
-import static tech.artcoded.atriangle.api.IdGenerators.UUID_SUPPLIER;
 
 @Component
 @Slf4j
@@ -51,9 +50,9 @@ public class RestSinkConsumer implements ATriangleConsumer<String, String> {
     RestEvent event = optionalRestEvent.orElseThrow(() -> new RuntimeException("event could not be parsed"));
 
 
-    String rdfSinkEventId = UUID_SUPPLIER.get();
-    String elasticSinkEventId = UUID_SUPPLIER.get();
-    String mongoSinkEventId = UUID_SUPPLIER.get();
+    String rdfSinkEventId = IdGenerators.get();
+    String elasticSinkEventId = IdGenerators.get();
+    String mongoSinkEventId = IdGenerators.get();
 
     RdfEvent rdfSinkEvent = RdfEvent.builder()
                                     .namespace(event.getNamespace())
@@ -61,30 +60,37 @@ public class RestSinkConsumer implements ATriangleConsumer<String, String> {
 
     KafkaEvent kafkaEventForRdf = KafkaEvent.builder()
                                             .id(rdfSinkEventId)
-                                            .json(kafkaEvent.getJson())
+                                            .correlationId(kafkaEvent.getCorrelationId())
+                                            .inputToSink(kafkaEvent.getInputToSink())
+                                            .shaclModel(kafkaEvent.getShaclModel())
                                             .eventType(EventType.RDF_SINK)
                                             .event(mapperWrapper.serialize(rdfSinkEvent))
                                             .build();
 
-    ElasticEvent elasticEvent = ElasticEvent.builder()
-                                            .index(event.getElasticIndex())
-                                            .createIndex(event.isCreateIndex())
-                                            .settings(event.getElasticSettingsJson())
-                                            .mappings(event.getElasticMappingsJson())
-                                            .build();
+    KafkaEvent kafkaEventForElastic = Optional.of(event).filter(RestEvent::isSinkToElastic)
+                                              .map(e -> {
+                                                ElasticEvent elasticEvent = ElasticEvent.builder()
+                                                                                        .index(e.getElasticIndex())
+                                                                                        .createIndex(true)
+                                                                                        .settings(e.getElasticSettingsJson())
+                                                                                        .mappings(e.getElasticMappingsJson())
+                                                                                        .build();
+                                                return KafkaEvent.builder()
+                                                                 .id(elasticSinkEventId)
+                                                                 .correlationId(kafkaEvent.getCorrelationId())
+                                                                 .inputToSink(kafkaEvent.getInputToSink())
+                                                                 .eventType(EventType.ELASTIC_SINK)
+                                                                 .event(mapperWrapper.serialize(elasticEvent))
+                                                                 .build();
+                                              }).orElse(null);
 
-    KafkaEvent kafkaEventForElastic = KafkaEvent.builder()
-                                                .id(elasticSinkEventId)
-                                                .json(kafkaEvent.getJson())
-                                                .eventType(EventType.ELASTIC_SINK)
-                                                .event(mapperWrapper.serialize(elasticEvent))
-                                                .build();
 
     MongoEvent mongoEvent = MongoEvent.builder().collection(event.getNamespace()).build();
 
     KafkaEvent kafkaEventForMongo = KafkaEvent.builder()
                                               .id(elasticSinkEventId)
-                                              .json(kafkaEvent.getJson())
+                                              .correlationId(kafkaEvent.getCorrelationId())
+                                              .inputToSink(kafkaEvent.getInputToSink())
                                               .eventType(EventType.MONGODB_SINK)
                                               .event(mapperWrapper.serialize(mongoEvent))
                                               .build();
@@ -92,9 +98,11 @@ public class RestSinkConsumer implements ATriangleConsumer<String, String> {
 
     log.info("sending to topic dispatcher");
 
-    return Map.of(rdfSinkEventId, mapperWrapper.serialize(kafkaEventForRdf),
-                  elasticSinkEventId, mapperWrapper.serialize(kafkaEventForElastic),
-                  mongoSinkEventId, mapperWrapper.serialize(kafkaEventForMongo));
+    return Map.of(rdfSinkEventId, mapperWrapper.serialize(kafkaEventForRdf));
+    // TODO
+    // the following must be send only if the rdfk sink worked:
+    //            elasticSinkEventId, mapperWrapper.serialize(kafkaEventForElastic),
+    //                  mongoSinkEventId, mapperWrapper.serialize(kafkaEventForMongo)
   }
 
 

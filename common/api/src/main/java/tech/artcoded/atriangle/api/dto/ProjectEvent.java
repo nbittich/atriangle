@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.api.kafka;
+package tech.artcoded.atriangle.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

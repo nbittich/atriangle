@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.kafka.LogEvent;
+import tech.artcoded.atriangle.api.dto.LogEvent;
 import tech.artcoded.atriangle.core.elastic.ElasticSearchRdfService;
 import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
 

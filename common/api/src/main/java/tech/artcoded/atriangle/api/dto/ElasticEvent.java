@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.api.kafka;
+package tech.artcoded.atriangle.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,8 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ElasticEvent {
   private String index;
-  private String settings;
-  private String mappings;
+  private FileEvent settings;
+  private FileEvent mappings;
 
   private boolean createIndex;
 }

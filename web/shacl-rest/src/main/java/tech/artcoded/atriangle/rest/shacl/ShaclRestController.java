@@ -12,7 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import tech.artcoded.atriangle.api.CheckedSupplier;
-import tech.artcoded.atriangle.api.kafka.FileEvent;
+import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;

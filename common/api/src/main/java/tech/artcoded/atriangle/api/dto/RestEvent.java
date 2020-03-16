@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.api.kafka;
+package tech.artcoded.atriangle.api.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,9 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class RestEvent {
   private String elasticIndex;
-  private boolean createIndex;
-  private String elasticMappingsJson;
-  private String elasticSettingsJson;
+  private boolean sinkToElastic;
+  private FileEvent elasticMappingsJson;
+  private FileEvent elasticSettingsJson;
   private String namespace;
-  private String shaclModel;
 }

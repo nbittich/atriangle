@@ -7,3 +7,6 @@ spring:
     name: ProjectRestPublicEndpoint
   profiles:
     include: kafka, zookeeper, rest, mongodb, feign
+  kafka:
+    template:
+      default-topic: event-sink-rest

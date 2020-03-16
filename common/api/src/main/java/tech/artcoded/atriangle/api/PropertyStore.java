@@ -2,7 +2,7 @@ package tech.artcoded.atriangle.api;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import tech.artcoded.atriangle.api.kafka.CommonConstants;
+import tech.artcoded.atriangle.api.dto.CommonConstants;
 
 import java.io.InputStream;
 import java.util.Arrays;

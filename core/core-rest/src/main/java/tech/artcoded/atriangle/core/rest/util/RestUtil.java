@@ -8,7 +8,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-import tech.artcoded.atriangle.api.kafka.FileEvent;
+import tech.artcoded.atriangle.api.dto.FileEvent;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;

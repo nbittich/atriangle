@@ -3,7 +3,7 @@ out:
 
 spring:
   profiles:
-    include: kafka,elasticsearch
+    include: kafka, elasticsearch, feign
   kafka:
     template:
       default-topic: event-sink-elastic

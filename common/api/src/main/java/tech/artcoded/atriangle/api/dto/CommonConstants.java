@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.api.kafka;
+package tech.artcoded.atriangle.api.dto;
 
 public final class CommonConstants {
   public static final String KAFKA_PROPERTY_FILE = "kafka.properties";

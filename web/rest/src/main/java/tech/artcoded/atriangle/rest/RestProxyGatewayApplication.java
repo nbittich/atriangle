@@ -12,8 +12,8 @@ import tech.artcoded.atriangle.core.rest.config.SwaggerConfig;
 @Import({KafkaConfig.class, SwaggerConfig.class})
 @EnableZuulProxy
 @EnableDiscoveryClient
-public class RestApplication {
+public class RestProxyGatewayApplication {
   public static void main(String[] args) {
-    SpringApplication.run(RestApplication.class, args);
+    SpringApplication.run(RestProxyGatewayApplication.class, args);
   }
 }

@@ -19,7 +19,7 @@ public interface ATriangleConsumer<K, V> {
 
   String getOutTopic();
 
-  Map<K, V> consume(ConsumerRecord<K, V> record);
+  Map<K, V> consume(ConsumerRecord<K, V> record) throws Exception;
 
   default Function<Map.Entry<K, V>, SendResult<K, V>> sendKafkaMessageForEachEntries() {
     return CheckedFunction.toFunction((var response) -> getKafkaTemplate().send(new ProducerRecord<>(getOutTopic(), response.getKey(), response

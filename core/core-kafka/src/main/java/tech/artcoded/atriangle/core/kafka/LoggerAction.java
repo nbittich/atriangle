@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.kafka.LogEvent;
-import tech.artcoded.atriangle.api.kafka.LogEventType;
+import tech.artcoded.atriangle.api.dto.LogEvent;
+import tech.artcoded.atriangle.api.dto.LogEventType;
 
 import java.util.UUID;
 import java.util.function.Supplier;

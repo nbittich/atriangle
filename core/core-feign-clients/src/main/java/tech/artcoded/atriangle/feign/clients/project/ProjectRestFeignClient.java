@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
-import tech.artcoded.atriangle.api.kafka.ProjectEvent;
+import tech.artcoded.atriangle.api.dto.ProjectEvent;
 
 import java.io.File;
 import java.util.List;
