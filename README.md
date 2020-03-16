@@ -1,6 +1,6 @@
 # WIP A Triangle
 
-  ![Screenshot](./docs/atriangle.png?raw=true)
+ ![Screenshot](./docs/atriangle.png?raw=true)
 
   ## Architecture Whatever Schema
 
