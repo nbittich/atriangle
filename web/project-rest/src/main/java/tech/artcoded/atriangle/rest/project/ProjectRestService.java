@@ -4,6 +4,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
@@ -12,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,6 +30,7 @@ import tech.artcoded.atriangle.api.dto.RestEvent;
 import tech.artcoded.atriangle.api.dto.SinkRequest;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.core.rest.util.ATriangleByteArrayMultipartFile;
+import tech.artcoded.atriangle.core.rest.util.RestUtil;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.shacl.ShaclRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.skosplay.SkosPlayRestFeignClient;
@@ -44,6 +47,7 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
+// TODO this class should probably be splitted in different parts / microservices
 public class ProjectRestService {
 
   private static final String DERIVED_FILE_REGEX = "-derived-output-";
@@ -189,28 +193,29 @@ public class ProjectRestService {
                                                boolean labelSkosXl,
                                                boolean ignorePostTreatmentsSkos,
                                                FileEvent xlsFileEvent) {
-    ATriangleByteArrayMultipartFile xlsInput = ATriangleByteArrayMultipartFile.builder()
-                                                                              .contentType(xlsFileEvent.getContentType())
-                                                                              .name(xlsFileEvent.getName())
-                                                                              .originalFilename(xlsFileEvent.getName())
-                                                                              .bytes(downloadFile(projectId, xlsFileEvent.getId())
-                                                                                       .getBody()
-                                                                                       .getByteArray())
-                                                                              .build();
+
+    MultipartFile xlsInput = RestUtil.transformToMultipartFile(xlsFileEvent, () -> downloadFile(projectId, xlsFileEvent.getId())
+      .getBody()
+      .getByteArray());
     String contentType = "text/turtle";
-    ResponseEntity<ByteArrayResource> response = skosPlayRestFeignClient.convertRDF("file", xlsInput, "fr", null, contentType, labelSkosXl, false, false, ignorePostTreatmentsSkos);
+    ResponseEntity<ByteArrayResource> response = skosPlayRestFeignClient.convertRDF("file", xlsInput,
+                                                                                    "fr",
+                                                                                    null,
+                                                                                    contentType,
+                                                                                    labelSkosXl,
+                                                                                    false,
+                                                                                    false, ignorePostTreatmentsSkos);
 
     ByteArrayResource body = response.getBody();
 
     String baseFileName = FilenameUtils.removeExtension(xlsFileEvent.getName());
     String outputFilename = baseFileName + DERIVED_FILE_SKOS_REGEX + IdGenerators.UUID_SUPPLIER.get() + ".ttl";
 
-    ATriangleByteArrayMultipartFile rdfOutput = ATriangleByteArrayMultipartFile.builder()
-                                                                               .contentType(contentType)
-                                                                               .name(outputFilename)
-                                                                               .originalFilename(outputFilename)
-                                                                               .bytes(body.getByteArray())
-                                                                               .build();
+    MultipartFile rdfOutput = ATriangleByteArrayMultipartFile.builder().contentType(contentType)
+                                                             .name(outputFilename)
+                                                             .originalFilename(outputFilename)
+                                                             .bytes(body.getByteArray())
+                                                             .build();
 
     return this.addFile(projectId, rdfOutput, FileEventType.SKOS_PLAY_CONVERTER_OUTPUT);
   }
@@ -247,5 +252,10 @@ public class ProjectRestService {
       kafkaTemplate.send(restRecord);
     });
 
+  }
+
+  @KafkaListener(topics = "")
+  public void sink(ConsumerRecord<String, String> record) throws Exception {
+    // TODO process result of sink
   }
 }
