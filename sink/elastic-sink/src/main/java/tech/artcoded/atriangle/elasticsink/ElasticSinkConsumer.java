@@ -73,15 +73,14 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
 
     String index = event.getIndex();
 
-    if (event.isCreateIndex()) {
-      log.info("index must be created");
-      boolean indexExist = elasticSearchRdfService.indexExist(index);
-      if (indexExist) {
-        AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.deleteIndex(index);
-        if (!acknowledgedResponse.isAcknowledged()) {
-          log.info("acknowledge false");
-          throw new RuntimeException("could not delete index");
-        }
+    log.info("index must be created");
+    boolean indexExist = elasticSearchRdfService.indexExist(index);
+
+    if (!indexExist) {
+      AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.deleteIndex(index);
+      if (!acknowledgedResponse.isAcknowledged()) {
+        log.info("acknowledge false");
+        throw new RuntimeException("could not delete index");
       }
 
       ResponseEntity<ByteArrayResource> settings = fileRestFeignClient.download(event.getSettings().getId());
@@ -112,7 +111,7 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
                                             .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
                                             .correlationId(kafkaEvent.getCorrelationId())
                                             .finishedDate(new Date())
-                                            .response("rdf saved to the elastic search instance")
+                                            .response("rdf saved to the elastic search instance".getBytes())
                                             .responseType(EventType.ELASTIC_SINK_OUT)
                                             .build();//todo think about failure..
 

@@ -76,7 +76,7 @@ public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
                                             .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
                                             .correlationId(kafkaEvent.getCorrelationId())
                                             .finishedDate(new Date())
-                                            .response("rdf saved to the mongodb")
+                                            .response("rdf saved to the mongodb".getBytes())
                                             .responseType(EventType.MONGODB_SINK_OUT)
                                             .build();//todo think about failure..
 

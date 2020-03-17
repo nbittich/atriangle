@@ -8,7 +8,6 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-import tech.artcoded.atriangle.api.CheckedSupplier;
 import tech.artcoded.atriangle.api.dto.FileEvent;
 
 import java.nio.charset.StandardCharsets;
@@ -38,14 +37,6 @@ public interface RestUtil {
                    .orElseGet(ResponseEntity.notFound()::build);
   }
 
-  static MultipartFile transformToMultipartFile(FileEvent event, CheckedSupplier<byte[]> file) {
-    return ATriangleByteArrayMultipartFile.builder().contentType(event.getContentType())
-                                          .name(event.getName())
-                                          .originalFilename(event.getName())
-                                          .bytes(file.safeGet())
-                                          .build();
-
-  }
 
 
 }

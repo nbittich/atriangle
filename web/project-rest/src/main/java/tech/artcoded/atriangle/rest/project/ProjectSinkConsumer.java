@@ -5,6 +5,9 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
+import tech.artcoded.atriangle.api.dto.FileEvent;
+import tech.artcoded.atriangle.api.dto.FileEventType;
+import tech.artcoded.atriangle.api.dto.KafkaEvent;
 import tech.artcoded.atriangle.api.dto.ProjectEvent;
 import tech.artcoded.atriangle.api.dto.SinkResponse;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
@@ -34,10 +37,10 @@ public class ProjectSinkConsumer {
 
 
   @KafkaListener(topics = {"${event.dispatcher.elastic-sink-topic-out}",
-                           "${event.dispatcher.mongodb-sink-topic-out}",
-                           "${event.dispatcher.rdf-sink-topic-out}"})
+                           "${event.dispatcher.mongodb-sink-topic-out}"})
   public void sink(ConsumerRecord<String, String> record) throws Exception {
-    SinkResponse response = objectMapperWrapper.deserialize(record.value(), SinkResponse.class).orElseThrow();
+    KafkaEvent event = objectMapperWrapper.deserialize(record.value(), KafkaEvent.class).orElseThrow();
+    SinkResponse response = objectMapperWrapper.deserialize(event.getEvent(), SinkResponse.class).orElseThrow();
     ProjectEvent projectEvent = projectRestService.findById(response.getCorrelationId()).orElseThrow();
 
 
@@ -50,5 +53,26 @@ public class ProjectSinkConsumer {
     loggerAction.info(projectEvent::getId, "received sink response with status %s, for project %s", response.getSinkResponsestatus()
                                                                                                             .name(), updatedProjectEvent
                         .getId());
+  }
+
+  @KafkaListener(topics = {"${event.dispatcher.rdf-sink-topic-out}"})
+  public void addJsonLdFile(ConsumerRecord<String, String> record) throws Exception {
+    KafkaEvent event = objectMapperWrapper.deserialize(record.value(), KafkaEvent.class).orElseThrow();
+    SinkResponse response = objectMapperWrapper.deserialize(event.getEvent(), SinkResponse.class).orElseThrow();
+    FileEvent jsonldFileEvent = objectMapperWrapper.deserialize(response.responseAsString(), FileEvent.class).orElseThrow();
+
+    ProjectEvent projectEvent = projectRestService.findById(response.getCorrelationId()).orElseThrow();
+
+
+    ProjectEvent newProjectEvent = projectEvent.toBuilder()
+                                               .fileEvents(Stream.concat(projectEvent.getFileEvents()
+                                                                                     .stream(), Stream.of(jsonldFileEvent.toBuilder()
+                                                                                                                         .eventType(FileEventType.PROJECT_FILE)
+                                                                                                                         .build()))
+                                                                 .collect(Collectors.toUnmodifiableList()))
+                                               .build();
+    ProjectEvent updatedProjectEvent = this.mongoTemplate.save(newProjectEvent);
+
+    loggerAction.info(projectEvent::getId, "received jsonld file event  for project %s", projectEvent.getName());
   }
 }

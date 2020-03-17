@@ -16,7 +16,11 @@ public class SinkResponse {
 
   private String correlationId;
   private EventType responseType;
-  private String response;
+  private byte[] response;
   private Date finishedDate;
   private SinkResponseStatus sinkResponsestatus;
+
+  public String responseAsString() {
+    return new String(response);
+  }
 }

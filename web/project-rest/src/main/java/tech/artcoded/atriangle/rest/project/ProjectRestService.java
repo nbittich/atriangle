@@ -13,17 +13,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.CheckedSupplier;
-import tech.artcoded.atriangle.api.IdGenerators;
+import tech.artcoded.atriangle.api.DateHelper;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.api.dto.FileEventType;
 import tech.artcoded.atriangle.api.dto.ProjectEvent;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
-import tech.artcoded.atriangle.core.rest.util.ATriangleByteArrayMultipartFile;
-import tech.artcoded.atriangle.core.rest.util.RestUtil;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.shacl.ShaclRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.skosplay.SkosPlayRestFeignClient;
+import tech.artcoded.atriangle.feign.clients.util.FeignMultipartFile;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -176,9 +175,13 @@ public class ProjectRestService {
                                                boolean ignorePostTreatmentsSkos,
                                                FileEvent xlsFileEvent) {
 
-    MultipartFile xlsInput = RestUtil.transformToMultipartFile(xlsFileEvent, () -> downloadFile(projectId, xlsFileEvent.getId())
-      .getBody()
-      .getByteArray());
+    MultipartFile xlsInput = FeignMultipartFile.builder().contentType(xlsFileEvent.getContentType())
+                                               .name(xlsFileEvent.getName())
+                                               .originalFilename(xlsFileEvent.getName())
+                                               .bytes(downloadFile(projectId, xlsFileEvent.getId())
+                                                        .getBody()
+                                                        .getByteArray())
+                                               .build();
     String contentType = "text/turtle";
     ResponseEntity<ByteArrayResource> response = skosPlayRestFeignClient.convertRDF("file", xlsInput,
                                                                                     "fr",
@@ -191,13 +194,13 @@ public class ProjectRestService {
     ByteArrayResource body = response.getBody();
 
     String baseFileName = FilenameUtils.removeExtension(xlsFileEvent.getName());
-    String outputFilename = baseFileName + DERIVED_FILE_SKOS_REGEX + IdGenerators.UUID_SUPPLIER.get() + ".ttl";
+    String outputFilename = baseFileName + DERIVED_FILE_SKOS_REGEX + DateHelper.formatCurrentDateForFilename() + ".ttl";
 
-    MultipartFile rdfOutput = ATriangleByteArrayMultipartFile.builder().contentType(contentType)
-                                                             .name(outputFilename)
-                                                             .originalFilename(outputFilename)
-                                                             .bytes(body.getByteArray())
-                                                             .build();
+    MultipartFile rdfOutput = FeignMultipartFile.builder().contentType(contentType)
+                                                .name(outputFilename)
+                                                .originalFilename(outputFilename)
+                                                .bytes(body.getByteArray())
+                                                .build();
 
     return this.addFile(projectId, rdfOutput, FileEventType.SKOS_PLAY_CONVERTER_OUTPUT);
   }
