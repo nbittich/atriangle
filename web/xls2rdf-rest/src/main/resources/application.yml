@@ -10,3 +10,5 @@ spring:
 logging:
   level.*: INFO
   config: classpath:logback.xml
+  file:
+    path: $(application.basePath}/logs
