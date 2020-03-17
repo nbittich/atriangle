@@ -134,6 +134,7 @@ services:
     depends_on:
       - kafkaserver
       - atrianglezookeeper
+      - atrianglemongo
     networks:
       atriangle:
         aliases:
@@ -145,6 +146,7 @@ services:
       ZOOKEEPER_URL: "zookeeper:2181"
       APPLICATION_BASE_PATH: "/usr/app/fileupload"
       JPA_DDL_STRATEGY: "create-drop"
+      MONGO_DB_HOST: "mongo"
   atriangleprojectrest:
     restart: always
     depends_on:

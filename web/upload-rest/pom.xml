@@ -22,8 +22,8 @@
             <artifactId>atriangle-shared-config</artifactId>
         </dependency>
         <dependency>
-            <groupId>tech.artcoded</groupId>
-            <artifactId>atriangle-core-database</artifactId>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-mongodb</artifactId>
         </dependency>
         <dependency>
             <groupId>tech.artcoded</groupId>
@@ -36,11 +36,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.h2database</groupId>
-            <artifactId>h2</artifactId>
-            <scope>runtime</scope>
         </dependency>
     </dependencies>
     <build>

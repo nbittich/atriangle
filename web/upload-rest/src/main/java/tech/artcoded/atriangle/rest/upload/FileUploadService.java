@@ -10,17 +10,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.api.dto.FileEventType;
-import tech.artcoded.atriangle.core.database.CrudService;
 
 import javax.inject.Inject;
-import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
-public class FileUploadService implements CrudService<String, FileUpload> {
+public class FileUploadService {
 
   private final FileUploadRepository repository;
 
@@ -32,11 +31,6 @@ public class FileUploadService implements CrudService<String, FileUpload> {
     this.repository = repository;
   }
 
-  @Override
-  public FileUploadRepository getRepository() {
-    return repository;
-  }
-
   private File getDirectory() {
     File directory = new File(apPath);
     if (!directory.exists() || !directory.isDirectory()) {
@@ -45,7 +39,6 @@ public class FileUploadService implements CrudService<String, FileUpload> {
     return directory;
   }
 
-  @Transactional
   public FileEvent upload(MultipartFile file, FileEventType uploadType) throws Exception {
     File upload = new File(getDirectory(), UUID.randomUUID()
                                                .toString() + "_" + FilenameUtils.normalize(file.getOriginalFilename()));
@@ -54,7 +47,6 @@ public class FileUploadService implements CrudService<String, FileUpload> {
     return FileUpload.transform(repository.save(apUpload));
   }
 
-  @Transactional
   public FileUpload upload(String contentType, String filename, FileEventType uploadType,
                            byte[] file) throws IOException {
     File upload = new File(getDirectory(), UUID.randomUUID()
@@ -63,10 +55,6 @@ public class FileUploadService implements CrudService<String, FileUpload> {
     FileUpload uploadNew = FileUpload.newUpload(contentType, filename, uploadType, upload.getAbsolutePath());
     uploadNew.setSize(file.length);
     return repository.save(uploadNew);
-  }
-
-  public Page<FileUpload> findAllByCreatedBy(String author, Pageable pageable) {
-    return repository.findAllByCreatedBy(author, pageable);
   }
 
   public Page<FileUpload> findAllByUploadType(FileEventType uploadType, Pageable pageable) {
@@ -90,9 +78,12 @@ public class FileUploadService implements CrudService<String, FileUpload> {
     }
   }
 
-  @Override
   public void delete(FileUpload upload) {
     repository.delete(upload);
+  }
+
+  public Optional<FileUpload> findOneById(String id) {
+    return repository.findById(id);
   }
 
   @SneakyThrows

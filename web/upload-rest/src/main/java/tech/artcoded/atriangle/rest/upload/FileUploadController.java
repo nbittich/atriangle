@@ -47,7 +47,7 @@ public class FileUploadController implements PingControllerTrait {
 
   @GetMapping("/download/{id}")
   public ResponseEntity<ByteArrayResource> download(@PathVariable("id") String id) throws Exception {
-    Optional<FileUpload> upload = uploadService.findById(id);
+    Optional<FileUpload> upload = uploadService.findOneById(id);
     return upload.map(FileUpload::transform)
                  .stream()
                  .peek(event -> loggerAction.info(event::getId, "Download request: %s, name: %s, content-type: %s, event type: %s ", event
@@ -75,7 +75,7 @@ public class FileUploadController implements PingControllerTrait {
 
   @DeleteMapping
   public Map.Entry<String, String> delete(@RequestParam("id") String id) {
-    FileUpload byId = uploadService.findById(id)
+    FileUpload byId = uploadService.findOneById(id)
                                    .stream()
                                    .peek(upload -> loggerAction.info(upload::getId, "Delete request: %s, name: %s", upload.getId(), upload
                                      .getName()))

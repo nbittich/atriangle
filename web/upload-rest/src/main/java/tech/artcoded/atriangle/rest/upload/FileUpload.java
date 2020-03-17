@@ -1,21 +1,23 @@
 package tech.artcoded.atriangle.rest.upload;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.api.dto.FileEventType;
-import tech.artcoded.atriangle.core.database.Auditable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import java.util.Date;
 import java.util.UUID;
 
-@Entity
-@Table(name = "file_rest_upload")
-public class FileUpload extends Auditable<String> {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class FileUpload {
 
   public static FileEvent transform(FileUpload fileUpload) {
     return FileEvent.builder()
@@ -59,72 +61,23 @@ public class FileUpload extends Auditable<String> {
     return upload;
   }
 
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
+              timezone = "Europe/Brussels")
+  private Date creationDate;
+
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
+              timezone = "Europe/Brussels")
+  private Date lastModifiedDate;
+
   @Id
-  @Column(name = "file_upload_id")
   private String id;
 
   private String contentType;
-  @Enumerated(EnumType.ORDINAL)
   private FileEventType uploadType;
   private String originalFilename;
   private String name;
   private String pathToFile;
   private long size;
 
-  public FileEventType getUploadType() {
-    return uploadType;
-  }
-
-  public void setUploadType(FileEventType uploadType) {
-    this.uploadType = uploadType;
-  }
-
-  public String getPathToFile() {
-    return pathToFile;
-  }
-
-  public void setPathToFile(String pathToFile) {
-    this.pathToFile = pathToFile;
-  }
-
-  public long getSize() {
-    return size;
-  }
-
-  public void setSize(long size) {
-    this.size = size;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  public String getOriginalFilename() {
-    return originalFilename;
-  }
-
-  public void setOriginalFilename(String originalFilename) {
-    this.originalFilename = originalFilename;
-  }
-
-  public String getContentType() {
-    return contentType;
-  }
-
-  public void setContentType(String contentType) {
-    this.contentType = contentType;
-  }
-
-  public String getId() {
-    return id;
-  }
-
-  public void setId(String id) {
-    this.id = id;
-  }
 
 }

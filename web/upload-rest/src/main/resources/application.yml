@@ -7,4 +7,4 @@ spring:
   application:
     name: FileRestPublicEndpoint
   profiles:
-    include: kafka, zookeeper, database, rest
+    include: kafka, zookeeper, mongodb, rest
