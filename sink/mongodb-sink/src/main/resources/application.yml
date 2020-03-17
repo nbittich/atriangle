@@ -5,7 +5,7 @@ spring:
   application:
     name: RDF_COLLECTION
   profiles:
-    include: kafka, mongodb
+    include: kafka, mongodb, feign
   kafka:
     template:
       default-topic: event-sink-mongodb

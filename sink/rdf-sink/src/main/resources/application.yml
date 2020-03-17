@@ -2,7 +2,7 @@ out:
   topic: event-dispatcher
 spring:
   profiles:
-    include: kafka, sparql
+    include: kafka, sparql, feign
   kafka:
     template:
       default-topic: event-sink-rdf
