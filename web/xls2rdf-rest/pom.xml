@@ -11,7 +11,7 @@
 
     <artifactId>atriangle-xls2rdf-rest</artifactId>
     <properties>
-        <docker.image.name>atriangle/xls2rdf-rest</docker.image.name>
+        <docker.image.name>atriangle/xls2rdf</docker.image.name>
     </properties>
     <dependencies>
         <dependency>
