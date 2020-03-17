@@ -21,8 +21,8 @@ import tech.artcoded.atriangle.api.dto.ProjectEvent;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.shacl.ShaclRestFeignClient;
-import tech.artcoded.atriangle.feign.clients.skosplay.SkosPlayRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.util.FeignMultipartFile;
+import tech.artcoded.atriangle.feign.clients.xls2rdf.Xls2RdfRestFeignClient;
 
 import javax.inject.Inject;
 import java.util.Arrays;
@@ -44,7 +44,7 @@ public class ProjectRestService {
   private final MongoTemplate mongoTemplate;
   private final FileRestFeignClient fileRestFeignClient;
   private final ShaclRestFeignClient shaclRestFeignClient;
-  private final SkosPlayRestFeignClient skosPlayRestFeignClient;
+  private final Xls2RdfRestFeignClient skosPlayRestFeignClient;
   private final LoggerAction loggerAction;
 
 
@@ -53,7 +53,7 @@ public class ProjectRestService {
                             FileRestFeignClient fileRestFeignClient,
                             ObjectMapperWrapper objectMapperWrapper,
                             ShaclRestFeignClient shaclRestFeignClient,
-                            SkosPlayRestFeignClient skosPlayRestFeignClient,
+                            Xls2RdfRestFeignClient skosPlayRestFeignClient,
                             LoggerAction loggerAction) {
     this.mongoTemplate = mongoTemplate;
     this.fileRestFeignClient = fileRestFeignClient;

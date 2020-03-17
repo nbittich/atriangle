@@ -18,9 +18,9 @@ zuul:
     sparql:
       path: /proxy/sparql/**
       url: ${sparql.endpoint.proxy.url}
-    skosplay:
-      path: /api/skosplay/**
-      url: ${skosplay.url}
+    xls2rdf:
+      path: /api/xls2rdf/**
+      serviceId: Xls2RdfRestPublicEndpoint
   host:
     connect-timeout-millis: 30000
     socket-timeout-millis: 30000

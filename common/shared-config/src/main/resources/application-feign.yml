@@ -10,4 +10,4 @@ endpoint:
   shacl:
     url: ${SHACL_ENDPOINT_URL:http://localhost:8088/api/shacl}
   skosplay:
-    url: ${SKOSPLAY_ENDPOINT_URL:http://localhost:8088/api/skosplay}
+    url: ${XLS2RDF_ENDPOINT_URL:http://localhost:8088/api/xls2rdf}

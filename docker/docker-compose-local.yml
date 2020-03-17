@@ -1,17 +1,6 @@
 version: '3'
 
 services:
-  skosplaylocal:
-    build: skosplay/.
-    restart: always
-    volumes:
-      - skosplay-storage-local:/usr/app
-    networks:
-      atrianglelocal:
-        aliases:
-          - skosplaylocal
-    ports:
-      - "8080:8080"
   atriangleblazegraphlocal:
     build: blazegraph/2.1.5/.
     restart: always
@@ -97,7 +86,6 @@ services:
 volumes:
   mongodb-storage:
   blazegraph-storage-local:
-  skosplay-storage-local:
 
 networks:
   atrianglelocal:

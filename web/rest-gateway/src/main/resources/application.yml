@@ -4,5 +4,5 @@ spring:
   application:
     name: RestPublicEndpoint
   profiles:
-    include: sparql, elasticsearch, zuul, zookeeper, rest, mongoexpress, skosplay
+    include: sparql, elasticsearch, zuul, zookeeper, rest, mongoexpress
 

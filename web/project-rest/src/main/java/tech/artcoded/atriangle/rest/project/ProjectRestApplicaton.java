@@ -9,13 +9,13 @@ import tech.artcoded.atriangle.core.kafka.KafkaConfig;
 import tech.artcoded.atriangle.core.rest.config.SwaggerConfig;
 import tech.artcoded.atriangle.feign.clients.file.DiscoverableFileRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.shacl.DiscoverableShaclRestFeignClient;
-import tech.artcoded.atriangle.feign.clients.skosplay.SkosPlayRestFeignClient;
+import tech.artcoded.atriangle.feign.clients.xls2rdf.DiscoverableXls2RdfRestFeignClient;
 
 @SpringBootApplication
 @Import({KafkaConfig.class, SwaggerConfig.class})
 @EnableDiscoveryClient
 @EnableFeignClients(clients = {DiscoverableFileRestFeignClient.class,
-                               SkosPlayRestFeignClient.class,
+                               DiscoverableXls2RdfRestFeignClient.class,
                                DiscoverableShaclRestFeignClient.class})
 public class ProjectRestApplicaton {
   public static void main(String[] args) {
