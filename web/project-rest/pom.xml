@@ -13,6 +13,10 @@
         <docker.image.name>atriangle/project-rest</docker.image.name>
     </properties>
     <dependencies>
+        <!--TODO externalize to microservice and replace skosplay <dependency>
+              <groupId>com.github.sparna-git.xls2rdf</groupId>
+             <artifactId>xls2rdf-app</artifactId>
+         </dependency> -->
         <dependency>
             <groupId>tech.artcoded</groupId>
             <artifactId>atriangle-core-rest</artifactId>

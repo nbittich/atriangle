@@ -195,7 +195,6 @@ public class ProjectRestService {
 
     String baseFileName = FilenameUtils.removeExtension(xlsFileEvent.getName());
     String outputFilename = baseFileName + DERIVED_FILE_SKOS_REGEX + DateHelper.formatCurrentDateForFilename() + ".ttl";
-
     MultipartFile rdfOutput = FeignMultipartFile.builder().contentType(contentType)
                                                 .name(outputFilename)
                                                 .originalFilename(outputFilename)
