@@ -264,8 +264,7 @@
     <modules>
         <module>common</module>
         <module>core</module>
-        <module>sink</module>
-        <module>web</module>
+        <module>microservices</module>
     </modules>
 </project>
 

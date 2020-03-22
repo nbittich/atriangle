@@ -4,12 +4,12 @@
 
     <parent>
         <groupId>tech.artcoded</groupId>
-        <artifactId>atriangle</artifactId>
+        <artifactId>atriangle-microservices</artifactId>
         <version>0.1.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>atriangle-web</artifactId>
-    <name>A Triangle Web root</name>
+    <name>A Triangle Web Microservices Root</name>
 
     <packaging>pom</packaging>
     <modules>

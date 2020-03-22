@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>atriangle-core</artifactId>
-    <name>A Triangle Core root</name>
+    <name>A Triangle Core Root</name>
 
     <packaging>pom</packaging>
     <modules>

@@ -9,7 +9,7 @@
     </parent>
 
     <artifactId>atriangle-common</artifactId>
-    <name>A Triangle Common root</name>
+    <name>A Triangle Common Root</name>
 
     <packaging>pom</packaging>
     <modules>
