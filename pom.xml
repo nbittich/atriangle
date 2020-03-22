@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>tech.artcoded</groupId>
@@ -9,6 +10,18 @@
     <name>A Triangle Root</name>
 
     <packaging>pom</packaging>
+
+    <developers>
+        <developer>
+            <name>Nordine Bittich</name>
+            <email>contact@bittich.be</email>
+            <organization>Artcoded</organization>
+            <roles>
+                <role>Main Developer</role>
+                <role>Architect</role>
+            </roles>
+        </developer>
+    </developers>
 
     <properties>
         <java.version>11</java.version>
