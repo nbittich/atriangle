@@ -162,7 +162,7 @@ public class ProjectRestService {
   public ResponseEntity<String> shaclValidation(String projectId, String shapesFileId, String rdfModelFileId) {
     FileEvent shaclFileEvent = getFileMetadata(projectId, shapesFileId).orElseThrow(() -> new RuntimeException("shacl not found in project"));
     FileEvent rdfFileEvent = getFileMetadata(projectId, rdfModelFileId).orElseThrow(() -> new RuntimeException("rdf model not found in project"));
-    return shaclRestFeignClient.validate(shaclFileEvent, rdfFileEvent);
+    return shaclRestFeignClient.validate(shapesFileId, rdfModelFileId);
   }
 
   public ResponseEntity<Map<String, String>> skosPing() {

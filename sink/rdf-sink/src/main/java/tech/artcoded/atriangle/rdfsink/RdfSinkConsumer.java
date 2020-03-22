@@ -88,7 +88,8 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
 
     if (kafkaEvent.getShaclModel() != null) {
       log.info("shacl validation");
-      ResponseEntity<String> validate = shaclRestFeignClient.validate(inputToSinkFileEvent, kafkaEvent.getShaclModel());
+      ResponseEntity<String> validate = shaclRestFeignClient.validate(inputToSinkFileEvent.getId(), kafkaEvent.getShaclModel()
+                                                                                                              .getId());
       if (validate.getStatusCodeValue() != HttpStatus.OK.value() || StringUtils.isNotEmpty(validate.getBody())) {
         log.error("validation failed {}", validate.getBody());
         loggerAction.error(kafkaEvent::getCorrelationId, String.format("validation shacl failed for event %s, result %s", kafkaEvent

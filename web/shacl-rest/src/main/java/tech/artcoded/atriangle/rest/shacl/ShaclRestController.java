@@ -39,11 +39,14 @@ public class ShaclRestController implements PingControllerTrait {
   @PostMapping(path = "/validate",
                consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   @SneakyThrows
-  public ResponseEntity<String> validate(@RequestParam("shaclFileEvent") FileEvent shaclFileEvent,
-                                         @RequestParam("modelFileEvent") FileEvent modelFileEvent) {
+  public ResponseEntity<String> validate(@RequestParam("shaclFileEventId") String shaclFileEventId,
+                                         @RequestParam("modelFileEventId") String modelFileEventId) {
 
-    ResponseEntity<ByteArrayResource> shaclDownload = fileRestFeignClient.download(shaclFileEvent.getId());
-    ResponseEntity<ByteArrayResource> modelDownload = fileRestFeignClient.download(modelFileEvent.getId());
+    FileEvent shaclFileEvent = fileRestFeignClient.findById(shaclFileEventId).getBody();
+    FileEvent modelFileEvent = fileRestFeignClient.findById(modelFileEventId).getBody();
+
+    ResponseEntity<ByteArrayResource> shaclDownload = fileRestFeignClient.download(shaclFileEventId);
+    ResponseEntity<ByteArrayResource> modelDownload = fileRestFeignClient.download(modelFileEventId);
 
     CheckedSupplier<String> shaclFile = () -> IOUtils.toString(requireNonNull(shaclDownload.getBody()).getInputStream(), StandardCharsets.UTF_8);
     CheckedSupplier<String> modelFile = () -> IOUtils.toString(requireNonNull(modelDownload.getBody()).getInputStream(), StandardCharsets.UTF_8);
