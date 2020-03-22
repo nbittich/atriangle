@@ -6,10 +6,10 @@ then
   echo "version mut be provided"
   exit -1;
 fi
- echo "release" $1 ", next" $2
 
 releaseVersion = $1
 nextVersion = $2-SNAPSHOT
+ echo "release" $releaseVersion ", next" $nextVersion
 
 mvn --batch-mode -Dtag=$releaseVersion release:prepare \
                  -DreleaseVersion=$releaseVersion \
