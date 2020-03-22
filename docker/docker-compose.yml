@@ -6,6 +6,10 @@ services:
     image: portainer/portainer:latest
     ports:
       - "9000:9000"
+    # to generate a password for portainer: docker run --rm httpd:2.4-alpine htpasswd -nbB admin '11111111' | cut -d ":" -f 2
+    # you need to escape each $ character inside the hashed password with another $ e.g $$2y$$05$$aJ1TVevLH/EyGM7bOLehyOR50USU5rZxEH9pZVPMJI8DGoJGlLSoi
+    # then uncomment the following line :
+    #command: --admin-password '$$2y$$05$$aJ1TVevLH/EyGM7bOLehyOR50USU5rZxEH9pZVPMJI8DGoJGlLSoi'
     networks:
       atriangle:
         aliases:
