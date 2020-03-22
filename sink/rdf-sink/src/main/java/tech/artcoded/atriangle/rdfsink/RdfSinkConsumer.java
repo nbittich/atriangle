@@ -16,16 +16,11 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.DateHelper;
-import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.dto.ElasticEvent;
-import tech.artcoded.atriangle.api.dto.EventType;
 import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.api.dto.FileEventType;
 import tech.artcoded.atriangle.api.dto.KafkaEvent;
-import tech.artcoded.atriangle.api.dto.MongoEvent;
 import tech.artcoded.atriangle.api.dto.RestEvent;
-import tech.artcoded.atriangle.api.dto.SinkResponse;
 import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.core.sparql.ModelConverter;
@@ -35,11 +30,8 @@ import tech.artcoded.atriangle.feign.clients.shacl.ShaclRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.util.FeignMultipartFile;
 
 import javax.inject.Inject;
-import java.util.Date;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 @Slf4j
@@ -53,26 +45,31 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
   private final ShaclRestFeignClient shaclRestFeignClient;
 
   @Getter
+  @Value("${out.topic}")
+  private String outTopic;
+
+  @Getter
   private final KafkaTemplate<String, String> kafkaTemplate;
 
   private final ObjectMapperWrapper mapperWrapper;
+  private final RdfSinkOutputProducer rdfSinkOutputProducer;
   private final LoggerAction loggerAction;
 
-  @Value("${out.topic}")
-  @Getter
-  private String outTopic;
 
   @Inject
   public RdfSinkConsumer(SimpleSparqlService sparqlService,
                          FileRestFeignClient fileRestFeignClient,
                          ShaclRestFeignClient shaclRestFeignClient,
                          KafkaTemplate<String, String> kafkaTemplate,
-                         ObjectMapperWrapper mapperWrapper, LoggerAction loggerAction) {
+                         ObjectMapperWrapper mapperWrapper,
+                         RdfSinkOutputProducer rdfSinkOutputProducer,
+                         LoggerAction loggerAction) {
     this.sparqlService = sparqlService;
     this.fileRestFeignClient = fileRestFeignClient;
     this.shaclRestFeignClient = shaclRestFeignClient;
     this.kafkaTemplate = kafkaTemplate;
     this.mapperWrapper = mapperWrapper;
+    this.rdfSinkOutputProducer = rdfSinkOutputProducer;
     this.loggerAction = loggerAction;
   }
 
@@ -125,56 +122,11 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
 
     log.info("sending other events");
 
-    String elasticSinkEventId = IdGenerators.get();
-    String mongoSinkEventId = IdGenerators.get();
-    MongoEvent mongoEvent = MongoEvent.builder().collection(event.getNamespace()).build();
 
     FileEvent jsonLdFile = derivatedFile.getBody();
 
-    KafkaEvent kafkaEventForMongo = kafkaEvent.toBuilder()
-                                              .id(mongoSinkEventId)
-                                              .eventType(EventType.MONGODB_SINK)
-                                              .inputToSink(jsonLdFile)
-                                              .event(mapperWrapper.serialize(mongoEvent))
-                                              .build();
+    return rdfSinkOutputProducer.produce(kafkaEvent, event, jsonLdFile);
 
-    SinkResponse sinkResponse = SinkResponse.builder()
-                                            .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
-                                            .correlationId(kafkaEvent.getCorrelationId())
-                                            .finishedDate(new Date())
-                                            .response(mapperWrapper.serialize(jsonLdFile).getBytes())
-                                            .responseType(EventType.RDF_SINK_OUT)
-                                            .build();//todo think about failure..
-
-
-    KafkaEvent kafkaEventForSinkOut = kafkaEvent.toBuilder()
-                                                .id(IdGenerators.get())
-                                                .eventType(EventType.RDF_SINK_OUT)
-                                                .inputToSink(jsonLdFile)
-                                                .event(mapperWrapper.serialize(sinkResponse))
-                                                .build();
-
-    KafkaEvent kafkaEventForElastic = Optional.of(event).filter(RestEvent::isSinkToElastic)
-                                              .map(e -> {
-                                                ElasticEvent elasticEvent = ElasticEvent.builder()
-                                                                                        .index(e.getElasticIndex())
-                                                                                        .createIndex(true)
-                                                                                        .settings(e.getElasticSettingsJson())
-                                                                                        .mappings(e.getElasticMappingsJson())
-                                                                                        .build();
-                                                return kafkaEvent.toBuilder()
-                                                                 .id(elasticSinkEventId)
-                                                                 .eventType(EventType.ELASTIC_SINK)
-                                                                 .inputToSink(jsonLdFile)
-                                                                 .event(mapperWrapper.serialize(elasticEvent))
-                                                                 .build();
-                                              }).orElse(null);
-
-    return Stream.of(Map.entry(IdGenerators.get(), mapperWrapper.serialize(kafkaEventForSinkOut)),
-                     Map.entry(elasticSinkEventId, mapperWrapper.serialize(kafkaEventForElastic)),
-                     Map.entry(mongoSinkEventId, mapperWrapper.serialize(kafkaEventForMongo)))
-                 .filter(e -> e.getValue() != null)
-                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
   }
 
 
