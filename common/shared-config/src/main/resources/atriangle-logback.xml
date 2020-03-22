@@ -32,6 +32,7 @@
     <logger name="fr.sparna.rdf" level="INFO"/>
     <logger name="org.hibernate" level="OFF"/>
     <logger name="org.apache.jena" level="ERROR"/>
+    <logger name="org.apache.zookeeper" level="WARN"/>
 
 
     <root level="INFO">
