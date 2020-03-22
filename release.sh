@@ -18,3 +18,4 @@ mvn --batch-mode -Dtag=$releaseVersion release:prepare \
                  -DdevelopmentVersion=$nextVersion
 
 mvn release:clean
+git pull
