@@ -1,8 +1,10 @@
 server:
   port: 8088
+application:
+  basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/rest-gateway}
 spring:
   application:
     name: RestPublicEndpoint
   profiles:
-    include: sparql, elasticsearch, zuul, zookeeper, rest, mongoexpress
+    include: sparql, elasticsearch, zuul, zookeeper, rest, mongoexpress, logging
 

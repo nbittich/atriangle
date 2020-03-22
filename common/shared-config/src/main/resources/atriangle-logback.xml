@@ -4,7 +4,7 @@
 
     <appender name="FILE"
               class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logPath}</file>
+        <file>${logPath}.app.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${logPath}.%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
             <timeBasedFileNamingAndTriggeringPolicy
@@ -29,6 +29,7 @@
 
 
     <logger name="org.springframework" level="INFO"/>
+    <logger name="fr.sparna.rdf" level="INFO"/>
     <logger name="org.hibernate" level="OFF"/>
     <logger name="org.apache.jena" level="ERROR"/>
 

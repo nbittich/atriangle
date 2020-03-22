@@ -1,0 +1,6 @@
+logging:
+  level.*: INFO
+  org.apache.zookeeper.ClientCnxn: ERROR
+  config: classpath:atriangle-logback.xml
+  file:
+    path: ${application.basePath}/logs

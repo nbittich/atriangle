@@ -5,7 +5,9 @@ log:
     index: logsink
 spring:
   profiles:
-    include: kafka,elasticsearch
+    include: kafka, elasticsearch, logging
   kafka:
     template:
       default-topic: event-sink-log
+application:
+  basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/log-sink}

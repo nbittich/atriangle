@@ -1,9 +1,10 @@
 out:
   topic: event-dispatcher
-
+application:
+  basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/elastic-sink}
 spring:
   profiles:
-    include: kafka, elasticsearch, feign
+    include: kafka, elasticsearch, feign, logging
   kafka:
     template:
       default-topic: event-sink-elastic

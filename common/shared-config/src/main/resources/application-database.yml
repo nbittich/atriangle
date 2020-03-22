@@ -1,5 +1,5 @@
 application:
-  basePath: ${APPLICATION_BASE_PATH:/${user.home}/${random.uuid}}
+  basePath: ${APPLICATION_BASE_PATH:${java.io.tmpdir}/${random.uuid}}
 spring:
   data:
     web:

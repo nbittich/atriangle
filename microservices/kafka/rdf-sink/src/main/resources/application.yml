@@ -2,7 +2,10 @@ out:
   topic: event-dispatcher
 spring:
   profiles:
-    include: kafka, sparql, feign
+    include: kafka, sparql, feign, logging
   kafka:
     template:
       default-topic: event-sink-rdf
+
+application:
+  basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/rdf-sink}

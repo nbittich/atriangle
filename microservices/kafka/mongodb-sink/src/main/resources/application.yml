@@ -5,7 +5,10 @@ spring:
   application:
     name: RDF_COLLECTION
   profiles:
-    include: kafka, mongodb, feign
+    include: kafka, mongodb, feign, logging
   kafka:
     template:
       default-topic: event-sink-mongodb
+
+application:
+  basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/mongodb-sink}

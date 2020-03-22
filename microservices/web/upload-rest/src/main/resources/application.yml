@@ -1,5 +1,5 @@
 application:
-  basePath: ${UPLOAD_BASE_PATH:/${user.home}/upload-rest}
+  basePath: ${UPLOAD_BASE_PATH:${java.io.tmpdir}/upload-rest}
   filePath: ${application.basePath}/uploads
 server:
   port: 0
@@ -7,4 +7,4 @@ spring:
   application:
     name: FileRestPublicEndpoint
   profiles:
-    include: kafka, zookeeper, mongodb, rest
+    include: kafka, zookeeper, mongodb, rest, logging

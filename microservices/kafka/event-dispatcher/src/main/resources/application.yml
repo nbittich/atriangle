@@ -6,9 +6,11 @@ event:
     mongodb-sink-topic-out: event-sink-mongodb-out
     rdf-sink-topic: event-sink-rdf
     rdf-sink-topic-out: event-sink-rdf-out
+application:
+  basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/event-dispatcher}
 spring:
   profiles:
-    include: kafka
+    include: kafka, logging
   kafka:
     template:
       default-topic: event-dispatcher

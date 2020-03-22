@@ -1,14 +1,9 @@
 application:
-  basePath: ${PROJECT_BASE_PATH:/${user.home}/xls2rdf-rest}
+  basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/xls2rdf-rest}
 server:
   port: 0
 spring:
   application:
     name: Xls2RdfRestPublicEndpoint
   profiles:
-    include: kafka, zookeeper, rest, feign
-logging:
-  level.*: INFO
-  config: classpath:logback.xml
-  file:
-    path: ${application.basePath}/logs
+    include: kafka, zookeeper, rest, feign, logging
