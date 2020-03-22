@@ -10,8 +10,8 @@ then
   exit -1;
 fi
 
- echo "release" $releaseVersion ", next" $nextVersion
-
+echo "release" $releaseVersion ", next" $nextVersion
+mvn release:clean
 
 mvn --batch-mode -Dtag=$releaseVersion release:prepare \
                  -DreleaseVersion=$releaseVersion \
