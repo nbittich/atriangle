@@ -1,7 +1,9 @@
 package tech.artcoded.atriangle.rest.project;
 
 import io.swagger.annotations.ApiOperation;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +15,12 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
+import tech.artcoded.atriangle.api.dto.CommonConstants;
 import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.api.dto.ProjectEvent;
 import tech.artcoded.atriangle.api.dto.SinkRequest;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
+import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 
 import javax.inject.Inject;
@@ -27,17 +31,20 @@ import java.util.concurrent.CompletableFuture;
 @CrossOriginRestController
 @ApiOperation("Project Rest")
 @Slf4j
-public class ProjectRestController implements PingControllerTrait {
+public class ProjectRestController implements PingControllerTrait, BuildInfoControllerTrait {
   private final ProjectRestService projectRestService;
   private final ProjectSinkProducer projectSinkProducer;
 
-  private static final String XLSX_MEDIA_TYPE = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+  @Getter
+  private final BuildProperties buildProperties;
 
   @Inject
   public ProjectRestController(ProjectRestService projectRestService,
-                               ProjectSinkProducer projectSinkProducer) {
+                               ProjectSinkProducer projectSinkProducer,
+                               BuildProperties buildProperties) {
     this.projectRestService = projectRestService;
     this.projectSinkProducer = projectSinkProducer;
+    this.buildProperties = buildProperties;
   }
 
   @PostMapping
@@ -117,7 +124,7 @@ public class ProjectRestController implements PingControllerTrait {
   ) {
     FileEvent xlsFileEvent = projectRestService.getFileMetadata(projectId, xlsFileEventId)
                                                .orElseThrow(() -> new RuntimeException("file  not found"));
-    if (!XLSX_MEDIA_TYPE.equals(xlsFileEvent.getContentType())) {
+    if (!CommonConstants.XLSX_MEDIA_TYPE.equals(xlsFileEvent.getContentType())) {
       log.error("only xlsx type supported, provided {}", xlsFileEvent.getContentType());
       return ResponseEntity.badRequest().build();
     }

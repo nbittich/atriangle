@@ -1,11 +1,13 @@
 package tech.artcoded.atriangle.rest.shacl;
 
 import io.swagger.annotations.ApiOperation;
+import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import tech.artcoded.atriangle.api.CheckedSupplier;
 import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
+import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 
@@ -27,12 +30,16 @@ import static java.util.Objects.requireNonNull;
 @CrossOriginRestController
 @ApiOperation("Shacl Validation Rest")
 @Slf4j
-public class ShaclRestController implements PingControllerTrait {
+public class ShaclRestController implements PingControllerTrait, BuildInfoControllerTrait {
   private final FileRestFeignClient fileRestFeignClient;
+  @Getter
+  private final BuildProperties buildProperties;
 
   @Inject
-  public ShaclRestController(FileRestFeignClient fileRestFeignClient) {
+  public ShaclRestController(FileRestFeignClient fileRestFeignClient,
+                             BuildProperties buildProperties) {
     this.fileRestFeignClient = fileRestFeignClient;
+    this.buildProperties = buildProperties;
   }
 
 

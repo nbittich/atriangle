@@ -1,7 +1,9 @@
 package tech.artcoded.atriangle.rest.upload;
 
 import io.swagger.annotations.ApiOperation;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.api.dto.FileEventType;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
+import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.core.rest.util.RestUtil;
 
@@ -26,15 +29,19 @@ import java.util.concurrent.CompletableFuture;
 @CrossOriginRestController
 @ApiOperation("File Upload")
 @Slf4j
-public class FileUploadController implements PingControllerTrait {
+public class FileUploadController implements PingControllerTrait, BuildInfoControllerTrait {
   private final FileUploadService uploadService;
   private final LoggerAction loggerAction;
 
+  @Getter
+  private final BuildProperties buildProperties;
+
   @Inject
   public FileUploadController(FileUploadService uploadService,
-                              LoggerAction loggerAction) {
+                              LoggerAction loggerAction, BuildProperties buildProperties) {
     this.uploadService = uploadService;
     this.loggerAction = loggerAction;
+    this.buildProperties = buildProperties;
   }
 
   @GetMapping("/by-id/{id}")

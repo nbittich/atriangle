@@ -7,21 +7,24 @@ import fr.sparna.rdf.xls2rdf.SkosPostProcessor;
 import fr.sparna.rdf.xls2rdf.SkosXlPostProcessor;
 import fr.sparna.rdf.xls2rdf.Xls2RdfConverter;
 import fr.sparna.rdf.xls2rdf.Xls2RdfPostProcessorIfc;
+import lombok.Getter;
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFWriterRegistry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
+import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
+import tech.artcoded.atriangle.core.rest.util.RestUtil;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -34,20 +37,20 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @CrossOriginRestController
-public class Xls2RdfRestController implements PingControllerTrait {
+public class Xls2RdfRestController implements PingControllerTrait, BuildInfoControllerTrait {
   private Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
-  static ResponseEntity<ByteArrayResource> transformToByteArrayResource(String filename, String contentType, byte[] file) {
-    return Optional.ofNullable(file)
-                   .map(u -> ResponseEntity.ok()
-                                           .contentType(MediaType.parseMediaType(contentType))
-                                           .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                                           .body(new ByteArrayResource(file)))
-                   .orElse(ResponseEntity.badRequest().body(null));
+
+  @Getter
+  private final BuildProperties buildProperties;
+
+  @Inject
+  public Xls2RdfRestController(BuildProperties buildProperties) {
+    this.buildProperties = buildProperties;
   }
+
 
   private enum SOURCE_TYPE {
     FILE,
@@ -166,7 +169,7 @@ public class Xls2RdfRestController implements PingControllerTrait {
 
         String filename = String.format("%s-%s.%s", resultFileName, dateString, extension);
         String contentType = useZip ? "application/zip" : theFormat.getDefaultMIMEType();
-        return transformToByteArrayResource(filename, contentType, responseOutputStream.toByteArray());
+        return RestUtil.transformToByteArrayResource(filename, contentType, responseOutputStream.toByteArray());
       }
     }
     catch (Exception e) {

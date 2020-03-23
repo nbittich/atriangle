@@ -225,9 +225,26 @@
                     <version>${spring.boot.starter.version}</version>
                     <executions>
                         <execution>
+                            <id>build-info</id>
+                            <goals>
+                                <goal>build-info</goal>
+                            </goals>
+                            <configuration>
+                                <additionalProperties>
+                                    <encoding.source>UTF-8</encoding.source>
+                                    <encoding.reporting>UTF-8</encoding.reporting>
+                                    <java.source>${java.version}</java.source>
+                                </additionalProperties>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>executable</id>
                             <goals>
                                 <goal>repackage</goal>
                             </goals>
+                            <configuration>
+                                <executable>true</executable>
+                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
