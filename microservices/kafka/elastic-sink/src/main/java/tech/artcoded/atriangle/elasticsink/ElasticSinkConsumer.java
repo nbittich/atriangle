@@ -10,6 +10,7 @@ import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.rest.RestStatus;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
@@ -40,6 +41,7 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
   @Getter
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectMapperWrapper mapperWrapper;
+  private final BuildProperties buildProperties;
 
 
   @Value("${out.topic}")
@@ -50,11 +52,13 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
   public ElasticSinkConsumer(ElasticSearchRdfService elasticSearchRdfService,
                              FileRestFeignClient fileRestFeignClient,
                              KafkaTemplate<String, String> kafkaTemplate,
-                             ObjectMapperWrapper objectMapperWrapper) {
+                             ObjectMapperWrapper objectMapperWrapper,
+                             BuildProperties buildProperties) {
     this.elasticSearchRdfService = elasticSearchRdfService;
     this.fileRestFeignClient = fileRestFeignClient;
     this.kafkaTemplate = kafkaTemplate;
     this.mapperWrapper = objectMapperWrapper;
+    this.buildProperties = buildProperties;
   }
 
 
@@ -117,6 +121,10 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
 
 
     KafkaEvent kafkaEventForSinkOut = kafkaEvent.toBuilder()
+                                                .version(buildProperties.getVersion())
+                                                .artifactId(buildProperties.getArtifact())
+                                                .groupId(buildProperties.getGroup())
+                                                .moduleName(buildProperties.getName())
                                                 .id(IdGenerators.get())
                                                 .eventType(EventType.ELASTIC_SINK_OUT)
                                                 .event(mapperWrapper.serialize(sinkResponse))

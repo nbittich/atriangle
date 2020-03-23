@@ -3,6 +3,7 @@ package tech.artcoded.atriangle.rest.project;
 import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.IdGenerators;
@@ -23,6 +24,7 @@ public class ProjectSinkProducer {
   private final ProjectRestService projectRestService;
   private final ObjectMapperWrapper objectMapperWrapper;
   private final KafkaTemplate<String, String> kafkaTemplate;
+  private final BuildProperties buildProperties;
 
   @Value("${spring.kafka.template.default-topic}")
   private String topicProducer;
@@ -30,10 +32,12 @@ public class ProjectSinkProducer {
   @Inject
   public ProjectSinkProducer(ProjectRestService projectRestService,
                              ObjectMapperWrapper objectMapperWrapper,
-                             KafkaTemplate<String, String> kafkaTemplate) {
+                             KafkaTemplate<String, String> kafkaTemplate,
+                             BuildProperties buildProperties) {
     this.projectRestService = projectRestService;
     this.objectMapperWrapper = objectMapperWrapper;
     this.kafkaTemplate = kafkaTemplate;
+    this.buildProperties = buildProperties;
   }
 
   public void sink(SinkRequest sinkRequest) {
@@ -54,7 +58,10 @@ public class ProjectSinkProducer {
                                                                                .orElse(null))
                                         .build();
 
-      KafkaEvent kafkaEvent = KafkaEvent.builder()
+      KafkaEvent kafkaEvent = KafkaEvent.withBuildPropertiesBuilder(buildProperties::getName,
+                                                                    buildProperties::getGroup,
+                                                                    buildProperties::getArtifact,
+                                                                    buildProperties::getVersion)
                                         .eventType(EventType.RDF_SINK)
                                         .correlationId(projectEvent.getId())
                                         .id(IdGenerators.get())

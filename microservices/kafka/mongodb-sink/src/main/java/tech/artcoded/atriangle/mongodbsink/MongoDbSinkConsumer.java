@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
@@ -35,6 +36,7 @@ public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
   @Getter
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectMapperWrapper mapperWrapper;
+  private final BuildProperties buildProperties;
 
 
   @Value("${out.topic}")
@@ -45,11 +47,12 @@ public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
   public MongoDbSinkConsumer(MongoTemplate mongoTemplate,
                              FileRestFeignClient fileRestFeignClient,
                              KafkaTemplate<String, String> kafkaTemplate,
-                             ObjectMapperWrapper mapperWrapper) {
+                             ObjectMapperWrapper mapperWrapper, BuildProperties buildProperties) {
     this.mongoTemplate = mongoTemplate;
     this.fileRestFeignClient = fileRestFeignClient;
     this.kafkaTemplate = kafkaTemplate;
     this.mapperWrapper = mapperWrapper;
+    this.buildProperties = buildProperties;
   }
 
 
@@ -82,6 +85,10 @@ public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
 
 
     KafkaEvent kafkaEventForSinkOut = kafkaEvent.toBuilder()
+                                                .version(buildProperties.getVersion())
+                                                .artifactId(buildProperties.getArtifact())
+                                                .groupId(buildProperties.getGroup())
+                                                .moduleName(buildProperties.getName())
                                                 .id(IdGenerators.get())
                                                 .eventType(EventType.MONGODB_SINK_OUT)
                                                 .event(mapperWrapper.serialize(sinkResponse))
