@@ -22,12 +22,12 @@ zuul:
       path: /api/xls2rdf/**
       serviceId: Xls2RdfRestPublicEndpoint
   host:
-    connect-timeout-millis: 30000
-    socket-timeout-millis: 30000
+    connect-timeout-millis: 45000
+    socket-timeout-millis: 45000
   ribbon:
     eager-load:
       enabled: on
 hystrix.command.default.execution.timeout.enabled: false
 ribbon:
-  ConnectTimeout: 30000
-  ReadTimeout: 30000
+  ConnectTimeout: 45000
+  ReadTimeout: 45000

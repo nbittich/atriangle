@@ -9,7 +9,6 @@ import org.apache.jena.riot.Lang;
 import org.apache.jena.riot.RDFLanguages;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -43,8 +42,7 @@ public class ShaclRestController implements PingControllerTrait, BuildInfoContro
   }
 
 
-  @PostMapping(path = "/validate",
-               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(path = "/validate")
   @SneakyThrows
   public ResponseEntity<String> validate(@RequestParam("shaclFileEventId") String shaclFileEventId,
                                          @RequestParam("modelFileEventId") String modelFileEventId) {
@@ -68,8 +66,7 @@ public class ShaclRestController implements PingControllerTrait, BuildInfoContro
     return report.map(ResponseEntity.badRequest()::body).orElseGet(ResponseEntity.ok()::build);
   }
 
-  @PostMapping(path = "/test",
-               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @PostMapping(path = "/test")
   public ResponseEntity<String> test(@RequestParam("shaclTurtleRules") String shaclRules,
                                      @RequestParam("sampleTurtleData") String sampleData) {
 

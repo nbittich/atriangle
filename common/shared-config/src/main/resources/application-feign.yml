@@ -1,6 +1,7 @@
 feign:
   httpclient:
-    connection-timeout: 30000
+    connection-timeout: 45000
+
 
 endpoint:
   file:

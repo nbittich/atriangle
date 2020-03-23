@@ -25,7 +25,6 @@ import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @CrossOriginRestController
@@ -106,11 +105,6 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
     return projectRestService.findAll();
   }
 
-  @GetMapping("/ping-skos")
-  public ResponseEntity<Map<String, String>> pingSkos() {
-    return projectRestService.skosPing();
-  }
-
   @PostMapping("/skos-conversion")
   public ResponseEntity<ProjectEvent> skosConversion(
     @RequestParam("projectId") String projectId,
@@ -138,6 +132,5 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
     projectSinkProducer.sink(sinkRequest);
     return ResponseEntity.accepted().build();
   }
-
 
 }
