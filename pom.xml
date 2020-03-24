@@ -228,10 +228,7 @@
             <exclude>target/**</exclude>
           </excludes>
           <includes>
-            <include>**/*.java</include>
-            <include>**/*.xml</include>
-            <include>**/*.json</include>
-            <include>**/*.yml</include>
+            <include>**</include>
           </includes>
         </configuration>
       </plugin>
