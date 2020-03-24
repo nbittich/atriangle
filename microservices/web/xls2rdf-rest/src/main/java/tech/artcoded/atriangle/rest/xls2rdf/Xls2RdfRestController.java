@@ -3,12 +3,11 @@ package tech.artcoded.atriangle.rest.xls2rdf;
 
 import fr.sparna.rdf.xls2rdf.*;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFWriterRegistry;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
@@ -26,11 +25,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 @CrossOriginRestController
+@Slf4j
 public class Xls2RdfRestController implements PingControllerTrait, BuildInfoControllerTrait, Xls2RdfRestFeignClient {
-  private Logger log = LoggerFactory.getLogger(this.getClass()
-                                                   .getName());
-
-
   @Getter
   private final BuildProperties buildProperties;
 
