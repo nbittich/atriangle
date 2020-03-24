@@ -16,9 +16,6 @@ import tech.artcoded.atriangle.api.dto.FileEventType;
 import java.util.Map;
 
 public interface FileRestFeignClient {
-  @GetMapping("/ping")
-  ResponseEntity<Map<String, String>> ping();
-
   @GetMapping("/by-id/{id}")
   ResponseEntity<FileEvent> findById(@PathVariable("id") String id);
 

@@ -6,11 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
+import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.dto.LogEvent;
 import tech.artcoded.atriangle.api.dto.LogEventType;
 
-import java.util.UUID;
 import java.util.function.Supplier;
 
 public interface LoggerAction {
@@ -24,8 +24,7 @@ public interface LoggerAction {
 
   @SneakyThrows
   default void log(String correlationId, LogEventType eventType, String messageFormat, Object... params) {
-    SendResult<String, String> response = getKafkaTemplate().send(DEFAULT_TOPIC_NAME, UUID.randomUUID()
-                                                                                          .toString(),
+    SendResult<String, String> response = getKafkaTemplate().send(DEFAULT_TOPIC_NAME, IdGenerators.get(),
                                                                   MAPPER_WRAPPER.serialize(
                                                                     LogEvent.builder()
                                                                             .message(String.format(messageFormat, params))

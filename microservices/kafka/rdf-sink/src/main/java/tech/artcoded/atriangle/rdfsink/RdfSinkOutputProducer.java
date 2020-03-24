@@ -11,6 +11,7 @@ import tech.artcoded.atriangle.api.dto.KafkaEvent;
 import tech.artcoded.atriangle.api.dto.MongoEvent;
 import tech.artcoded.atriangle.api.dto.RestEvent;
 import tech.artcoded.atriangle.api.dto.SinkResponse;
+import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
 
 import javax.inject.Inject;
 import java.util.Date;
@@ -28,20 +29,20 @@ public class RdfSinkOutputProducer {
 
   private final ObjectMapperWrapper mapperWrapper;
   private final BuildProperties buildProperties;
+  private final KafkaEventHelper kafkaEventHelper;
 
   @Inject
-  public RdfSinkOutputProducer(ObjectMapperWrapper mapperWrapper, BuildProperties buildProperties) {
+  public RdfSinkOutputProducer(ObjectMapperWrapper mapperWrapper,
+                               BuildProperties buildProperties,
+                               KafkaEventHelper kafkaEventHelper) {
     this.mapperWrapper = mapperWrapper;
     this.buildProperties = buildProperties;
+    this.kafkaEventHelper = kafkaEventHelper;
   }
 
   public Map<String, String> produce(KafkaEvent kafkaEvent, RestEvent event, FileEvent jsonLdFile) {
 
-    KafkaEvent.KafkaEventBuilder kafkaEventBuilder = kafkaEvent.toBuilder()
-                                                               .version(buildProperties.getVersion())
-                                                               .artifactId(buildProperties.getArtifact())
-                                                               .groupId(buildProperties.getGroup())
-                                                               .moduleName(buildProperties.getName());
+    KafkaEvent.KafkaEventBuilder kafkaEventBuilder = kafkaEventHelper.newKafkaEventBuilder(buildProperties);
     String elasticSinkEventId = IdGenerators.get();
     String mongoSinkEventId = IdGenerators.get();
     MongoEvent mongoEvent = MongoEvent.builder().collection(event.getNamespace()).build();

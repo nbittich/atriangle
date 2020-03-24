@@ -22,6 +22,7 @@ import tech.artcoded.atriangle.api.dto.FileEventType;
 import tech.artcoded.atriangle.api.dto.KafkaEvent;
 import tech.artcoded.atriangle.api.dto.RestEvent;
 import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
+import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.core.sparql.ModelConverter;
 import tech.artcoded.atriangle.core.sparql.SimpleSparqlService;
@@ -31,7 +32,6 @@ import tech.artcoded.atriangle.feign.clients.util.FeignMultipartFile;
 
 import javax.inject.Inject;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 @Slf4j
@@ -52,6 +52,7 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
   private final KafkaTemplate<String, String> kafkaTemplate;
 
   private final ObjectMapperWrapper mapperWrapper;
+  private final KafkaEventHelper kafkaEventHelper;
   private final RdfSinkOutputProducer rdfSinkOutputProducer;
   private final LoggerAction loggerAction;
 
@@ -62,6 +63,7 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
                          ShaclRestFeignClient shaclRestFeignClient,
                          KafkaTemplate<String, String> kafkaTemplate,
                          ObjectMapperWrapper mapperWrapper,
+                         KafkaEventHelper kafkaEventHelper,
                          RdfSinkOutputProducer rdfSinkOutputProducer,
                          LoggerAction loggerAction) {
     this.sparqlService = sparqlService;
@@ -69,6 +71,7 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
     this.shaclRestFeignClient = shaclRestFeignClient;
     this.kafkaTemplate = kafkaTemplate;
     this.mapperWrapper = mapperWrapper;
+    this.kafkaEventHelper = kafkaEventHelper;
     this.rdfSinkOutputProducer = rdfSinkOutputProducer;
     this.loggerAction = loggerAction;
   }
@@ -77,13 +80,10 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
   public Map<String, String> consume(ConsumerRecord<String, String> record) throws Exception {
     String restEvent = record.value();
 
-    Optional<KafkaEvent> optionalKafkaEvent = mapperWrapper.deserialize(restEvent, KafkaEvent.class);
-    KafkaEvent kafkaEvent = optionalKafkaEvent.orElseThrow(() -> new RuntimeException("event could not be parsed"));
-
-    Optional<RestEvent> optionalRestEvent = mapperWrapper.deserialize(kafkaEvent.getEvent(), RestEvent.class);
-    RestEvent event = optionalRestEvent.orElseThrow(() -> new RuntimeException("event could not be parsed"));
-
+    KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(restEvent);
+    RestEvent event = kafkaEventHelper.parseEvent(kafkaEvent, RestEvent.class);
     FileEvent inputToSinkFileEvent = kafkaEvent.getInputToSink();
+
     ResponseEntity<ByteArrayResource> inputToSink = fileRestFeignClient.download(inputToSinkFileEvent.getId());
 
     if (kafkaEvent.getShaclModel() != null) {

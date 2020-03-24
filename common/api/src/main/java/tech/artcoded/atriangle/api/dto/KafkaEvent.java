@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.function.Supplier;
 
 @Data
 @Builder(toBuilder = true)
@@ -24,18 +23,6 @@ public class KafkaEvent implements IKafkaEvent {
   @Builder.Default
   private Date creationDate = new Date();
   private String event;
+  private KafkaEventMetadata eventMetadata;
 
-  private String version;
-  private String artifactId;
-  private String groupId;
-  private String moduleName;
-
-  public static KafkaEventBuilder withBuildPropertiesBuilder(
-    Supplier<String> moduleName, Supplier<String> groupId, Supplier<String> artifactId, Supplier<String> version) {
-    return KafkaEvent.builder()
-                     .artifactId(artifactId.get())
-                     .version(version.get())
-                     .groupId(groupId.get())
-                     .moduleName(moduleName.get());
-  }
 }

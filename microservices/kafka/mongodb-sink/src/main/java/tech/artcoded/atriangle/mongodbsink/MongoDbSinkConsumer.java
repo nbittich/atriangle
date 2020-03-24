@@ -19,19 +19,20 @@ import tech.artcoded.atriangle.api.dto.KafkaEvent;
 import tech.artcoded.atriangle.api.dto.MongoEvent;
 import tech.artcoded.atriangle.api.dto.SinkResponse;
 import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
+import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 @Slf4j
 public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
   private final MongoTemplate mongoTemplate;
   private final FileRestFeignClient fileRestFeignClient;
+  private final KafkaEventHelper kafkaEventHelper;
 
   @Getter
   private final KafkaTemplate<String, String> kafkaTemplate;
@@ -46,10 +47,13 @@ public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
   @Inject
   public MongoDbSinkConsumer(MongoTemplate mongoTemplate,
                              FileRestFeignClient fileRestFeignClient,
+                             KafkaEventHelper kafkaEventHelper,
                              KafkaTemplate<String, String> kafkaTemplate,
-                             ObjectMapperWrapper mapperWrapper, BuildProperties buildProperties) {
+                             ObjectMapperWrapper mapperWrapper,
+                             BuildProperties buildProperties) {
     this.mongoTemplate = mongoTemplate;
     this.fileRestFeignClient = fileRestFeignClient;
+    this.kafkaEventHelper = kafkaEventHelper;
     this.kafkaTemplate = kafkaTemplate;
     this.mapperWrapper = mapperWrapper;
     this.buildProperties = buildProperties;
@@ -60,10 +64,8 @@ public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
   public Map<String, String> consume(ConsumerRecord<String, String> record) throws Exception {
     String mongoEvent = record.value();
 
-    Optional<KafkaEvent> optionalKafkaEvent = mapperWrapper.deserialize(mongoEvent, KafkaEvent.class);
-    KafkaEvent kafkaEvent = optionalKafkaEvent.orElseThrow(() -> new RuntimeException("event could not be parsed"));
-    Optional<MongoEvent> optionalMongoEvent = mapperWrapper.deserialize(kafkaEvent.getEvent(), MongoEvent.class);
-    MongoEvent event = optionalMongoEvent.orElseThrow(() -> new RuntimeException("event could not be parsed"));
+    KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(mongoEvent);
+    MongoEvent event = kafkaEventHelper.parseEvent(kafkaEvent, MongoEvent.class);
 
     ResponseEntity<ByteArrayResource> inputToSink = fileRestFeignClient.download(kafkaEvent.getInputToSink().getId());
 
@@ -84,15 +86,11 @@ public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
                                             .build();//todo think about failure..
 
 
-    KafkaEvent kafkaEventForSinkOut = kafkaEvent.toBuilder()
-                                                .version(buildProperties.getVersion())
-                                                .artifactId(buildProperties.getArtifact())
-                                                .groupId(buildProperties.getGroup())
-                                                .moduleName(buildProperties.getName())
-                                                .id(IdGenerators.get())
-                                                .eventType(EventType.MONGODB_SINK_OUT)
-                                                .event(mapperWrapper.serialize(sinkResponse))
-                                                .build();
+    KafkaEvent kafkaEventForSinkOut = kafkaEventHelper.copyKafkaEventBuilder(kafkaEvent, buildProperties)
+                                                      .id(IdGenerators.get())
+                                                      .eventType(EventType.MONGODB_SINK_OUT)
+                                                      .event(mapperWrapper.serialize(sinkResponse))
+                                                      .build();
 
     return Map.of(IdGenerators.get(), mapperWrapper.serialize(kafkaEventForSinkOut));
   }

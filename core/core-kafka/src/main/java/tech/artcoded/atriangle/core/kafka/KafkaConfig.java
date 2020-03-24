@@ -11,6 +11,7 @@ import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import static tech.artcoded.atriangle.core.kafka.NamedBean.KAFKA_EVENT_HELPER;
 import static tech.artcoded.atriangle.core.kafka.NamedBean.LOGGER_ACTION;
 import static tech.artcoded.atriangle.core.kafka.NamedBean.OBJECT_MAPPER_WRAPPER;
 
@@ -30,6 +31,12 @@ public class KafkaConfig {
   @Named(OBJECT_MAPPER_WRAPPER)
   public ObjectMapperWrapper objectMapperWrapper() {
     return ObjectMapper::new;
+  }
+
+  @Bean
+  @Named(KAFKA_EVENT_HELPER)
+  public KafkaEventHelper kafkaEventHelper() {
+    return this::objectMapperWrapper;
   }
 
   @Bean

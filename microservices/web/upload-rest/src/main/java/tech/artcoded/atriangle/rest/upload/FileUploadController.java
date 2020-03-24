@@ -5,13 +5,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.api.dto.FileEventType;
@@ -20,6 +14,7 @@ import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.core.rest.util.RestUtil;
+import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 
 import javax.inject.Inject;
 import java.util.Map;
@@ -29,7 +24,7 @@ import java.util.concurrent.CompletableFuture;
 @CrossOriginRestController
 @ApiOperation("File Upload")
 @Slf4j
-public class FileUploadController implements PingControllerTrait, BuildInfoControllerTrait {
+public class FileUploadController implements BuildInfoControllerTrait, PingControllerTrait, FileRestFeignClient {
   private final FileUploadService uploadService;
   private final LoggerAction loggerAction;
 
@@ -44,16 +39,16 @@ public class FileUploadController implements PingControllerTrait, BuildInfoContr
     this.buildProperties = buildProperties;
   }
 
-  @GetMapping("/by-id/{id}")
-  public ResponseEntity<FileEvent> findById(@PathVariable("id") String id) {
+  @Override
+  public ResponseEntity<FileEvent> findById(String id) {
     return uploadService.findOneById(id)
                         .map(FileUpload::transform)
                         .map(ResponseEntity.ok()::body)
                         .orElseGet(ResponseEntity.notFound()::build);
   }
 
-  @GetMapping("/download/{id}")
-  public ResponseEntity<ByteArrayResource> download(@PathVariable("id") String id) throws Exception {
+  @Override
+  public ResponseEntity<ByteArrayResource> download(String id) throws Exception {
     Optional<FileUpload> upload = uploadService.findOneById(id);
     return upload.map(FileUpload::transform)
                  .stream()
@@ -65,10 +60,8 @@ public class FileUploadController implements PingControllerTrait, BuildInfoContr
   }
 
 
-  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<FileEvent> upload(@RequestParam("file") MultipartFile file,
-                                          @RequestParam(value = "fileUploadType",
-                                                        defaultValue = "SHARED_FILE") FileEventType fileUploadType) throws Exception {
+  @Override
+  public ResponseEntity<FileEvent> upload(MultipartFile file, FileEventType fileUploadType) throws Exception {
     return Optional.of(uploadService.upload(file, fileUploadType))
                    .stream()
                    .peek(event -> loggerAction.info(event::getId, "Upload request: %s, name: %s, content-type: %s, event type: %s ", event
@@ -80,8 +73,8 @@ public class FileUploadController implements PingControllerTrait, BuildInfoContr
   }
 
 
-  @DeleteMapping
-  public Map.Entry<String, String> delete(@RequestParam("id") String id) {
+  @Override
+  public Map.Entry<String, String> delete(String id) {
     FileUpload byId = uploadService.findOneById(id)
                                    .stream()
                                    .peek(upload -> loggerAction.info(upload::getId, "Delete request: %s, name: %s", upload.getId(), upload

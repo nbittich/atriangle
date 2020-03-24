@@ -25,19 +25,20 @@ import tech.artcoded.atriangle.api.dto.KafkaEvent;
 import tech.artcoded.atriangle.api.dto.SinkResponse;
 import tech.artcoded.atriangle.core.elastic.ElasticSearchRdfService;
 import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
+import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.Map;
-import java.util.Optional;
 
 @Component
 @Slf4j
 public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
   private final ElasticSearchRdfService elasticSearchRdfService;
   private final FileRestFeignClient fileRestFeignClient;
+  private final KafkaEventHelper kafkaEventHelper;
   @Getter
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectMapperWrapper mapperWrapper;
@@ -51,11 +52,13 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
   @Inject
   public ElasticSinkConsumer(ElasticSearchRdfService elasticSearchRdfService,
                              FileRestFeignClient fileRestFeignClient,
+                             KafkaEventHelper kafkaEventHelper,
                              KafkaTemplate<String, String> kafkaTemplate,
                              ObjectMapperWrapper objectMapperWrapper,
                              BuildProperties buildProperties) {
     this.elasticSearchRdfService = elasticSearchRdfService;
     this.fileRestFeignClient = fileRestFeignClient;
+    this.kafkaEventHelper = kafkaEventHelper;
     this.kafkaTemplate = kafkaTemplate;
     this.mapperWrapper = objectMapperWrapper;
     this.buildProperties = buildProperties;
@@ -69,11 +72,8 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
 
     String elasticEvent = record.value();
 
-    Optional<KafkaEvent> optionalKafkaEvent = mapperWrapper.deserialize(elasticEvent, KafkaEvent.class);
-    KafkaEvent kafkaEvent = optionalKafkaEvent.orElseThrow(() -> new RuntimeException("event could not be parsed"));
-
-    Optional<ElasticEvent> optionalElasticEvent = mapperWrapper.deserialize(kafkaEvent.getEvent(), ElasticEvent.class);
-    ElasticEvent event = optionalElasticEvent.orElseThrow(() -> new RuntimeException("event could not be parsed"));
+    KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(elasticEvent);
+    ElasticEvent event = kafkaEventHelper.parseEvent(kafkaEvent, ElasticEvent.class);
 
     String index = event.getIndex();
 
@@ -120,15 +120,11 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
                                             .build();//todo think about failure..
 
 
-    KafkaEvent kafkaEventForSinkOut = kafkaEvent.toBuilder()
-                                                .version(buildProperties.getVersion())
-                                                .artifactId(buildProperties.getArtifact())
-                                                .groupId(buildProperties.getGroup())
-                                                .moduleName(buildProperties.getName())
-                                                .id(IdGenerators.get())
-                                                .eventType(EventType.ELASTIC_SINK_OUT)
-                                                .event(mapperWrapper.serialize(sinkResponse))
-                                                .build();
+    KafkaEvent kafkaEventForSinkOut = kafkaEventHelper.copyKafkaEventBuilder(kafkaEvent, buildProperties)
+                                                      .id(IdGenerators.get())
+                                                      .eventType(EventType.ELASTIC_SINK_OUT)
+                                                      .event(mapperWrapper.serialize(sinkResponse))
+                                                      .build();
 
     return Map.of(IdGenerators.get(), mapperWrapper.serialize(kafkaEventForSinkOut));
   }

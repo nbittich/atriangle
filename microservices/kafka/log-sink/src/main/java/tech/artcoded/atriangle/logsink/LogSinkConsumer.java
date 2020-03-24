@@ -13,11 +13,11 @@ import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.dto.LogEvent;
 import tech.artcoded.atriangle.core.elastic.ElasticSearchRdfService;
 import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
+import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 @Component
@@ -27,6 +27,7 @@ public class LogSinkConsumer implements ATriangleConsumer<String, String> {
   @Getter
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectMapperWrapper mapperWrapper;
+  private final KafkaEventHelper kafkaEventHelper;
 
   @Value("${log.sink.index}")
   private String logSinkIndex;
@@ -47,10 +48,12 @@ public class LogSinkConsumer implements ATriangleConsumer<String, String> {
   @Inject
   public LogSinkConsumer(ElasticSearchRdfService elasticSearchRdfService,
                          KafkaTemplate<String, String> kafkaTemplate,
-                         ObjectMapperWrapper objectMapperWrapper) {
+                         ObjectMapperWrapper objectMapperWrapper,
+                         KafkaEventHelper kafkaEventHelper) {
     this.elasticSearchRdfService = elasticSearchRdfService;
     this.kafkaTemplate = kafkaTemplate;
     this.mapperWrapper = objectMapperWrapper;
+    this.kafkaEventHelper = kafkaEventHelper;
   }
 
 
@@ -58,9 +61,7 @@ public class LogSinkConsumer implements ATriangleConsumer<String, String> {
   public Map<String, String> consume(ConsumerRecord<String, String> record) {
     String logEvent = record.value();
 
-    Optional<LogEvent> optionalElasticEvent = mapperWrapper.deserialize(logEvent, LogEvent.class);
-    LogEvent event = optionalElasticEvent.orElseThrow(() -> new RuntimeException("event could not be parsed"));
-
+    LogEvent event = kafkaEventHelper.parseEvent(logEvent, LogEvent.class);
 
     String uuid = UUID.randomUUID()
                       .toString();
