@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
-
 public interface Xls2RdfRestFeignClient {
   /**
    * @param sourceString   type of source ("file", "url")
@@ -48,8 +46,5 @@ public interface Xls2RdfRestFeignClient {
                   required = false) boolean ignorePostProc
   ) throws Exception;
 
-  @RequestMapping(method = RequestMethod.GET,
-                  value = "/rest/ping")
-  ResponseEntity<Map<String, String>> ping();
 
 }

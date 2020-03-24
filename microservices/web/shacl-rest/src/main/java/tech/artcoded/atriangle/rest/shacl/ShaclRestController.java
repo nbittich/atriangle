@@ -10,14 +10,13 @@ import org.apache.jena.riot.RDFLanguages;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import tech.artcoded.atriangle.api.CheckedSupplier;
 import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
+import tech.artcoded.atriangle.feign.clients.shacl.ShaclRestFeignClient;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
@@ -29,7 +28,7 @@ import static java.util.Objects.requireNonNull;
 @CrossOriginRestController
 @ApiOperation("Shacl Validation Rest")
 @Slf4j
-public class ShaclRestController implements PingControllerTrait, BuildInfoControllerTrait {
+public class ShaclRestController implements PingControllerTrait, BuildInfoControllerTrait, ShaclRestFeignClient {
   private final FileRestFeignClient fileRestFeignClient;
   @Getter
   private final BuildProperties buildProperties;
@@ -42,10 +41,10 @@ public class ShaclRestController implements PingControllerTrait, BuildInfoContro
   }
 
 
-  @PostMapping(path = "/validate")
   @SneakyThrows
-  public ResponseEntity<String> validate(@RequestParam("shaclFileEventId") String shaclFileEventId,
-                                         @RequestParam("modelFileEventId") String modelFileEventId) {
+  @Override
+  public ResponseEntity<String> validate(String shaclFileEventId,
+                                         String modelFileEventId) {
 
     FileEvent shaclFileEvent = fileRestFeignClient.findById(shaclFileEventId).getBody();
     FileEvent modelFileEvent = fileRestFeignClient.findById(modelFileEventId).getBody();
@@ -66,9 +65,8 @@ public class ShaclRestController implements PingControllerTrait, BuildInfoContro
     return report.map(ResponseEntity.badRequest()::body).orElseGet(ResponseEntity.ok()::build);
   }
 
-  @PostMapping(path = "/test")
-  public ResponseEntity<String> test(@RequestParam("shaclTurtleRules") String shaclRules,
-                                     @RequestParam("sampleTurtleData") String sampleData) {
+  @Override
+  public ResponseEntity<String> test(String shaclRules, String sampleData) {
 
     Optional<String> report = ShaclValidationUtils.validate(sampleData, Lang.TURTLE, shaclRules, Lang.TURTLE);
     return report.map(ResponseEntity.badRequest()::body).orElseGet(ResponseEntity.ok()::build);

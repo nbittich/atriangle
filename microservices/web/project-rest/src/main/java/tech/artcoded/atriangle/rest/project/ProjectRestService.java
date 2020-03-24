@@ -27,7 +27,6 @@ import tech.artcoded.atriangle.feign.clients.xls2rdf.Xls2RdfRestFeignClient;
 import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -160,13 +159,8 @@ public class ProjectRestService {
   }
 
   public ResponseEntity<String> shaclValidation(String projectId, String shapesFileId, String rdfModelFileId) {
-    FileEvent shaclFileEvent = getFileMetadata(projectId, shapesFileId).orElseThrow(() -> new RuntimeException("shacl not found in project"));
-    FileEvent rdfFileEvent = getFileMetadata(projectId, rdfModelFileId).orElseThrow(() -> new RuntimeException("rdf model not found in project"));
+    //todo check belongs to project
     return shaclRestFeignClient.validate(shapesFileId, rdfModelFileId);
-  }
-
-  public ResponseEntity<Map<String, String>> skosPing() {
-    return skosPlayRestFeignClient.ping();
   }
 
   @SneakyThrows

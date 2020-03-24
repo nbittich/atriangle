@@ -1,12 +1,7 @@
 package tech.artcoded.atriangle.rest.xls2rdf;
 
 
-import fr.sparna.rdf.xls2rdf.ModelWriterFactory;
-import fr.sparna.rdf.xls2rdf.ModelWriterIfc;
-import fr.sparna.rdf.xls2rdf.SkosPostProcessor;
-import fr.sparna.rdf.xls2rdf.SkosXlPostProcessor;
-import fr.sparna.rdf.xls2rdf.Xls2RdfConverter;
-import fr.sparna.rdf.xls2rdf.Xls2RdfPostProcessorIfc;
+import fr.sparna.rdf.xls2rdf.*;
 import lombok.Getter;
 import org.apache.commons.lang.NotImplementedException;
 import org.eclipse.rdf4j.rio.RDFFormat;
@@ -16,21 +11,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.core.rest.util.RestUtil;
+import tech.artcoded.atriangle.feign.clients.xls2rdf.Xls2RdfRestFeignClient;
 
 import javax.inject.Inject;
-import javax.servlet.http.HttpServletRequest;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -39,7 +28,7 @@ import java.util.Date;
 import java.util.List;
 
 @CrossOriginRestController
-public class Xls2RdfRestController implements PingControllerTrait, BuildInfoControllerTrait {
+public class Xls2RdfRestController implements PingControllerTrait, BuildInfoControllerTrait, Xls2RdfRestFeignClient {
   private Logger log = LoggerFactory.getLogger(this.getClass().getName());
 
 
@@ -51,54 +40,16 @@ public class Xls2RdfRestController implements PingControllerTrait, BuildInfoCont
     this.buildProperties = buildProperties;
   }
 
-
   private enum SOURCE_TYPE {
     FILE,
     URL,
   }
 
-  /**
-   * @param sourceString   type of source ("file", "url", "example", "google")
-   * @param file           uploaded file if source=file
-   * @param language       language of the labels to generate
-   * @param url            URL of the file if source=url
-   * @param format         output format of the generated files
-   * @param useskosxl      flag to generate SKOS-XL or not
-   * @param useZip         flag to output result in a ZIP file or not
-   * @param useGraph       flag to indicate if graph files should be generated or not
-   * @param ignorePostProc flag to indicate if graph files should be generated or not
-   * @param request        the request
-   * @return
-   * @throws Exception
-   */
-  @PostMapping(value = "/convert")
-  public ResponseEntity<ByteArrayResource> convertRDF(
-    @RequestParam(value = "source",
-                  required = true) String sourceString,
-    @RequestParam(value = "file",
-                  required = false) MultipartFile file,
-    @RequestParam(value = "language",
-                  required = false) String language,
-    @RequestParam(value = "url",
-                  required = false) String url,
-    @RequestParam(value = "output",
-                  required = false) String format,
-    @RequestParam(value = "useskosxl",
-                  required = false) boolean useskosxl,
-    @RequestParam(value = "usezip",
-                  required = false) boolean useZip,
-    @RequestParam(value = "usegraph",
-                  required = false) boolean useGraph,
-    @RequestParam(value = "ignorePostProc",
-                  required = false) boolean ignorePostProc,
-    HttpServletRequest request
-  ) throws Exception {
+  @Override
+  public ResponseEntity<ByteArrayResource> convertRDF(String sourceString,MultipartFile file, String language,String url,
+     String format, boolean useskosxl, boolean useZip, boolean useGraph, boolean ignorePostProc) throws Exception {
     SOURCE_TYPE source = SOURCE_TYPE.valueOf(sourceString.toUpperCase());
     RDFFormat theFormat = RDFWriterRegistry.getInstance().getFileFormatForMIMEType(format).orElse(RDFFormat.RDFXML);
-
-    URL baseURL = new URL("http://" + request.getServerName() + ((request.getServerPort() != 80) ? ":" + request.getServerPort() : "") + request
-      .getContextPath());
-    log.debug("Base URL is " + baseURL.toString());
 
     /**************************CONVERSION RDF**************************/
     InputStream in = null;
