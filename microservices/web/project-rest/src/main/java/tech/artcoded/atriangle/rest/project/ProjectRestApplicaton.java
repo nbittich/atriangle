@@ -15,8 +15,8 @@ import tech.artcoded.atriangle.feign.clients.xls2rdf.DiscoverableXls2RdfRestFeig
 @Import({KafkaConfig.class, SwaggerConfig.class})
 @EnableDiscoveryClient
 @EnableFeignClients(clients = {DiscoverableFileRestFeignClient.class,
-                               DiscoverableXls2RdfRestFeignClient.class,
-                               DiscoverableShaclRestFeignClient.class})
+  DiscoverableXls2RdfRestFeignClient.class,
+  DiscoverableShaclRestFeignClient.class})
 public class ProjectRestApplicaton {
   public static void main(String[] args) {
     SpringApplication.run(ProjectRestApplicaton.class, args);

@@ -113,7 +113,8 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
     String baseFileName = FilenameUtils.removeExtension(inputToSinkFileEvent.getOriginalFilename()) + "-" + RandomStringUtils.randomAlphanumeric(3);
     String outputFilename = baseFileName + DERIVED_FILE_JSON_LD_REGEX + DateHelper.formatCurrentDateForFilename() + ".json";
     String jsonld = ModelConverter.inputStreamToLang(inputToSinkFileEvent.getName(), inputToSink.getBody()::getInputStream, RDFFormat.JSONLD);
-    MultipartFile rdfOutput = FeignMultipartFile.builder().contentType(MediaType.APPLICATION_JSON_VALUE)
+    MultipartFile rdfOutput = FeignMultipartFile.builder()
+                                                .contentType(MediaType.APPLICATION_JSON_VALUE)
                                                 .name(outputFilename)
                                                 .originalFilename(outputFilename)
                                                 .bytes(jsonld.getBytes())

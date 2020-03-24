@@ -9,11 +9,7 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.dto.EventType;
-import tech.artcoded.atriangle.api.dto.KafkaEvent;
-import tech.artcoded.atriangle.api.dto.ProjectEvent;
-import tech.artcoded.atriangle.api.dto.RestEvent;
-import tech.artcoded.atriangle.api.dto.SinkRequest;
+import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
 
 import javax.inject.Inject;
@@ -50,7 +46,8 @@ public class ProjectSinkProducer {
     CompletableFuture.runAsync(() -> {
       String projectId = sinkRequest.getProjectId();
       log.info("sink {}, request {}", projectId, sinkRequest.getRdfFileEventId());
-      ProjectEvent projectEvent = projectRestService.findById(projectId).orElseThrow();
+      ProjectEvent projectEvent = projectRestService.findById(projectId)
+                                                    .orElseThrow();
       String ns = Optional.ofNullable(sinkRequest.getNamespace())
                           .filter(StringUtils::isNotEmpty)
                           .orElseGet(projectEvent::getName);

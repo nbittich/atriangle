@@ -11,9 +11,7 @@ import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import javax.inject.Inject;
 import javax.inject.Named;
 
-import static tech.artcoded.atriangle.core.kafka.NamedBean.KAFKA_EVENT_HELPER;
-import static tech.artcoded.atriangle.core.kafka.NamedBean.LOGGER_ACTION;
-import static tech.artcoded.atriangle.core.kafka.NamedBean.OBJECT_MAPPER_WRAPPER;
+import static tech.artcoded.atriangle.core.kafka.NamedBean.*;
 
 @Configuration
 @Slf4j

@@ -5,11 +5,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.dto.FileEvent;
-import tech.artcoded.atriangle.api.dto.FileEventType;
-import tech.artcoded.atriangle.api.dto.KafkaEvent;
-import tech.artcoded.atriangle.api.dto.ProjectEvent;
-import tech.artcoded.atriangle.api.dto.SinkResponse;
+import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
 
@@ -40,13 +36,14 @@ public class ProjectSinkConsumer {
 
 
   @KafkaListener(topics = {"${event.dispatcher.elastic-sink-topic-out}",
-                           "${event.dispatcher.mongodb-sink-topic-out}"})
+    "${event.dispatcher.mongodb-sink-topic-out}"})
   public void sink(ConsumerRecord<String, String> record) throws Exception {
 
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(record.value());
     SinkResponse response = kafkaEventHelper.parseEvent(kafkaEvent, SinkResponse.class);
 
-    ProjectEvent projectEvent = projectRestService.findById(response.getCorrelationId()).orElseThrow();
+    ProjectEvent projectEvent = projectRestService.findById(response.getCorrelationId())
+                                                  .orElseThrow();
 
 
     ProjectEvent newProjectEvent = projectEvent.toBuilder()
@@ -65,9 +62,11 @@ public class ProjectSinkConsumer {
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(record.value());
     SinkResponse response = kafkaEventHelper.parseEvent(kafkaEvent, SinkResponse.class);
 
-    FileEvent jsonLdFileEvent = objectMapperWrapper.deserialize(response.responseAsString(), FileEvent.class).orElseThrow();
+    FileEvent jsonLdFileEvent = objectMapperWrapper.deserialize(response.responseAsString(), FileEvent.class)
+                                                   .orElseThrow();
 
-    ProjectEvent projectEvent = projectRestService.findById(response.getCorrelationId()).orElseThrow();
+    ProjectEvent projectEvent = projectRestService.findById(response.getCorrelationId())
+                                                  .orElseThrow();
 
 
     ProjectEvent newProjectEvent = projectEvent.toBuilder()

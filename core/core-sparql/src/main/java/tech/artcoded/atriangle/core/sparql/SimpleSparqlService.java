@@ -40,7 +40,8 @@ public interface SimpleSparqlService {
     if (!namespaceExists(namespace)) {
       LOGGER.info("namespace {} does not exist", namespace);
       LOGGER.info("Create namespace {}...", namespace);
-      getRemoteRepositoryManager().createRepository(namespace, CREATE_NAMESPACE_PROPERTIES.apply(namespace).toProperties());
+      getRemoteRepositoryManager().createRepository(namespace, CREATE_NAMESPACE_PROPERTIES.apply(namespace)
+                                                                                          .toProperties());
       LOGGER.info("Create namespace {} done", namespace);
     }
     else {
@@ -88,7 +89,7 @@ public interface SimpleSparqlService {
   default JettyResponseListener getNamespaceProperties(String namespace) {
 
     final ConnectOptions opts = new ConnectOptions(getServiceUrl() + "/namespace/"
-                                                   + namespace + "/properties");
+                                                     + namespace + "/properties");
     opts.method = "GET";
     return getRemoteRepositoryManager().doConnect(opts);
 
@@ -104,7 +105,8 @@ public interface SimpleSparqlService {
         if (stmt.getPredicate()
                 .toString()
                 .equals(SD.KB_NAMESPACE.stringValue())) {
-          if (namespace.equals(stmt.getObject().stringValue())) {
+          if (namespace.equals(stmt.getObject()
+                                   .stringValue())) {
             return true;
           }
         }
@@ -115,7 +117,8 @@ public interface SimpleSparqlService {
       return false;
     }
     finally {
-      Optional.ofNullable(res).ifPresent(CheckedConsumer.toConsumer(GraphQueryResult::close));
+      Optional.ofNullable(res)
+              .ifPresent(CheckedConsumer.toConsumer(GraphQueryResult::close));
     }
     return false;
   }

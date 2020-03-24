@@ -46,8 +46,10 @@ public class ShaclRestController implements PingControllerTrait, BuildInfoContro
   public ResponseEntity<String> validate(String shaclFileEventId,
                                          String modelFileEventId) {
 
-    FileEvent shaclFileEvent = fileRestFeignClient.findById(shaclFileEventId).getBody();
-    FileEvent modelFileEvent = fileRestFeignClient.findById(modelFileEventId).getBody();
+    FileEvent shaclFileEvent = fileRestFeignClient.findById(shaclFileEventId)
+                                                  .getBody();
+    FileEvent modelFileEvent = fileRestFeignClient.findById(modelFileEventId)
+                                                  .getBody();
 
     ResponseEntity<ByteArrayResource> shaclDownload = fileRestFeignClient.download(shaclFileEventId);
     ResponseEntity<ByteArrayResource> modelDownload = fileRestFeignClient.download(modelFileEventId);
@@ -62,13 +64,15 @@ public class ShaclRestController implements PingControllerTrait, BuildInfoContro
                                                             RDFLanguages.filenameToLang(shaclFileEvent.getOriginalFilename())
     );
 
-    return report.map(ResponseEntity.badRequest()::body).orElseGet(ResponseEntity.ok()::build);
+    return report.map(ResponseEntity.badRequest()::body)
+                 .orElseGet(ResponseEntity.ok()::build);
   }
 
   @Override
   public ResponseEntity<String> test(String shaclRules, String sampleData) {
 
     Optional<String> report = ShaclValidationUtils.validate(sampleData, Lang.TURTLE, shaclRules, Lang.TURTLE);
-    return report.map(ResponseEntity.badRequest()::body).orElseGet(ResponseEntity.ok()::build);
+    return report.map(ResponseEntity.badRequest()::body)
+                 .orElseGet(ResponseEntity.ok()::build);
   }
 }

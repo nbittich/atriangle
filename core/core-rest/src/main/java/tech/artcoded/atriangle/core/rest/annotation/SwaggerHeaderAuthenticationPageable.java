@@ -33,8 +33,8 @@ import java.lang.annotation.Target;
                                        dataType = "string",
                                        paramType = "query",
                                        value = "Sorting criteria in the format: property(,asc|desc). " +
-                                               "Default sort order is ascending. " +
-                                               "Multiple sort criteria are supported.")
+                                         "Default sort order is ascending. " +
+                                         "Multiple sort criteria are supported.")
                    })
 public @interface SwaggerHeaderAuthenticationPageable {
 }

@@ -38,13 +38,15 @@ public interface RestUtil {
   }
 
 
-  static ResponseEntity<ByteArrayResource> transformToByteArrayResource(String filename, String contentType, byte[] file) {
+  static ResponseEntity<ByteArrayResource> transformToByteArrayResource(String filename, String contentType,
+                                                                        byte[] file) {
     return Optional.ofNullable(file)
                    .map(u -> ResponseEntity.ok()
                                            .contentType(MediaType.parseMediaType(contentType))
                                            .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
                                            .body(new ByteArrayResource(file)))
-                   .orElse(ResponseEntity.badRequest().body(null));
+                   .orElse(ResponseEntity.badRequest()
+                                         .body(null));
   }
 
 }

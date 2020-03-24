@@ -68,7 +68,8 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
   @Override
   public Map<String, String> consume(ConsumerRecord<String, String> record) throws Exception {
     CheckedFunction<HttpEntity<ByteArrayResource>, String> inputStreamToString = entity -> entity == null || entity.getBody() == null ? null : IOUtils
-      .toString(entity.getBody().getInputStream(), StandardCharsets.UTF_8);
+      .toString(entity.getBody()
+                      .getInputStream(), StandardCharsets.UTF_8);
 
     String elasticEvent = record.value();
 
@@ -87,8 +88,10 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
         throw new RuntimeException("could not delete index");
       }
 
-      ResponseEntity<ByteArrayResource> settings = fileRestFeignClient.download(event.getSettings().getId());
-      ResponseEntity<ByteArrayResource> mappings = fileRestFeignClient.download(event.getMappings().getId());
+      ResponseEntity<ByteArrayResource> settings = fileRestFeignClient.download(event.getSettings()
+                                                                                     .getId());
+      ResponseEntity<ByteArrayResource> mappings = fileRestFeignClient.download(event.getMappings()
+                                                                                     .getId());
 
 
       CreateIndexResponse response = elasticSearchRdfService.createIndex(index, createIndexRequest -> createIndexRequest.settings(inputStreamToString
@@ -99,7 +102,8 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
 
     }
 
-    ResponseEntity<ByteArrayResource> inputToSink = fileRestFeignClient.download(kafkaEvent.getInputToSink().getId());
+    ResponseEntity<ByteArrayResource> inputToSink = fileRestFeignClient.download(kafkaEvent.getInputToSink()
+                                                                                           .getId());
 
     IndexResponse response = elasticSearchRdfService.index(index, kafkaEvent.getId(), IOUtils.toString(inputToSink.getBody()
                                                                                                                   .getInputStream(), StandardCharsets.UTF_8));

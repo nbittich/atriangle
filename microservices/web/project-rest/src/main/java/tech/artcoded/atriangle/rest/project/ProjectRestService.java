@@ -67,7 +67,10 @@ public class ProjectRestService {
       throw new RuntimeException(String.format("cannot create project %s. already exist", name));
     }
 
-    ProjectEvent project = ProjectEvent.builder().name(name).fileEvents(Arrays.asList(fileEvents)).build();
+    ProjectEvent project = ProjectEvent.builder()
+                                       .name(name)
+                                       .fileEvents(Arrays.asList(fileEvents))
+                                       .build();
     ProjectEvent save = mongoTemplate.save(project);
     loggerAction.info(save::getId, "new project with name %s created", name);
     return save;
@@ -82,26 +85,33 @@ public class ProjectRestService {
   }
 
   public Optional<ProjectEvent> findByName(String name) {
-    Query query = new Query().addCriteria(Criteria.where("name").is(name));
+    Query query = new Query().addCriteria(Criteria.where("name")
+                                                  .is(name));
     return Optional.ofNullable(mongoTemplate.findOne(query, ProjectEvent.class));
   }
 
   public void deleteByName(String name) {
-    Query query = new Query().addCriteria(Criteria.where("name").is(name));
+    Query query = new Query().addCriteria(Criteria.where("name")
+                                                  .is(name));
     mongoTemplate.remove(query);
   }
 
   public void deleteFile(String projectId, String fileEventId) {
     Optional<ProjectEvent> projectEvent = findById(projectId);
     projectEvent.ifPresent((p) -> {
-      Optional<FileEvent> fileEvent = p.getFileEvents().stream().filter(file -> file.getId().equals(fileEventId)).findAny();
+      Optional<FileEvent> fileEvent = p.getFileEvents()
+                                       .stream()
+                                       .filter(file -> file.getId()
+                                                           .equals(fileEventId))
+                                       .findAny();
       fileEvent.ifPresent(f -> {
         loggerAction.info(p::getId, " file %s removed from project %s", f.getId(), p.getName());
         fileRestFeignClient.delete(f.getId());
         ProjectEvent newProject = p.toBuilder()
                                    .fileEvents(p.getFileEvents()
                                                 .stream()
-                                                .filter(file -> !file.getId().equals(fileEventId))
+                                                .filter(file -> !file.getId()
+                                                                     .equals(fileEventId))
                                                 .collect(toList()))
                                    .build();
         mongoTemplate.save(newProject);
@@ -116,7 +126,11 @@ public class ProjectRestService {
   public ResponseEntity<ByteArrayResource> downloadFile(String projectId, String fileEventId) {
     try {
       Optional<ProjectEvent> projectEvent = findById(projectId);
-      return projectEvent.flatMap(p -> p.getFileEvents().stream().filter(file -> file.getId().equals(fileEventId)).findFirst())
+      return projectEvent.flatMap(p -> p.getFileEvents()
+                                        .stream()
+                                        .filter(file -> file.getId()
+                                                            .equals(fileEventId))
+                                        .findFirst())
                          .map(CheckedFunction.toFunction(f -> fileRestFeignClient.download(f.getId())))
                          .orElseGet(ResponseEntity.notFound()::build);
     }
@@ -124,12 +138,17 @@ public class ProjectRestService {
       log.error("error", e);
       loggerAction.error(() -> projectId, "an error occured %s", e.getMessage());
     }
-    return ResponseEntity.notFound().build();
+    return ResponseEntity.notFound()
+                         .build();
   }
 
   public Optional<FileEvent> getFileMetadata(String projectId, String fileEventId) {
     Optional<ProjectEvent> projectEvent = findById(projectId);
-    return projectEvent.flatMap(p -> p.getFileEvents().stream().filter(file -> file.getId().equals(fileEventId)).findFirst());
+    return projectEvent.flatMap(p -> p.getFileEvents()
+                                      .stream()
+                                      .filter(file -> file.getId()
+                                                          .equals(fileEventId))
+                                      .findFirst());
   }
 
   public Optional<ProjectEvent> addFile(String projectId, MultipartFile file) {
@@ -150,7 +169,8 @@ public class ProjectRestService {
                                                                                            .getName(), projectEvent.getName());
 
         return projectEvent.toBuilder()
-                           .fileEvents(Stream.concat(projectEvent.getFileEvents().stream(), Stream.of(fileEvent.getBody()))
+                           .fileEvents(Stream.concat(projectEvent.getFileEvents()
+                                                                 .stream(), Stream.of(fileEvent.getBody()))
                                              .collect(toList()))
                            .build();
       })
@@ -169,7 +189,8 @@ public class ProjectRestService {
                                                boolean ignorePostTreatmentsSkos,
                                                FileEvent xlsFileEvent) {
 
-    MultipartFile xlsInput = FeignMultipartFile.builder().contentType(xlsFileEvent.getContentType())
+    MultipartFile xlsInput = FeignMultipartFile.builder()
+                                               .contentType(xlsFileEvent.getContentType())
                                                .name(xlsFileEvent.getName())
                                                .originalFilename(xlsFileEvent.getName())
                                                .bytes(downloadFile(projectId, xlsFileEvent.getId())
@@ -189,7 +210,8 @@ public class ProjectRestService {
 
     String baseFileName = FilenameUtils.removeExtension(xlsFileEvent.getName());
     String outputFilename = baseFileName + DERIVED_FILE_SKOS_REGEX + DateHelper.formatCurrentDateForFilename() + ".ttl";
-    MultipartFile rdfOutput = FeignMultipartFile.builder().contentType(contentType)
+    MultipartFile rdfOutput = FeignMultipartFile.builder()
+                                                .contentType(contentType)
                                                 .name(outputFilename)
                                                 .originalFilename(outputFilename)
                                                 .bytes(body.getByteArray())

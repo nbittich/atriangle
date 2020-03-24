@@ -4,6 +4,7 @@ package tech.artcoded.atriangle.rest.xls2rdf;
 import fr.sparna.rdf.xls2rdf.*;
 import lombok.Getter;
 import org.apache.commons.lang.NotImplementedException;
+import org.apache.commons.lang.StringUtils;
 import org.eclipse.rdf4j.rio.RDFFormat;
 import org.eclipse.rdf4j.rio.RDFWriterRegistry;
 import org.slf4j.Logger;
@@ -22,14 +23,12 @@ import javax.inject.Inject;
 import java.io.*;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @CrossOriginRestController
 public class Xls2RdfRestController implements PingControllerTrait, BuildInfoControllerTrait, Xls2RdfRestFeignClient {
-  private Logger log = LoggerFactory.getLogger(this.getClass().getName());
+  private Logger log = LoggerFactory.getLogger(this.getClass()
+                                                   .getName());
 
 
   @Getter
@@ -46,31 +45,33 @@ public class Xls2RdfRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
-  public ResponseEntity<ByteArrayResource> convertRDF(String sourceString,MultipartFile file, String language,String url,
-     String format, boolean useskosxl, boolean useZip, boolean useGraph, boolean ignorePostProc) throws Exception {
+  public ResponseEntity<ByteArrayResource> convertRDF(String sourceString, MultipartFile file, String language,
+                                                      String url,
+                                                      String format, boolean useSkosXl, boolean useZip,
+                                                      boolean useGraph, boolean ignorePostProc) throws Exception {
     SOURCE_TYPE source = SOURCE_TYPE.valueOf(sourceString.toUpperCase());
-    RDFFormat theFormat = RDFWriterRegistry.getInstance().getFileFormatForMIMEType(format).orElse(RDFFormat.RDFXML);
+    RDFFormat theFormat = RDFWriterRegistry.getInstance()
+                                           .getFileFormatForMIMEType(format)
+                                           .orElse(RDFFormat.RDFXML);
 
-    /**************************CONVERSION RDF**************************/
-    InputStream in = null;
+    InputStream in;
     String resultFileName = "skos-play-convert";
 
     switch (source) {
       case FILE: {
-        log.debug("*Conversion à partir d'un fichier uploadé : " + file.getOriginalFilename());
         if (file.isEmpty()) {
           throw new RuntimeException("Uploaded file is empty");
         }
 
         in = file.getInputStream();
         // set the output file name to the name of the input file
-        resultFileName = (file.getOriginalFilename().contains(".")) ? file.getOriginalFilename()
-                                                                          .substring(0, file.getOriginalFilename()
-                                                                                            .lastIndexOf('.')) : file.getOriginalFilename();
+        resultFileName = (file.getOriginalFilename()
+                              .contains(".")) ? file.getOriginalFilename()
+                                                    .substring(0, file.getOriginalFilename()
+                                                                      .lastIndexOf('.')) : file.getOriginalFilename();
         break;
       }
       case URL: {
-        log.debug("*Conversion à partir d'une URL : " + url);
         if (url.isEmpty()) {
           throw new RuntimeException("Uploaded link file is empty");
         }
@@ -81,7 +82,8 @@ public class Xls2RdfRestController implements PingControllerTrait, BuildInfoCont
           in = new DataInputStream(new BufferedInputStream(urlInputStream));
 
           // set the output file name to the final part of the URL
-          resultFileName = (!urls.getPath().equals("")) ? urls.getPath() : resultFileName;
+          resultFileName = (!urls.getPath()
+                                 .equals("")) ? urls.getPath() : resultFileName;
           // keep only latest file, after final /
           resultFileName = (resultFileName.contains("/")) ? resultFileName.substring(0, resultFileName.lastIndexOf("/")) : resultFileName;
         }
@@ -97,7 +99,6 @@ public class Xls2RdfRestController implements PingControllerTrait, BuildInfoCont
     }
 
     try {
-      log.debug("*Lancement de la conversion avec lang=" + language + " et usexl=" + useskosxl);
       resultFileName = (resultFileName.contains(".")) ? resultFileName.substring(0, resultFileName.lastIndexOf('.')) : resultFileName;
       String extension = (useZip) ? "zip" : theFormat.getDefaultFileExtension();
 
@@ -106,17 +107,20 @@ public class Xls2RdfRestController implements PingControllerTrait, BuildInfoCont
 
       ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream();
       try (var openedIn = in) {
-        List<String> identifiant = runConversion(
+        List<String> cvIds = runConversion(
           new ModelWriterFactory(useZip, theFormat, useGraph).buildNewModelWriter(responseOutputStream),
           openedIn,
-          language.equals("") ? null : language,
-          useskosxl,
+          Optional.ofNullable(language)
+                  .filter(StringUtils::isNotEmpty)
+                  .orElse(null),
+          useSkosXl,
           ignorePostProc
         );
 
-        // sort to garantee order
-        List<String> uri = new ArrayList<String>(identifiant);
-        Collections.sort(uri);
+        Collections.sort(cvIds);
+        cvIds.stream()
+             .map(cv -> "ConvertedVocabularyIdentifier: " + cv)
+             .forEach(log::info);
 
         String filename = String.format("%s-%s.%s", resultFileName, dateString, extension);
         String contentType = useZip ? "application/zip" : theFormat.getDefaultMIMEType();
@@ -130,22 +134,21 @@ public class Xls2RdfRestController implements PingControllerTrait, BuildInfoCont
   }
 
   private List<String> runConversion(ModelWriterIfc writer,
-                                     InputStream filefrom,
+                                     InputStream fileFrom,
                                      String lang,
-                                     boolean generatexl,
+                                     boolean generateXl,
                                      boolean ignorePostProc) {
     Xls2RdfConverter converter = new Xls2RdfConverter(writer, lang);
     List<Xls2RdfPostProcessorIfc> postProcessors = new ArrayList<>();
 
     if (!ignorePostProc) {
       postProcessors.add(new SkosPostProcessor());
-    }
-    if (!ignorePostProc && generatexl) {
-      postProcessors.add(new SkosXlPostProcessor(generatexl, generatexl));
+      if (generateXl) {
+        postProcessors.add(new SkosXlPostProcessor(true, true));
+      }
     }
     converter.setPostProcessors(postProcessors);
-
-    converter.processInputStream(filefrom);
+    converter.processInputStream(fileFrom);
     return converter.getConvertedVocabularyIdentifiers();
   }
 }

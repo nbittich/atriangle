@@ -35,11 +35,12 @@ public interface KafkaEventHelper {
   }
 
   default KafkaEvent.KafkaEventBuilder newKafkaEventBuilder(BuildProperties buildProperties) {
-    return KafkaEvent.builder().eventMetadata(KafkaEventMetadata.builder()
-                                                                .version(buildProperties.getVersion())
-                                                                .artifactId(buildProperties.getArtifact())
-                                                                .groupId(buildProperties.getGroup())
-                                                                .moduleName(buildProperties.getName())
-                                                                .build());
+    return KafkaEvent.builder()
+                     .eventMetadata(KafkaEventMetadata.builder()
+                                                      .version(buildProperties.getVersion())
+                                                      .artifactId(buildProperties.getArtifact())
+                                                      .groupId(buildProperties.getGroup())
+                                                      .moduleName(buildProperties.getName())
+                                                      .build());
   }
 }

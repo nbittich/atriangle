@@ -22,13 +22,22 @@ public interface ShaclValidationUtils {
                                    Lang shapesLang) {
     StringWriter writer = new StringWriter();
     Graph shapesGraph = GraphFactory.createDefaultGraph();
-    RDFParser.fromString(shapesModel).base("").lang(shapesLang).build().parse(shapesGraph);
+    RDFParser.fromString(shapesModel)
+             .base("")
+             .lang(shapesLang)
+             .build()
+             .parse(shapesGraph);
     Graph dataGraph = GraphFactory.createDefaultGraph();
-    RDFParser.fromString(dataModel).base("").lang(modelLang).build().parse(dataGraph);
+    RDFParser.fromString(dataModel)
+             .base("")
+             .lang(modelLang)
+             .build()
+             .parse(dataGraph);
 
     Shapes shapes = Shapes.parse(shapesGraph);
 
-    ValidationReport report = ShaclValidator.get().validate(shapes, dataGraph);
+    ValidationReport report = ShaclValidator.get()
+                                            .validate(shapes, dataGraph);
 
     if (report.conforms()) {
       return Optional.empty();

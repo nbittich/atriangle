@@ -4,13 +4,7 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.dto.ElasticEvent;
-import tech.artcoded.atriangle.api.dto.EventType;
-import tech.artcoded.atriangle.api.dto.FileEvent;
-import tech.artcoded.atriangle.api.dto.KafkaEvent;
-import tech.artcoded.atriangle.api.dto.MongoEvent;
-import tech.artcoded.atriangle.api.dto.RestEvent;
-import tech.artcoded.atriangle.api.dto.SinkResponse;
+import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
 
 import javax.inject.Inject;
@@ -45,7 +39,9 @@ public class RdfSinkOutputProducer {
     KafkaEvent.KafkaEventBuilder kafkaEventBuilder = kafkaEventHelper.newKafkaEventBuilder(buildProperties);
     String elasticSinkEventId = IdGenerators.get();
     String mongoSinkEventId = IdGenerators.get();
-    MongoEvent mongoEvent = MongoEvent.builder().collection(event.getNamespace()).build();
+    MongoEvent mongoEvent = MongoEvent.builder()
+                                      .collection(event.getNamespace())
+                                      .build();
     KafkaEvent kafkaEventForMongo = kafkaEventBuilder
       .id(mongoSinkEventId)
       .eventType(EventType.MONGODB_SINK)
@@ -57,7 +53,8 @@ public class RdfSinkOutputProducer {
                                             .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
                                             .correlationId(kafkaEvent.getCorrelationId())
                                             .finishedDate(new Date())
-                                            .response(mapperWrapper.serialize(jsonLdFile).getBytes())
+                                            .response(mapperWrapper.serialize(jsonLdFile)
+                                                                   .getBytes())
                                             .responseType(EventType.RDF_SINK_OUT)
                                             .build();//todo think about failure..
 
@@ -69,7 +66,8 @@ public class RdfSinkOutputProducer {
       .event(mapperWrapper.serialize(sinkResponse))
       .build();
 
-    KafkaEvent kafkaEventForElastic = Optional.of(event).filter(RestEvent::isSinkToElastic)
+    KafkaEvent kafkaEventForElastic = Optional.of(event)
+                                              .filter(RestEvent::isSinkToElastic)
                                               .map(e -> {
                                                 ElasticEvent elasticEvent = ElasticEvent.builder()
                                                                                         .index(e.getElasticIndex())
@@ -83,7 +81,8 @@ public class RdfSinkOutputProducer {
                                                   .inputToSink(jsonLdFile)
                                                   .event(mapperWrapper.serialize(elasticEvent))
                                                   .build();
-                                              }).orElse(null);
+                                              })
+                                              .orElse(null);
     return Stream.of(Map.entry(IdGenerators.get(), mapperWrapper.serialize(kafkaEventForSinkOut)),
                      Map.entry(elasticSinkEventId, mapperWrapper.serialize(kafkaEventForElastic)),
                      Map.entry(mongoSinkEventId, mapperWrapper.serialize(kafkaEventForMongo)))

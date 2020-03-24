@@ -67,7 +67,8 @@ public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(mongoEvent);
     MongoEvent event = kafkaEventHelper.parseEvent(kafkaEvent, MongoEvent.class);
 
-    ResponseEntity<ByteArrayResource> inputToSink = fileRestFeignClient.download(kafkaEvent.getInputToSink().getId());
+    ResponseEntity<ByteArrayResource> inputToSink = fileRestFeignClient.download(kafkaEvent.getInputToSink()
+                                                                                           .getId());
 
 
     BasicDBObject objectToSave = BasicDBObject.parse(IOUtils.toString(inputToSink.getBody()

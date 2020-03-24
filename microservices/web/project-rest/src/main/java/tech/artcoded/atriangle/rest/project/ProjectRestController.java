@@ -7,13 +7,7 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.dto.CommonConstants;
 import tech.artcoded.atriangle.api.dto.FileEvent;
@@ -55,13 +49,15 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   public ResponseEntity<ProjectEvent> addFile(@RequestParam("file") MultipartFile multipartFile,
                                               @RequestParam("projectId") String projectId) {
-    return projectRestService.addFile(projectId, multipartFile).map(ResponseEntity::ok)
+    return projectRestService.addFile(projectId, multipartFile)
+                             .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
 
   @GetMapping("/by-name/{name}")
   public ResponseEntity<ProjectEvent> findByName(@PathVariable("name") String name) {
-    return projectRestService.findByName(name).map(ResponseEntity::ok)
+    return projectRestService.findByName(name)
+                             .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.notFound()::build);
   }
 
@@ -96,7 +92,8 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
 
   @GetMapping("/by-id/{projectId}")
   public ResponseEntity<ProjectEvent> findById(@PathVariable("projectId") String id) {
-    return projectRestService.findById(id).map(ResponseEntity::ok)
+    return projectRestService.findById(id)
+                             .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.notFound()::build);
   }
 
@@ -120,7 +117,8 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
                                                .orElseThrow(() -> new RuntimeException("file  not found"));
     if (!CommonConstants.XLSX_MEDIA_TYPE.equals(xlsFileEvent.getContentType())) {
       log.error("only xlsx type supported, provided {}", xlsFileEvent.getContentType());
-      return ResponseEntity.badRequest().build();
+      return ResponseEntity.badRequest()
+                           .build();
     }
     return projectRestService.skosConversion(projectId, labelSkosXl, ignorePostTreatmentsSkos, xlsFileEvent)
                              .map(ResponseEntity::ok)
@@ -130,7 +128,8 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   @PostMapping("/{projectId}/sink")
   public ResponseEntity<Void> sink(@RequestBody SinkRequest sinkRequest) {
     projectSinkProducer.sink(sinkRequest);
-    return ResponseEntity.accepted().build();
+    return ResponseEntity.accepted()
+                         .build();
   }
 
 }
