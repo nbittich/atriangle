@@ -1,60 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>atriangle-kafka</artifactId>
-        <groupId>tech.artcoded</groupId>
-        <version>0.1.6-SNAPSHOT</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
-    <name>A Triangle - EVENT-DISPATCHER</name>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <parent>
+    <artifactId>atriangle-kafka</artifactId>
+    <groupId>tech.artcoded</groupId>
+    <version>0.1.6-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <name>A Triangle - EVENT-DISPATCHER</name>
 
-    <artifactId>atriangle-event-dispatcher</artifactId>
-    <properties>
-        <docker.image.name>atriangle/event-dispatcher</docker.image.name>
-    </properties>
-    <dependencies>
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>javax.inject</groupId>
-            <artifactId>javax.inject</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>tech.artcoded</groupId>
-            <artifactId>atriangle-core-kafka</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>tech.artcoded</groupId>
-            <artifactId>atriangle-shared-config</artifactId>
-        </dependency>
-    </dependencies>
-    <profiles>
-        <profile>
-            <id>docker</id>
-            <activation>
-                <property>
-                    <name>docker</name>
-                </property>
-            </activation>
-            <build>
-                <plugins>
-                    <plugin>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <artifactId>exec-maven-plugin</artifactId>
-                    </plugin>
-                </plugins>
-            </build>
-        </profile>
-    </profiles>
-    <build>
-        <finalName>atriangle-event-dispatcher</finalName>
+  <artifactId>atriangle-event-dispatcher</artifactId>
+  <properties>
+    <docker.image.name>atriangle/event-dispatcher</docker.image.name>
+  </properties>
+  <dependencies>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.inject</groupId>
+      <artifactId>javax.inject</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>tech.artcoded</groupId>
+      <artifactId>atriangle-core-kafka</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>tech.artcoded</groupId>
+      <artifactId>atriangle-shared-config</artifactId>
+    </dependency>
+  </dependencies>
+  <profiles>
+    <profile>
+      <id>docker</id>
+      <activation>
+        <property>
+          <name>docker</name>
+        </property>
+      </activation>
+      <build>
         <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+          </plugin>
         </plugins>
-    </build>
+      </build>
+    </profile>
+  </profiles>
+  <build>
+    <finalName>atriangle-event-dispatcher</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
 </project>

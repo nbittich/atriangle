@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
 
-    <parent>
-        <groupId>tech.artcoded</groupId>
-        <artifactId>atriangle</artifactId>
-        <version>0.1.6-SNAPSHOT</version>
-    </parent>
+  <parent>
+    <groupId>tech.artcoded</groupId>
+    <artifactId>atriangle</artifactId>
+    <version>0.1.6-SNAPSHOT</version>
+  </parent>
 
-    <artifactId>atriangle-common</artifactId>
-    <name>A Triangle Common Root</name>
+  <artifactId>atriangle-common</artifactId>
+  <name>A Triangle Common Root</name>
 
-    <packaging>pom</packaging>
-    <modules>
-        <module>api</module>
-        <module>shared-config</module>
-    </modules>
+  <packaging>pom</packaging>
+  <modules>
+    <module>api</module>
+    <module>shared-config</module>
+  </modules>
 </project>
 
