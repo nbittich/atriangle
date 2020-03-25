@@ -5,3 +5,5 @@
 
 * dynamic readme & release notes
 
+* change cloc to defaut format
+

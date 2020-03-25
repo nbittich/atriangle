@@ -14,7 +14,7 @@ mvn clean
 mvn editorconfig:check
 mvn editorconfig:format
 
-clocResult=$(cloc common core microservices --json --quiet)
+clocResult=$(cloc common core microservices --quiet)
 
 mvn clean install
 
