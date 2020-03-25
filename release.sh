@@ -10,12 +10,6 @@ then
   exit -1;
 fi
 
-mvn editorconfig:check
-mvn editorconfig:format
-git add .
-git commit -m "Formatting before release"
-git push
-
 echo "release" $releaseVersion ", next" $nextVersion
 mvn release:clean
 
