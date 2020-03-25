@@ -63,9 +63,8 @@ public class ProjectSinkProducer {
                                                                                .orElse(null))
                                         .build();
 
-      KafkaEvent kafkaEvent = kafkaEventHelper.newKafkaEventBuilder(buildProperties)
+      KafkaEvent kafkaEvent = kafkaEventHelper.newKafkaEventBuilder(projectId, buildProperties)
                                               .eventType(EventType.RDF_SINK)
-                                              .correlationId(projectEvent.getId())
                                               .id(IdGenerators.get())
                                               .shaclModel(projectRestService.getFileMetadata(projectId, sinkRequest.getShaclFileEventId())
                                                                             .orElse(null))

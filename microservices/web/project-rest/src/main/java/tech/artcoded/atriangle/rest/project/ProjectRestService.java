@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.CheckedSupplier;
@@ -61,6 +62,7 @@ public class ProjectRestService {
     this.loggerAction = loggerAction;
   }
 
+  @Transactional
   public ProjectEvent newProject(String name, FileEvent... fileEvents) {
 
     if (findByName(name).isPresent()) {
@@ -90,12 +92,14 @@ public class ProjectRestService {
     return Optional.ofNullable(mongoTemplate.findOne(query, ProjectEvent.class));
   }
 
+  @Transactional
   public void deleteByName(String name) {
     Query query = new Query().addCriteria(Criteria.where("name")
                                                   .is(name));
     mongoTemplate.remove(query);
   }
 
+  @Transactional
   public void deleteFile(String projectId, String fileEventId) {
     Optional<ProjectEvent> projectEvent = findById(projectId);
     projectEvent.ifPresent((p) -> {
@@ -119,6 +123,7 @@ public class ProjectRestService {
     });
   }
 
+  @Transactional
   public void deleteById(String id) {
     mongoTemplate.remove(id);
   }
@@ -155,6 +160,7 @@ public class ProjectRestService {
     return addFile(projectId, file, FileEventType.PROJECT_FILE);
   }
 
+  @Transactional
   public Optional<ProjectEvent> addFile(String projectId, MultipartFile file, FileEventType fileEventType) {
     return findById(projectId)
       .stream()

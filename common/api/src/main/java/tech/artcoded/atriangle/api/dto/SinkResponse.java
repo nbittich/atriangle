@@ -14,7 +14,6 @@ import java.util.Date;
 public class SinkResponse {
   public enum SinkResponseStatus {SUCCESS, ERROR}
 
-  private String correlationId;
   private EventType responseType;
   private byte[] response;
   private Date finishedDate;

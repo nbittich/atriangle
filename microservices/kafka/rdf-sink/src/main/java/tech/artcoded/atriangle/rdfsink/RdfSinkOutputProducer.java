@@ -36,7 +36,8 @@ public class RdfSinkOutputProducer {
 
   public Map<String, String> produce(KafkaEvent kafkaEvent, RestEvent event, FileEvent jsonLdFile) {
 
-    KafkaEvent.KafkaEventBuilder kafkaEventBuilder = kafkaEventHelper.newKafkaEventBuilder(buildProperties);
+    KafkaEvent.KafkaEventBuilder kafkaEventBuilder = kafkaEventHelper.newKafkaEventBuilder(kafkaEvent.getCorrelationId(), buildProperties);
+
     String elasticSinkEventId = IdGenerators.get();
     String mongoSinkEventId = IdGenerators.get();
     MongoEvent mongoEvent = MongoEvent.builder()
@@ -51,7 +52,6 @@ public class RdfSinkOutputProducer {
 
     SinkResponse sinkResponse = SinkResponse.builder()
                                             .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
-                                            .correlationId(kafkaEvent.getCorrelationId())
                                             .finishedDate(new Date())
                                             .response(mapperWrapper.serialize(jsonLdFile)
                                                                    .getBytes())

@@ -1,5 +1,6 @@
 package tech.artcoded.atriangle.rest.project;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @Component
+@Slf4j
 public class ProjectSinkConsumer {
 
   private final ObjectMapperWrapper objectMapperWrapper;
@@ -41,8 +43,9 @@ public class ProjectSinkConsumer {
 
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(record.value());
     SinkResponse response = kafkaEventHelper.parseEvent(kafkaEvent, SinkResponse.class);
+    log.info("kafkaEvent correlationId {}", kafkaEvent.getCorrelationId());
 
-    ProjectEvent projectEvent = projectRestService.findById(response.getCorrelationId())
+    ProjectEvent projectEvent = projectRestService.findById(kafkaEvent.getCorrelationId())
                                                   .orElseThrow();
 
 
@@ -65,7 +68,7 @@ public class ProjectSinkConsumer {
     FileEvent jsonLdFileEvent = objectMapperWrapper.deserialize(response.responseAsString(), FileEvent.class)
                                                    .orElseThrow();
 
-    ProjectEvent projectEvent = projectRestService.findById(response.getCorrelationId())
+    ProjectEvent projectEvent = projectRestService.findById(kafkaEvent.getCorrelationId())
                                                   .orElseThrow();
 
 
@@ -78,7 +81,7 @@ public class ProjectSinkConsumer {
                                                .build();
     ProjectEvent updatedProjectEvent = this.mongoTemplate.save(newProjectEvent);
 
-    loggerAction.info(projectEvent::getId, "received jsonld file event  for project %s, mongo id: %s", projectEvent.getName(), updatedProjectEvent
+    loggerAction.info(updatedProjectEvent::getId, "received jsonld file event  for project %s, mongo id: %s", projectEvent.getName(), updatedProjectEvent
       .getId());
   }
 }

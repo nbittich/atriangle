@@ -34,8 +34,9 @@ public interface KafkaEventHelper {
                                                       .build());
   }
 
-  default KafkaEvent.KafkaEventBuilder newKafkaEventBuilder(BuildProperties buildProperties) {
+  default KafkaEvent.KafkaEventBuilder newKafkaEventBuilder(String correlationId, BuildProperties buildProperties) {
     return KafkaEvent.builder()
+                     .correlationId(correlationId)
                      .eventMetadata(KafkaEventMetadata.builder()
                                                       .version(buildProperties.getVersion())
                                                       .artifactId(buildProperties.getArtifact())

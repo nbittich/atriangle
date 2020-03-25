@@ -80,14 +80,13 @@ public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
 
     SinkResponse sinkResponse = SinkResponse.builder()
                                             .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
-                                            .correlationId(kafkaEvent.getCorrelationId())
                                             .finishedDate(new Date())
                                             .response("rdf saved to the mongodb".getBytes())
                                             .responseType(EventType.MONGODB_SINK_OUT)
                                             .build();//todo think about failure..
 
 
-    KafkaEvent kafkaEventForSinkOut = kafkaEventHelper.copyKafkaEventBuilder(kafkaEvent, buildProperties)
+    KafkaEvent kafkaEventForSinkOut = kafkaEventHelper.newKafkaEventBuilder(kafkaEvent.getCorrelationId(), buildProperties)
                                                       .id(IdGenerators.get())
                                                       .eventType(EventType.MONGODB_SINK_OUT)
                                                       .event(mapperWrapper.serialize(sinkResponse))
