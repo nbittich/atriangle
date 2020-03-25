@@ -10,16 +10,20 @@ then
   exit -1;
 fi
 
-rm -f _CLOC.*
-
 mvn clean
-
 mvn editorconfig:check
 mvn editorconfig:format
 
-cloc  common core microservices --out=_CLOC.txt
+clocResult=$(cloc common core microservices --json --quiet)
 
 mvn clean install
+
+rm -f README.md
+readmeTemplate=$(cat docs/DYNAMIC_README_TEMPLATE.md)
+readme="$readmeTemplate \n \`\`\` \n $clocResult \n \`\`\`"
+echo "$readme" >> README.md
+
+echo "* $1\n" >> RELEASE_NOTE.md
 
 git add .
 git commit -m "$1"
