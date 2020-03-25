@@ -10,7 +10,7 @@
   ## Cloc 
  ``` 
  
-github.com/AlDanial/cloc v 1.84  T=0.14 s (1235.2 files/s, 66702.5 lines/s)
+github.com/AlDanial/cloc v 1.84  T=0.17 s (1014.1 files/s, 54759.1 lines/s)
 -------------------------------------------------------------------------------
 Language                     files          blank        comment           code
 -------------------------------------------------------------------------------
