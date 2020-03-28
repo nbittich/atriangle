@@ -108,7 +108,7 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
                                                 .bytes(jsonld.getBytes())
                                                 .build();
 
-    ResponseEntity<FileEvent> derivatedFile = fileRestFeignClient.upload(rdfOutput, FileEventType.RDF_TO_JSON_LD_OUTPUT);
+    ResponseEntity<FileEvent> derivatedFile = fileRestFeignClient.upload(rdfOutput, FileEventType.RDF_TO_JSON_LD_OUTPUT, kafkaEvent.getCorrelationId());
 
     log.info("sending other events");
 

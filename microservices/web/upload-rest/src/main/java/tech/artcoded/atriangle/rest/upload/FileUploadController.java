@@ -61,10 +61,11 @@ public class FileUploadController implements BuildInfoControllerTrait, PingContr
 
 
   @Override
-  public ResponseEntity<FileEvent> upload(MultipartFile file, FileEventType fileUploadType) throws Exception {
+  public ResponseEntity<FileEvent> upload(MultipartFile file, FileEventType fileUploadType,
+                                          String correlationId) throws Exception {
     return Optional.of(uploadService.upload(file, fileUploadType))
                    .stream()
-                   .peek(event -> loggerAction.info(event::getId, "Upload request: %s, name: %s, content-type: %s, event type: %s ", event
+                   .peek(event -> loggerAction.info(() -> correlationId, "Upload request: %s, name: %s, content-type: %s, event type: %s ", event
                      .getId(), event.getName(), event.getContentType(), event.getEventType()))
                    .map(ResponseEntity::ok)
                    .findFirst()

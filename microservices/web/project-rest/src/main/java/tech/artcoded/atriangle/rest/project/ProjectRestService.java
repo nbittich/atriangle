@@ -165,7 +165,7 @@ public class ProjectRestService {
     return findById(projectId)
       .stream()
       .map(projectEvent -> {
-        ResponseEntity<FileEvent> fileEvent = CheckedSupplier.toSupplier(() -> fileRestFeignClient.upload(file, fileEventType))
+        ResponseEntity<FileEvent> fileEvent = CheckedSupplier.toSupplier(() -> fileRestFeignClient.upload(file, fileEventType, projectId))
                                                              .get();
         if (!HttpStatus.OK.equals(fileEvent.getStatusCode()) || !fileEvent.hasBody()) {
           throw new RuntimeException("upload failed with status " + fileEvent.getStatusCode());
