@@ -37,8 +37,8 @@ public class ProjectSinkConsumer {
   }
 
 
-  @KafkaListener(topics = {"${event.dispatcher.elastic-sink-topic-out}",
-    "${event.dispatcher.mongodb-sink-topic-out}"})
+  @KafkaListener(topics = {"${kafka.dispatcher.elastic-sink-topic-out}",
+    "${kafka.dispatcher.mongodb-sink-topic-out}"})
   public void sink(ConsumerRecord<String, String> record) throws Exception {
 
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(record.value());
@@ -60,7 +60,7 @@ public class ProjectSinkConsumer {
                         .getId());
   }
 
-  @KafkaListener(topics = {"${event.dispatcher.rdf-sink-topic-out}"})
+  @KafkaListener(topics = {"${kafka.dispatcher.rdf-sink-topic-out}"})
   public void addJsonLdFile(ConsumerRecord<String, String> record) throws Exception {
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(record.value());
     SinkResponse response = kafkaEventHelper.parseEvent(kafkaEvent, SinkResponse.class);
@@ -78,6 +78,9 @@ public class ProjectSinkConsumer {
                                                                                                                          .eventType(FileEventType.PROJECT_FILE)
                                                                                                                          .build()))
                                                                  .collect(Collectors.toUnmodifiableList()))
+                                               .sinkResponses(Stream.concat(projectEvent.getSinkResponses()
+                                                                                        .stream(), Stream.of(response))
+                                                                    .collect(Collectors.toUnmodifiableList()))
                                                .build();
     ProjectEvent updatedProjectEvent = this.mongoTemplate.save(newProjectEvent);
 

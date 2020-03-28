@@ -1,4 +1,4 @@
-event:
+kafka:
   dispatcher:
     elastic-sink-topic-out: event-sink-elastic-out
     mongodb-sink-topic-out: event-sink-mongodb-out
