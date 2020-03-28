@@ -65,7 +65,7 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
     MongoEvent event = kafkaEventHelper.parseEvent(kafkaEvent, MongoEvent.class);
 
     ResponseEntity<ByteArrayResource> inputToSink = fileRestFeignClient.download(kafkaEvent.getInputToSink()
-                                                                                           .getId());
+                                                                                           .getId(), kafkaEvent.getCorrelationId());
 
 
     BasicDBObject objectToSave = BasicDBObject.parse(IOUtils.toString(inputToSink.getBody()

@@ -86,9 +86,9 @@ public class ElasticSinkConsumer implements KafkaSink<String, String> {
       }
 
       ResponseEntity<ByteArrayResource> settings = fileRestFeignClient.download(event.getSettings()
-                                                                                     .getId());
+                                                                                     .getId(), kafkaEvent.getCorrelationId());
       ResponseEntity<ByteArrayResource> mappings = fileRestFeignClient.download(event.getMappings()
-                                                                                     .getId());
+                                                                                     .getId(), kafkaEvent.getCorrelationId());
 
 
       CreateIndexResponse response = elasticSearchRdfService.createIndex(index, createIndexRequest -> createIndexRequest.settings(inputStreamToString
@@ -100,7 +100,7 @@ public class ElasticSinkConsumer implements KafkaSink<String, String> {
     }
 
     ResponseEntity<ByteArrayResource> inputToSink = fileRestFeignClient.download(kafkaEvent.getInputToSink()
-                                                                                           .getId());
+                                                                                           .getId(), kafkaEvent.getCorrelationId());
 
     IndexResponse response = elasticSearchRdfService.index(index, kafkaEvent.getId(), IOUtils.toString(inputToSink.getBody()
                                                                                                                   .getInputStream(), StandardCharsets.UTF_8));

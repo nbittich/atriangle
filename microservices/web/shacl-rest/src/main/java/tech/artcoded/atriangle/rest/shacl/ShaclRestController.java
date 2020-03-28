@@ -43,7 +43,8 @@ public class ShaclRestController implements PingControllerTrait, BuildInfoContro
 
   @SneakyThrows
   @Override
-  public ResponseEntity<String> validate(String shaclFileEventId,
+  public ResponseEntity<String> validate(String correlationId,
+                                         String shaclFileEventId,
                                          String modelFileEventId) {
 
     FileEvent shaclFileEvent = fileRestFeignClient.findById(shaclFileEventId)
@@ -51,8 +52,8 @@ public class ShaclRestController implements PingControllerTrait, BuildInfoContro
     FileEvent modelFileEvent = fileRestFeignClient.findById(modelFileEventId)
                                                   .getBody();
 
-    ResponseEntity<ByteArrayResource> shaclDownload = fileRestFeignClient.download(shaclFileEventId);
-    ResponseEntity<ByteArrayResource> modelDownload = fileRestFeignClient.download(modelFileEventId);
+    ResponseEntity<ByteArrayResource> shaclDownload = fileRestFeignClient.download(shaclFileEventId, correlationId);
+    ResponseEntity<ByteArrayResource> modelDownload = fileRestFeignClient.download(modelFileEventId, correlationId);
 
     CheckedSupplier<String> shaclFile = () -> IOUtils.toString(requireNonNull(shaclDownload.getBody()).getInputStream(), StandardCharsets.UTF_8);
     CheckedSupplier<String> modelFile = () -> IOUtils.toString(requireNonNull(modelDownload.getBody()).getInputStream(), StandardCharsets.UTF_8);

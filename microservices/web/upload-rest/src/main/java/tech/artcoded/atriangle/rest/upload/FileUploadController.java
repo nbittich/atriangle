@@ -48,11 +48,11 @@ public class FileUploadController implements BuildInfoControllerTrait, PingContr
   }
 
   @Override
-  public ResponseEntity<ByteArrayResource> download(String id) throws Exception {
+  public ResponseEntity<ByteArrayResource> download(String id, String correlationId) throws Exception {
     Optional<FileUpload> upload = uploadService.findOneById(id);
     return upload.map(FileUpload::transform)
                  .stream()
-                 .peek(event -> loggerAction.info(event::getId, "Download request: %s, name: %s, content-type: %s, event type: %s ", event
+                 .peek(event -> loggerAction.info(() -> correlationId, "Download request: %s, name: %s, content-type: %s, event type: %s ", event
                    .getId(), event.getName(), event.getContentType(), event.getEventType()))
                  .map(event -> RestUtil.transformToByteArrayResource(event, uploadService.uploadToByteArray(event)))
                  .findFirst()

@@ -15,7 +15,8 @@ public interface FileRestFeignClient {
   ResponseEntity<FileEvent> findById(@PathVariable("id") String id);
 
   @GetMapping("/download/{id}")
-  ResponseEntity<ByteArrayResource> download(@PathVariable("id") String id) throws Exception;
+  ResponseEntity<ByteArrayResource> download(@PathVariable("id") String id,
+                                             @RequestParam("correlationId") String correlationId) throws Exception;
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<FileEvent> upload(@RequestPart("file") MultipartFile file,

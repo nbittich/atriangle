@@ -136,7 +136,7 @@ public class ProjectRestService {
                                         .filter(file -> file.getId()
                                                             .equals(fileEventId))
                                         .findFirst())
-                         .map(CheckedFunction.toFunction(f -> fileRestFeignClient.download(f.getId())))
+                         .map(CheckedFunction.toFunction(f -> fileRestFeignClient.download(f.getId(), projectId)))
                          .orElseGet(ResponseEntity.notFound()::build);
     }
     catch (Exception e) {
@@ -186,7 +186,7 @@ public class ProjectRestService {
 
   public ResponseEntity<String> shaclValidation(String projectId, String shapesFileId, String rdfModelFileId) {
     //todo check belongs to project
-    return shaclRestFeignClient.validate(shapesFileId, rdfModelFileId);
+    return shaclRestFeignClient.validate(projectId, shapesFileId, rdfModelFileId);
   }
 
   @SneakyThrows
@@ -215,7 +215,7 @@ public class ProjectRestService {
     ByteArrayResource body = response.getBody();
 
     String baseFileName = FilenameUtils.removeExtension(xlsFileEvent.getName());
-    String outputFilename = baseFileName + DERIVED_FILE_SKOS_REGEX + DateHelper.formatCurrentDateForFilename() + ".ttl";
+    String outputFilename = baseFileName.split(DERIVED_FILE_REGEX)[0] + DERIVED_FILE_SKOS_REGEX + DateHelper.formatCurrentDateForFilename() + ".ttl";
     MultipartFile rdfOutput = FeignMultipartFile.builder()
                                                 .contentType(contentType)
                                                 .name(outputFilename)

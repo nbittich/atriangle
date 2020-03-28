@@ -72,12 +72,12 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
     RestEvent event = kafkaEventHelper.parseEvent(kafkaEvent, RestEvent.class);
     FileEvent inputToSinkFileEvent = kafkaEvent.getInputToSink();
 
-    ResponseEntity<ByteArrayResource> inputToSink = fileRestFeignClient.download(inputToSinkFileEvent.getId());
+    ResponseEntity<ByteArrayResource> inputToSink = fileRestFeignClient.download(inputToSinkFileEvent.getId(), kafkaEvent.getCorrelationId());
 
     if (kafkaEvent.getShaclModel() != null) {
       log.info("shacl validation");
       ResponseEntity<String> validate = shaclRestFeignClient.validate(inputToSinkFileEvent.getId(), kafkaEvent.getShaclModel()
-                                                                                                              .getId());
+                                                                                                              .getId(), kafkaEvent.getCorrelationId());
       if (validate.getStatusCodeValue() != HttpStatus.OK.value() || StringUtils.isNotEmpty(validate.getBody())) {
         log.error("validation failed {}", validate.getBody());
         loggerAction.error(kafkaEvent::getCorrelationId, String.format("validation shacl failed for event %s, result %s", kafkaEvent
@@ -99,7 +99,7 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
     log.info("create derivate json-ld rdf file");
 
     String baseFileName = FilenameUtils.removeExtension(inputToSinkFileEvent.getOriginalFilename()) + "-" + RandomStringUtils.randomAlphanumeric(3);
-    String outputFilename = baseFileName + DERIVED_FILE_JSON_LD_REGEX + DateHelper.formatCurrentDateForFilename() + ".json";
+    String outputFilename = baseFileName.split(DERIVED_FILE_REGEX)[0] + DERIVED_FILE_JSON_LD_REGEX + DateHelper.formatCurrentDateForFilename() + ".json";
     String jsonld = ModelConverter.inputStreamToLang(inputToSinkFileEvent.getName(), inputToSink.getBody()::getInputStream, RDFFormat.JSONLD);
     MultipartFile rdfOutput = FeignMultipartFile.builder()
                                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
