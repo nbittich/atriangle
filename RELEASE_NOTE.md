@@ -1,14 +1,5 @@
 # Release note
 
-## 0.1.7
-
-* dynamic readme & release notes
-
-* change cloc to defaut format
-
-* fix extra space
-
-* remove weird file --quiet
-
-* drop event-dispatcher, event-sink-rdf becomes source of truth. refactoring
+## 0.1.8
+* Next development version
 
