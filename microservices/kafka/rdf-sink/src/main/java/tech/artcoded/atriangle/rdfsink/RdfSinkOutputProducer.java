@@ -28,11 +28,11 @@ public class RdfSinkOutputProducer {
   private final BuildProperties buildProperties;
   private final KafkaEventHelper kafkaEventHelper;
 
-  @Value("${kafka.rdf-sink-topic-out}")
+  @Value("${kafka.dispatcher.rdf-sink-topic-out}")
   private String rdfSinkTopicOut;
-  @Value("${kafka.elastic-sink-topic}")
+  @Value("${kafka.dispatcher.elastic-sink-topic}")
   private String elasticSinkTopic;
-  @Value("${kafka.mongodb-sink-topic}")
+  @Value("${kafka.dispatcher.mongodb-sink-topic}")
   private String mongoSinkTopic;
 
   @Inject
@@ -55,11 +55,11 @@ public class RdfSinkOutputProducer {
                                       .collection(event.getNamespace())
                                       .build();
     String kafkaEventForMongo = mapperWrapper.serialize(kafkaEventBuilder
-      .id(mongoSinkEventId)
-      .eventType(EventType.MONGODB_SINK)
-      .inputToSink(jsonLdFile)
-      .event(mapperWrapper.serialize(mongoEvent))
-      .build());
+                                                          .id(mongoSinkEventId)
+                                                          .eventType(EventType.MONGODB_SINK)
+                                                          .inputToSink(jsonLdFile)
+                                                          .event(mapperWrapper.serialize(mongoEvent))
+                                                          .build());
 
     SinkResponse sinkResponse = SinkResponse.builder()
                                             .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
@@ -71,48 +71,50 @@ public class RdfSinkOutputProducer {
 
 
     String kafkaEventForSinkOut = mapperWrapper.serialize(kafkaEventBuilder
-      .id(IdGenerators.get())
-      .eventType(EventType.RDF_SINK_OUT)
-      .inputToSink(jsonLdFile)
-      .event(mapperWrapper.serialize(sinkResponse))
-      .build());
+                                                            .id(IdGenerators.get())
+                                                            .eventType(EventType.RDF_SINK_OUT)
+                                                            .inputToSink(jsonLdFile)
+                                                            .event(mapperWrapper.serialize(sinkResponse))
+                                                            .build());
 
     String kafkaEventForElastic = Optional.of(event)
                                           .filter(RestEvent::isSinkToElastic)
                                           .map(e -> {
-                                                ElasticEvent elasticEvent = ElasticEvent.builder()
-                                                                                        .index(e.getElasticIndex())
-                                                                                        .createIndex(true)
-                                                                                        .settings(e.getElasticSettingsJson())
-                                                                                        .mappings(e.getElasticMappingsJson())
-                                                                                        .build();
-                                                return kafkaEventBuilder
-                                                  .id(elasticSinkEventId)
-                                                  .eventType(EventType.ELASTIC_SINK)
-                                                  .inputToSink(jsonLdFile)
-                                                  .event(mapperWrapper.serialize(elasticEvent))
-                                                  .build();
-                                              })
-                                          .map(mapperWrapper::serialize).orElse(null);
+                                            ElasticEvent elasticEvent = ElasticEvent.builder()
+                                                                                    .index(e.getElasticIndex())
+                                                                                    .createIndex(true)
+                                                                                    .settings(e.getElasticSettingsJson())
+                                                                                    .mappings(e.getElasticMappingsJson())
+                                                                                    .build();
+                                            return kafkaEventBuilder
+                                              .id(elasticSinkEventId)
+                                              .eventType(EventType.ELASTIC_SINK)
+                                              .inputToSink(jsonLdFile)
+                                              .event(mapperWrapper.serialize(elasticEvent))
+                                              .build();
+                                          })
+                                          .map(mapperWrapper::serialize)
+                                          .orElse(null);
 
-    CheckedSupplier<KafkaMessage.KafkaMessageBuilder<String,String>> builder = KafkaMessage::builder;
+    CheckedSupplier<KafkaMessage.KafkaMessageBuilder<String, String>> builder = KafkaMessage::builder;
 
     return Stream.of(builder.safeGet()
-                                 .outTopic(rdfSinkTopicOut)
-                                 .key(IdGenerators.get())
-                                 .value(kafkaEventForSinkOut)
-                                 .build(),
-                   builder.safeGet()
-                               .outTopic(elasticSinkTopic)
-                               .key(elasticSinkEventId)
-                               .value(kafkaEventForElastic)
-                               .build(),
-                   builder.safeGet()
-                               .outTopic(mongoSinkTopic)
-                               .key(mongoSinkEventId)
-                               .value(kafkaEventForMongo)
-                               .build()
-                   ).filter(m-> StringUtils.isNotBlank(m.getValue()))
-      .collect(Collectors.toList());
+                            .outTopic(rdfSinkTopicOut)
+                            .key(IdGenerators.get())
+                            .value(kafkaEventForSinkOut)
+                            .build(),
+                     builder.safeGet()
+                            .outTopic(elasticSinkTopic)
+                            .key(elasticSinkEventId)
+                            .value(kafkaEventForElastic)
+                            .build(),
+                     builder.safeGet()
+                            .outTopic(mongoSinkTopic)
+                            .key(mongoSinkEventId)
+                            .value(kafkaEventForMongo)
+                            .build()
+    )
+                 .filter(m -> StringUtils.isNotBlank(m.getValue()))
+                 .collect(Collectors.toList());
   }
 }

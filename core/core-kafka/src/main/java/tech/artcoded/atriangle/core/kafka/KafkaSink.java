@@ -4,7 +4,6 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
@@ -12,7 +11,6 @@ import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.dto.KafkaMessage;
 
 import java.util.List;
-import java.util.Map;
 import java.util.function.Function;
 
 public interface KafkaSink<K, V> {
@@ -20,7 +18,7 @@ public interface KafkaSink<K, V> {
 
   KafkaTemplate<K, V> getKafkaTemplate();
 
-  List<KafkaMessage<K,V>> consume(ConsumerRecord<K, V> record) throws Exception;
+  List<KafkaMessage<K, V>> consume(ConsumerRecord<K, V> record) throws Exception;
 
   default Function<KafkaMessage<K, V>, SendResult<K, V>> sendKafkaMessageForEachEntries() {
     return CheckedFunction.toFunction((var response) -> getKafkaTemplate().send(new ProducerRecord<>(response.getOutTopic(), response.getKey(), response
@@ -31,7 +29,7 @@ public interface KafkaSink<K, V> {
   @KafkaListener(topics = "#{'${kafka.listener.topics}'.split(',')}")
   default void sink(ConsumerRecord<K, V> record) throws Exception {
     LOGGER.info("receiving key {} value {}", record.key(), record.value());
-    List<KafkaMessage<K,V>> responses = consume(record);
+    List<KafkaMessage<K, V>> responses = consume(record);
     responses.stream()
              .map(this.sendKafkaMessageForEachEntries())
              .forEach(result -> LOGGER.info("result {}", result.toString()));

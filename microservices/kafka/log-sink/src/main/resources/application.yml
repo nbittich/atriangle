@@ -1,13 +1,11 @@
-out:
-  topic: event-sink-log-out
+kafka:
+  listener:
+    topics: event-sink-log
 log:
   sink:
     index: logsink
 spring:
   profiles:
     include: kafka, elasticsearch, logging
-  kafka:
-    template:
-      default-topic: event-sink-log
 application:
   basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/log-sink}

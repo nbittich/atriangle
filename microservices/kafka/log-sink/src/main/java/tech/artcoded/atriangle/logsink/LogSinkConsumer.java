@@ -19,7 +19,6 @@ import tech.artcoded.atriangle.core.kafka.KafkaSink;
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -34,9 +33,6 @@ public class LogSinkConsumer implements KafkaSink<String, String> {
   @Value("${log.sink.index}")
   private String logSinkIndex;
 
-  @Value("${out.topic}")
-  @Getter
-  private String outTopic;
 
   @PostConstruct
   public void createIndexIfNotExist() {

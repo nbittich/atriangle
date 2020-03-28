@@ -25,7 +25,6 @@ echo "docker ps"
 echo "docker logs -f docker_atrianglelogsink_1"
 echo "docker logs -f docker_atrianglemongodbsink_1"
 echo "docker logs -f docker_atrianglerdfsink_1"
-echo "docker logs -f docker_atriangleeventdispatcher_1"
 
 echo "docker logs -f docker_atrianglerestgateway_1"
 echo "docker logs -f docker_atriangleelasticsink_1"

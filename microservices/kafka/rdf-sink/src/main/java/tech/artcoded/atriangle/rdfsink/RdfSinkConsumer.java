@@ -7,7 +7,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.openrdf.rio.RDFFormat;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -16,7 +15,6 @@ import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.DateHelper;
-import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
 import tech.artcoded.atriangle.core.kafka.KafkaSink;
@@ -29,7 +27,6 @@ import tech.artcoded.atriangle.feign.clients.util.FeignMultipartFile;
 
 import javax.inject.Inject;
 import java.util.List;
-import java.util.Map;
 
 @Component
 @Slf4j
@@ -68,7 +65,7 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
   }
 
   @Override
-  public List<KafkaMessage<String,String>> consume(ConsumerRecord<String, String> record) throws Exception {
+  public List<KafkaMessage<String, String>> consume(ConsumerRecord<String, String> record) throws Exception {
     String restEvent = record.value();
 
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(restEvent);

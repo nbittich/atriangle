@@ -24,7 +24,6 @@ import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Component
 @Slf4j
@@ -90,9 +89,13 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
                                                       .event(mapperWrapper.serialize(sinkResponse))
                                                       .build();
 
-    CheckedSupplier<KafkaMessage.KafkaMessageBuilder<String,String>> builder = KafkaMessage::builder;
+    CheckedSupplier<KafkaMessage.KafkaMessageBuilder<String, String>> builder = KafkaMessage::builder;
 
-    return List.of(builder.safeGet().key(IdGenerators.get()).value(mapperWrapper.serialize(kafkaEventForSinkOut)).outTopic(outTopic).build());
+    return List.of(builder.safeGet()
+                          .key(IdGenerators.get())
+                          .value(mapperWrapper.serialize(kafkaEventForSinkOut))
+                          .outTopic(outTopic)
+                          .build());
   }
 
 
