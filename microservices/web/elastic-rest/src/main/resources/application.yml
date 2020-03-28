@@ -1,0 +1,9 @@
+application:
+  basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/elastic-rest}
+server:
+  port: 0
+spring:
+  application:
+    name: ElasticRestPublicEndpoint
+  profiles:
+    include: kafka, zookeeper, rest, feign, logging, elasticsearch

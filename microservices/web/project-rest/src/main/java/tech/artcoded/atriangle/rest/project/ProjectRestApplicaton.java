@@ -7,6 +7,7 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Import;
 import tech.artcoded.atriangle.core.kafka.KafkaConfig;
 import tech.artcoded.atriangle.core.rest.config.SwaggerConfig;
+import tech.artcoded.atriangle.feign.clients.elastic.DiscoverableElasticRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.file.DiscoverableFileRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.shacl.DiscoverableShaclRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.xls2rdf.DiscoverableXls2RdfRestFeignClient;
@@ -14,7 +15,9 @@ import tech.artcoded.atriangle.feign.clients.xls2rdf.DiscoverableXls2RdfRestFeig
 @SpringBootApplication
 @Import({KafkaConfig.class, SwaggerConfig.class})
 @EnableDiscoveryClient
-@EnableFeignClients(clients = {DiscoverableFileRestFeignClient.class,
+@EnableFeignClients(clients = {
+  DiscoverableElasticRestFeignClient.class,
+  DiscoverableFileRestFeignClient.class,
   DiscoverableXls2RdfRestFeignClient.class,
   DiscoverableShaclRestFeignClient.class})
 public class ProjectRestApplicaton {

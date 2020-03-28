@@ -3,10 +3,13 @@ zuul:
     filerestupload:
       path: /api/upload/**
       serviceId: FileRestPublicEndpoint
-    projectrestupload:
+    projectrest:
       path: /api/project/**
       serviceId: ProjectRestPublicEndpoint
-    shaclrestupload:
+    elasticrest:
+      path: /api/elastic/**
+      serviceId: ElasticRestPublicEndpoint
+    shaclrest:
       path: /api/shacl/**
       serviceId: ShaclRestPublicEndpoint
     elasticsearch:

@@ -11,3 +11,5 @@
 
 * sink response refactoring, todo response field must be updated
 
+* Show logs for a project
+

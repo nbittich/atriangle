@@ -102,6 +102,7 @@ services:
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+  # KAFKA
   atriangleelasticsink:
     restart: always
     depends_on:
@@ -116,6 +117,7 @@ services:
       ELASTICSEARCH_HOSTNAME: "elasticsearch"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
+      APPLICATION_BASE_PATH: "/usr/app/elastic-sink"
     volumes:
       - elastic-sink-storage:/user/app
   atrianglelogsink:
@@ -131,8 +133,47 @@ services:
     environment:
       ELASTICSEARCH_HOSTNAME: "elasticsearch"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
+      APPLICATION_BASE_PATH: "/usr/app/log-sink"
     volumes:
       - log-sink-storage:/user/app
+
+  atrianglerdfsink:
+    restart: always
+    depends_on:
+      - blazegraph
+      - kafkaserver
+    networks:
+      atriangle:
+        aliases:
+          - rdfsink
+    image: atriangle/rdf-sink
+    environment:
+      SPARQL_ENDPOINT_URL: "http://blazegraph:8080/bigdata"
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
+      SHACL_ENDPOINT_URL: "http://restgateway:8088/api/shacl"
+      FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
+      APPLICATION_BASE_PATH: "/usr/app/rdf-sink"
+    volumes:
+      - rdf-sink-storage:/user/app
+  atrianglemongodbsink:
+    restart: always
+    depends_on:
+      - atrianglemongo
+      - kafkaserver
+    networks:
+      atriangle:
+        aliases:
+          - mongodbsink
+    image: atriangle/mongodb-sink
+    environment:
+      MONGO_DB_HOST: "mongo"
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
+      FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
+      APPLICATION_BASE_PATH: "/usr/app/mongodb-sink"
+
+    volumes:
+      - mongodb-sink-storage:/user/app
+  # WEB
   atriangleuploadrest:
     restart: always
     depends_on:
@@ -149,7 +190,6 @@ services:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
       APPLICATION_BASE_PATH: "/usr/app/fileupload"
-      JPA_DDL_STRATEGY: "create-drop"
       MONGO_DB_HOST: "mongo"
   atriangleprojectrest:
     restart: always
@@ -165,7 +205,7 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
-      APPLICATION_BASE_PATH: "/usr/app/atriangleproject"
+      APPLICATION_BASE_PATH: "/usr/app/project"
       MONGO_DB_HOST: "mongo"
     volumes:
       - project-rest-storage:/user/app
@@ -185,39 +225,24 @@ services:
       APPLICATION_BASE_PATH: "/usr/app/shacl"
     volumes:
       - shacl-rest-storage:/user/app
-  atrianglerdfsink:
+  atriangleelasticrest:
     restart: always
     depends_on:
-      - blazegraph
       - kafkaserver
+      - atrianglezookeeper
+      - atriangleelasticsearch
     networks:
       atriangle:
         aliases:
-          - rdfsink
-    image: atriangle/rdf-sink
+          - elasticrest
+    image: atriangle/elastic-rest
     environment:
-      SPARQL_ENDPOINT_URL: "http://blazegraph:8080/bigdata"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
-      SHACL_ENDPOINT_URL: "http://restgateway:8088/api/shacl"
-      FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
+      ZOOKEEPER_URL: "zookeeper:2181"
+      ELASTICSEARCH_HOSTNAME: "elasticsearch"
+      APPLICATION_BASE_PATH: "/usr/app/elastic"
     volumes:
-      - rdf-sink-storage:/user/app
-  atrianglemongodbsink:
-    restart: always
-    depends_on:
-      - atrianglemongo
-      - kafkaserver
-    networks:
-      atriangle:
-        aliases:
-          - mongodbsink
-    image: atriangle/mongodb-sink
-    environment:
-      MONGO_DB_HOST: "mongo"
-      KAFKA_BOOTSTRAP_SERVER: "kafka"
-      FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
-    volumes:
-      - mongodb-sink-storage:/user/app
+      - elastic-rest-storage:/user/app
   atrianglerestgateway:
     restart: always
     depends_on:
@@ -237,6 +262,7 @@ services:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
       MONGO_EXPRESS_HOST: "mongoexpress"
+      APPLICATION_BASE_PATH: "/usr/app/rest-gateway"
     volumes:
       - rest-storage:/user/app
   atrianglerestxls2rdf:
@@ -251,6 +277,7 @@ services:
     environment:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
+      APPLICATION_BASE_PATH: "/usr/app/xls2rdf"
     volumes:
       - xls2rdf-storage:/user/app
 
@@ -263,6 +290,7 @@ volumes:
   upload-rest-storage:
   project-rest-storage:
   shacl-rest-storage:
+  elastic-rest-storage:
   mongodb-storage:
   blazegraph-storage:
   portainer-storage:

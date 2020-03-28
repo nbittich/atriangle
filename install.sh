@@ -29,11 +29,13 @@ echo "docker logs -f docker_atrianglerdfsink_1"
 echo "docker logs -f docker_atrianglerestgateway_1"
 echo "docker logs -f docker_atriangleelasticsink_1"
 echo "docker logs -f docker_atriangleuploadrest_1"
+echo "docker logs -f docker_atriangleelasticrest_1"
 echo "docker logs -f docker_atriangleprojectrest_1"
 echo "docker logs -f docker_atriangleshaclrest_1"
+echo "docker logs -f docker_atrianglerestxls2rdf_1"
 
-echo "Portainer: http://localhost:9000"
-echo "App: http://localhost:8088/api/project/swagger-ui.html"
+echo "PORTAINER: http://localhost:9000"
+echo "APP: http://localhost:8088/api/project/swagger-ui.html"
 
 
 

@@ -1,9 +1,6 @@
 kafka:
   listener:
     topics: event-sink-log
-log:
-  sink:
-    index: logsink
 spring:
   profiles:
     include: kafka, elasticsearch, logging

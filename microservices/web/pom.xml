@@ -16,6 +16,7 @@
     <module>shacl-rest</module>
     <module>xls2rdf-rest</module>
     <module>upload-rest</module>
+    <module>elastic-rest</module>
     <module>project-rest</module>
     <module>rest-gateway</module>
   </modules>

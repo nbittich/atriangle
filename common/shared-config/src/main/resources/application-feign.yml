@@ -2,7 +2,6 @@ feign:
   httpclient:
     connection-timeout: 45000
 
-
 endpoint:
   file:
     url: ${FILE_ENDPOINT_URL:http://localhost:8088/api/upload}
@@ -10,5 +9,7 @@ endpoint:
     url: ${PROJECT_ENDPOINT_URL:http://localhost:8088/api/project}
   shacl:
     url: ${SHACL_ENDPOINT_URL:http://localhost:8088/api/shacl}
+  elastic:
+    url: ${SHACL_ENDPOINT_URL:http://localhost:8088/api/elastic}
   skosplay:
     url: ${XLS2RDF_ENDPOINT_URL:http://localhost:8088/api/xls2rdf}

@@ -30,7 +30,7 @@ public class LogSinkConsumer implements KafkaSink<String, String> {
   private final ObjectMapperWrapper mapperWrapper;
   private final KafkaEventHelper kafkaEventHelper;
 
-  @Value("${log.sink.index}")
+  @Value("${elasticsearch.shared-indexes.logsink}")
   private String logSinkIndex;
 
 

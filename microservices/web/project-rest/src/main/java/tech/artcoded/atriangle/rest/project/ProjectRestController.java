@@ -9,10 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import tech.artcoded.atriangle.api.dto.CommonConstants;
-import tech.artcoded.atriangle.api.dto.FileEvent;
-import tech.artcoded.atriangle.api.dto.ProjectEvent;
-import tech.artcoded.atriangle.api.dto.SinkRequest;
+import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
@@ -57,6 +54,13 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   @GetMapping("/by-name/{name}")
   public ResponseEntity<ProjectEvent> findByName(@PathVariable("name") String name) {
     return projectRestService.findByName(name)
+                             .map(ResponseEntity::ok)
+                             .orElseGet(ResponseEntity.notFound()::build);
+  }
+
+  @GetMapping("/{projectId}/logs")
+  public ResponseEntity<List<LogEvent>> getLogsForProject(@PathVariable("projectId") String projectId) {
+    return projectRestService.getLogsForProject(projectId)
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.notFound()::build);
   }

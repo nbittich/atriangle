@@ -15,11 +15,12 @@ import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.CheckedSupplier;
 import tech.artcoded.atriangle.api.DateHelper;
-import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.api.dto.FileEventType;
+import tech.artcoded.atriangle.api.dto.LogEvent;
 import tech.artcoded.atriangle.api.dto.ProjectEvent;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
+import tech.artcoded.atriangle.feign.clients.elastic.ElasticRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.shacl.ShaclRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.util.FeignMultipartFile;
@@ -43,20 +44,23 @@ public class ProjectRestService {
 
   private final MongoTemplate mongoTemplate;
   private final FileRestFeignClient fileRestFeignClient;
+  private final ElasticRestFeignClient elasticRestFeignClient;
   private final ShaclRestFeignClient shaclRestFeignClient;
   private final Xls2RdfRestFeignClient skosPlayRestFeignClient;
+
   private final LoggerAction loggerAction;
 
 
   @Inject
   public ProjectRestService(MongoTemplate mongoTemplate,
                             FileRestFeignClient fileRestFeignClient,
-                            ObjectMapperWrapper objectMapperWrapper,
+                            ElasticRestFeignClient elasticRestFeignClient,
                             ShaclRestFeignClient shaclRestFeignClient,
                             Xls2RdfRestFeignClient skosPlayRestFeignClient,
                             LoggerAction loggerAction) {
     this.mongoTemplate = mongoTemplate;
     this.fileRestFeignClient = fileRestFeignClient;
+    this.elasticRestFeignClient = elasticRestFeignClient;
     this.shaclRestFeignClient = shaclRestFeignClient;
     this.skosPlayRestFeignClient = skosPlayRestFeignClient;
     this.loggerAction = loggerAction;
@@ -80,6 +84,11 @@ public class ProjectRestService {
 
   public Optional<ProjectEvent> findById(String projectId) {
     return Optional.ofNullable(mongoTemplate.findById(projectId, ProjectEvent.class));
+  }
+
+  public Optional<List<LogEvent>> getLogsForProject(String projectId) {
+    return findById(projectId)
+      .map(projectEvent -> elasticRestFeignClient.getLogsByCorrelationId(projectId));
   }
 
   public List<ProjectEvent> findAll() {

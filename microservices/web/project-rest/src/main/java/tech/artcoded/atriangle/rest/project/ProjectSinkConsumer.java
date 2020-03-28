@@ -49,15 +49,8 @@ public class ProjectSinkConsumer {
                                                   .orElseThrow();
 
 
-    ProjectEvent newProjectEvent = projectEvent.toBuilder()
-                                               .sinkResponses(Stream.concat(projectEvent.getSinkResponses()
-                                                                                        .stream(), Stream.of(response ))
-                                                                    .collect(Collectors.toUnmodifiableList()))
-                                               .build();
-    ProjectEvent updatedProjectEvent = this.mongoTemplate.save(newProjectEvent);
     loggerAction.info(projectEvent::getId, "received sink response with status %s, for project %s", response.getSinkResponsestatus()
-                                                                                                            .name(), updatedProjectEvent
-                        .getId());
+                                                                                                            .name(), projectEvent.getId());
   }
 
   @KafkaListener(topics = {"${kafka.dispatcher.rdf-sink-topic-out}"})
@@ -78,9 +71,6 @@ public class ProjectSinkConsumer {
                                                                                                                          .eventType(FileEventType.PROJECT_FILE)
                                                                                                                          .build()))
                                                                  .collect(Collectors.toUnmodifiableList()))
-                                               .sinkResponses(Stream.concat(projectEvent.getSinkResponses()
-                                                                                        .stream(), Stream.of(response))
-                                                                    .collect(Collectors.toUnmodifiableList()))
                                                .build();
     ProjectEvent updatedProjectEvent = this.mongoTemplate.save(newProjectEvent);
 
