@@ -5,3 +5,5 @@
 
 * Add Kafka topic, metadata & offsets for later usage
 
+* bugfix before elastic-rest
+

@@ -25,7 +25,8 @@ public class FileEvent {
 
   @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
               timezone = "Europe/Brussels")
-  private Date creationDate;
+  @Builder.Default
+  private Date creationDate = new Date();
 
   @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
               timezone = "Europe/Brussels")
