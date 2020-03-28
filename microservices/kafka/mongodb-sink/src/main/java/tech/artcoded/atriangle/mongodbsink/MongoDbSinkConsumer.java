@@ -32,7 +32,7 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
   private final FileRestFeignClient fileRestFeignClient;
   private final KafkaEventHelper kafkaEventHelper;
 
-  @Value("${<kafka.dispatcher.mongodb-sink-topic-out}")
+  @Value("${kafka.dispatcher.mongodb-sink-topic-out}")
   private String outTopic;
 
   @Getter
