@@ -115,7 +115,7 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
 
     FileEvent jsonLdFile = derivatedFile.getBody();
 
-    return rdfSinkOutputProducer.produce(kafkaEvent, event, jsonLdFile);
+    return rdfSinkOutputProducer.produce(kafkaEvent, event, jsonLdFile, record.partition(), record.offset(), record.headers());
 
   }
 

@@ -120,7 +120,11 @@ public class ElasticSinkConsumer implements KafkaSink<String, String> {
                                             .build();//todo think about failure..
 
 
-    KafkaEvent kafkaEventForSinkOut = kafkaEventHelper.newKafkaEventBuilder(kafkaEvent.getCorrelationId(), buildProperties)
+    KafkaEvent kafkaEventForSinkOut = kafkaEventHelper.newKafkaEventBuilder(kafkaEvent.getCorrelationId(),
+                                                                            record.partition(),
+                                                                            record.offset(),
+                                                                            record.headers(),
+                                                                            buildProperties)
                                                       .id(IdGenerators.get())
                                                       .eventType(EventType.ELASTIC_SINK_OUT)
                                                       .event(mapperWrapper.serialize(sinkResponse))

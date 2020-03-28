@@ -3,6 +3,7 @@ package tech.artcoded.atriangle.rest.project;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.header.Headers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -63,7 +64,8 @@ public class ProjectSinkProducer {
                                                                                .orElse(null))
                                         .build();
 
-      KafkaEvent kafkaEvent = kafkaEventHelper.newKafkaEventBuilder(projectId, buildProperties)
+      KafkaEvent kafkaEvent = kafkaEventHelper.newKafkaEventBuilderWithoutRecord(projectId,
+                                                                    buildProperties)
                                               .eventType(EventType.RDF_SINK)
                                               .id(IdGenerators.get())
                                               .shaclModel(projectRestService.getFileMetadata(projectId, sinkRequest.getShaclFileEventId())

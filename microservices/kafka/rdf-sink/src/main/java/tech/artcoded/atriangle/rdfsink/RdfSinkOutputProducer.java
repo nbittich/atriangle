@@ -1,6 +1,7 @@
 package tech.artcoded.atriangle.rdfsink;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.kafka.common.header.Headers;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.stereotype.Component;
@@ -44,9 +45,18 @@ public class RdfSinkOutputProducer {
     this.kafkaEventHelper = kafkaEventHelper;
   }
 
-  public List<KafkaMessage<String, String>> produce(KafkaEvent kafkaEvent, RestEvent event, FileEvent jsonLdFile) {
+  public List<KafkaMessage<String, String>> produce(KafkaEvent kafkaEvent,
+                                                    RestEvent event,
+                                                    FileEvent jsonLdFile,
+                                                    int partition,
+                                                    long offset,
+                                                    Headers headers) {
 
-    KafkaEvent.KafkaEventBuilder kafkaEventBuilder = kafkaEventHelper.newKafkaEventBuilder(kafkaEvent.getCorrelationId(), buildProperties);
+    KafkaEvent.KafkaEventBuilder kafkaEventBuilder = kafkaEventHelper.newKafkaEventBuilder(kafkaEvent.getCorrelationId(),
+                                                                                           partition,
+                                                                                           offset,
+                                                                                           headers,
+                                                                                           buildProperties);
 
     String elasticSinkEventId = IdGenerators.get();
     String mongoSinkEventId = IdGenerators.get();

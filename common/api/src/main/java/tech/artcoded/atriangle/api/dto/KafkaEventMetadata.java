@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Map;
+
 @Data
 @Builder(toBuilder = true)
 @NoArgsConstructor
@@ -14,4 +16,7 @@ public class KafkaEventMetadata {
   private String artifactId;
   private String groupId;
   private String moduleName;
+  private long offset;
+  private int partition;
+  private Map<String,String> headers;
 }
