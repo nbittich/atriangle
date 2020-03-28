@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -115,7 +116,7 @@ public class ElasticSinkConsumer implements KafkaSink<String, String> {
     SinkResponse sinkResponse = SinkResponse.builder()
                                             .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
                                             .finishedDate(new Date())
-                                            .response("rdf saved to the elastic search instance".getBytes())
+                                            .response(mapperWrapper.serialize(Map.of("message","rdf saved to the elastic search instance")))
                                             .responseType(EventType.ELASTIC_SINK_OUT)
                                             .build();//todo think about failure..
 

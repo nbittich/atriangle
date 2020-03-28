@@ -51,7 +51,7 @@ public class ProjectSinkConsumer {
 
     ProjectEvent newProjectEvent = projectEvent.toBuilder()
                                                .sinkResponses(Stream.concat(projectEvent.getSinkResponses()
-                                                                                        .stream(), Stream.of(response))
+                                                                                        .stream(), Stream.of(response ))
                                                                     .collect(Collectors.toUnmodifiableList()))
                                                .build();
     ProjectEvent updatedProjectEvent = this.mongoTemplate.save(newProjectEvent);
@@ -65,7 +65,7 @@ public class ProjectSinkConsumer {
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(record.value());
     SinkResponse response = kafkaEventHelper.parseEvent(kafkaEvent, SinkResponse.class);
 
-    FileEvent jsonLdFileEvent = objectMapperWrapper.deserialize(response.responseAsString(), FileEvent.class)
+    FileEvent jsonLdFileEvent = objectMapperWrapper.deserialize(response.getResponse(), FileEvent.class)
                                                    .orElseThrow();
 
     ProjectEvent projectEvent = projectRestService.findById(kafkaEvent.getCorrelationId())

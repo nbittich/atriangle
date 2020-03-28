@@ -74,8 +74,7 @@ public class RdfSinkOutputProducer {
     SinkResponse sinkResponse = SinkResponse.builder()
                                             .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
                                             .finishedDate(new Date())
-                                            .response(mapperWrapper.serialize(jsonLdFile)
-                                                                   .getBytes())
+                                            .response(mapperWrapper.serialize(jsonLdFile))
                                             .responseType(EventType.RDF_SINK_OUT)
                                             .build();//todo think about failure..
 

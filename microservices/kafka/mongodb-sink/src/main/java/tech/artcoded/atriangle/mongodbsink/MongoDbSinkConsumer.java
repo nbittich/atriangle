@@ -24,6 +24,7 @@ import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @Slf4j
@@ -78,7 +79,7 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
     SinkResponse sinkResponse = SinkResponse.builder()
                                             .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
                                             .finishedDate(new Date())
-                                            .response("rdf saved to the mongodb".getBytes())
+                                            .response(mapperWrapper.serialize(Map.of("message","rdf saved to the mongodb")))
                                             .responseType(EventType.MONGODB_SINK_OUT)
                                             .build();//todo think about failure..
 

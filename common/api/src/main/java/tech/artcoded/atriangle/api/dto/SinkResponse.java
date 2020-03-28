@@ -1,5 +1,6 @@
 package tech.artcoded.atriangle.api.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -15,11 +16,9 @@ public class SinkResponse {
   public enum SinkResponseStatus {SUCCESS, ERROR}
 
   private EventType responseType;
-  private byte[] response;
+  private String response;
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
   private Date finishedDate;
   private SinkResponseStatus sinkResponsestatus;
 
-  public String responseAsString() {
-    return new String(response);
-  }
 }
