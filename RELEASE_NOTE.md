@@ -7,3 +7,5 @@
 
 * bugfix before elastic-rest
 
+* fix null creation date for file upload
+

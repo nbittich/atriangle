@@ -43,6 +43,7 @@ public class FileUpload {
     upload.setSize(file.getSize());
     upload.setUploadType(uploadType);
     upload.setPathToFile(pathToFile);
+    upload.setCreationDate(new Date());
     return upload;
   }
 
@@ -58,6 +59,8 @@ public class FileUpload {
     upload.setName(originalFilename);
     upload.setUploadType(uploadType);
     upload.setPathToFile(pathToFile);
+    upload.setCreationDate(new Date());
+
     return upload;
   }
 
