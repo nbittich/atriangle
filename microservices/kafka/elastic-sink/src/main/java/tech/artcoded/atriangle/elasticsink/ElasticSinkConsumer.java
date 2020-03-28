@@ -17,25 +17,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.CheckedFunction;
+import tech.artcoded.atriangle.api.CheckedSupplier;
 import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.dto.ElasticEvent;
-import tech.artcoded.atriangle.api.dto.EventType;
-import tech.artcoded.atriangle.api.dto.KafkaEvent;
-import tech.artcoded.atriangle.api.dto.SinkResponse;
+import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.elastic.ElasticSearchRdfService;
-import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
 import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
+import tech.artcoded.atriangle.core.kafka.KafkaSink;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Component
 @Slf4j
-public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
+public class ElasticSinkConsumer implements KafkaSink<String, String> {
   private final ElasticSearchRdfService elasticSearchRdfService;
   private final FileRestFeignClient fileRestFeignClient;
   private final KafkaEventHelper kafkaEventHelper;
@@ -45,8 +44,8 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
   private final BuildProperties buildProperties;
 
 
-  @Value("${out.topic}")
-  @Getter
+
+  @Value("${kafka.dispatcher.elastic-sink-topic-out")
   private String outTopic;
 
   @Inject
@@ -66,7 +65,7 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
 
 
   @Override
-  public Map<String, String> consume(ConsumerRecord<String, String> record) throws Exception {
+  public List<KafkaMessage<String, String>> consume(ConsumerRecord<String, String> record) throws Exception {
     CheckedFunction<HttpEntity<ByteArrayResource>, String> inputStreamToString = entity -> entity == null || entity.getBody() == null ? null : IOUtils
       .toString(entity.getBody()
                       .getInputStream(), StandardCharsets.UTF_8);
@@ -129,7 +128,10 @@ public class ElasticSinkConsumer implements ATriangleConsumer<String, String> {
                                                       .event(mapperWrapper.serialize(sinkResponse))
                                                       .build();
 
-    return Map.of(IdGenerators.get(), mapperWrapper.serialize(kafkaEventForSinkOut));
+    CheckedSupplier<KafkaMessage.KafkaMessageBuilder<String,String>> builder = KafkaMessage::builder;
+
+    return List.of(builder.safeGet().key(IdGenerators.get()).value(mapperWrapper.serialize(kafkaEventForSinkOut)).outTopic(outTopic).build());
+
   }
 
 

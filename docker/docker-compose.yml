@@ -218,18 +218,6 @@ services:
       FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
     volumes:
       - mongodb-sink-storage:/user/app
-  atriangleeventdispatcher:
-    depends_on:
-      - kafkaserver
-    networks:
-      atriangle:
-        aliases:
-          - eventdispatcher
-    image: atriangle/event-dispatcher
-    environment:
-      KAFKA_BOOTSTRAP_SERVER: "kafka"
-    volumes:
-      - event-dispatcher-storage:/user/app
   atrianglerestgateway:
     restart: always
     depends_on:
@@ -271,7 +259,6 @@ volumes:
   rdf-sink-storage:
   mongodb-sink-storage:
   log-sink-storage:
-  event-dispatcher-storage:
   rest-storage:
   upload-rest-storage:
   project-rest-storage:

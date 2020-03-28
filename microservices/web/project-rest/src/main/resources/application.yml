@@ -14,4 +14,4 @@ spring:
     include: kafka, zookeeper, rest, mongodb, feign, logging
   kafka:
     template:
-      default-topic: event-dispatcher
+      default-topic: event-sink-rdf

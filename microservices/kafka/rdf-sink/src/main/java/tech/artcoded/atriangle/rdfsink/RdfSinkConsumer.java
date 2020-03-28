@@ -17,12 +17,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.DateHelper;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.dto.FileEvent;
-import tech.artcoded.atriangle.api.dto.FileEventType;
-import tech.artcoded.atriangle.api.dto.KafkaEvent;
-import tech.artcoded.atriangle.api.dto.RestEvent;
-import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
+import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
+import tech.artcoded.atriangle.core.kafka.KafkaSink;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.core.sparql.ModelConverter;
 import tech.artcoded.atriangle.core.sparql.SimpleSparqlService;
@@ -31,11 +28,12 @@ import tech.artcoded.atriangle.feign.clients.shacl.ShaclRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.util.FeignMultipartFile;
 
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 
 @Component
 @Slf4j
-public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
+public class RdfSinkConsumer implements KafkaSink<String, String> {
 
   private static final String DERIVED_FILE_REGEX = "-derived-output-";
   private static final String DERIVED_FILE_JSON_LD_REGEX = DERIVED_FILE_REGEX + "jsonld-";
@@ -45,13 +43,8 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
   private final ShaclRestFeignClient shaclRestFeignClient;
 
   @Getter
-  @Value("${out.topic}")
-  private String outTopic;
-
-  @Getter
   private final KafkaTemplate<String, String> kafkaTemplate;
 
-  private final ObjectMapperWrapper mapperWrapper;
   private final KafkaEventHelper kafkaEventHelper;
   private final RdfSinkOutputProducer rdfSinkOutputProducer;
   private final LoggerAction loggerAction;
@@ -62,7 +55,6 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
                          FileRestFeignClient fileRestFeignClient,
                          ShaclRestFeignClient shaclRestFeignClient,
                          KafkaTemplate<String, String> kafkaTemplate,
-                         ObjectMapperWrapper mapperWrapper,
                          KafkaEventHelper kafkaEventHelper,
                          RdfSinkOutputProducer rdfSinkOutputProducer,
                          LoggerAction loggerAction) {
@@ -70,14 +62,13 @@ public class RdfSinkConsumer implements ATriangleConsumer<String, String> {
     this.fileRestFeignClient = fileRestFeignClient;
     this.shaclRestFeignClient = shaclRestFeignClient;
     this.kafkaTemplate = kafkaTemplate;
-    this.mapperWrapper = mapperWrapper;
     this.kafkaEventHelper = kafkaEventHelper;
     this.rdfSinkOutputProducer = rdfSinkOutputProducer;
     this.loggerAction = loggerAction;
   }
 
   @Override
-  public Map<String, String> consume(ConsumerRecord<String, String> record) throws Exception {
+  public List<KafkaMessage<String,String>> consume(ConsumerRecord<String, String> record) throws Exception {
     String restEvent = record.value();
 
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(restEvent);

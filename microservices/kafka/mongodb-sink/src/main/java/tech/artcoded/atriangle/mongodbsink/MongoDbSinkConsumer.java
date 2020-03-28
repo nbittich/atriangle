@@ -12,37 +12,35 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
+import tech.artcoded.atriangle.api.CheckedSupplier;
 import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.dto.EventType;
-import tech.artcoded.atriangle.api.dto.KafkaEvent;
-import tech.artcoded.atriangle.api.dto.MongoEvent;
-import tech.artcoded.atriangle.api.dto.SinkResponse;
-import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
+import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
+import tech.artcoded.atriangle.core.kafka.KafkaSink;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 @Component
 @Slf4j
-public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
+public class MongoDbSinkConsumer implements KafkaSink<String, String> {
   private final MongoTemplate mongoTemplate;
   private final FileRestFeignClient fileRestFeignClient;
   private final KafkaEventHelper kafkaEventHelper;
+
+  @Value("${kafka.dispatcher.mongodb-sink-topic-out")
+  private String outTopic;
 
   @Getter
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectMapperWrapper mapperWrapper;
   private final BuildProperties buildProperties;
 
-
-  @Value("${out.topic}")
-  @Getter
-  private String outTopic;
 
   @Inject
   public MongoDbSinkConsumer(MongoTemplate mongoTemplate,
@@ -61,7 +59,7 @@ public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
 
 
   @Override
-  public Map<String, String> consume(ConsumerRecord<String, String> record) throws Exception {
+  public List<KafkaMessage<String, String>> consume(ConsumerRecord<String, String> record) throws Exception {
     String mongoEvent = record.value();
 
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(mongoEvent);
@@ -92,7 +90,9 @@ public class MongoDbSinkConsumer implements ATriangleConsumer<String, String> {
                                                       .event(mapperWrapper.serialize(sinkResponse))
                                                       .build();
 
-    return Map.of(IdGenerators.get(), mapperWrapper.serialize(kafkaEventForSinkOut));
+    CheckedSupplier<KafkaMessage.KafkaMessageBuilder<String,String>> builder = KafkaMessage::builder;
+
+    return List.of(builder.safeGet().key(IdGenerators.get()).value(mapperWrapper.serialize(kafkaEventForSinkOut)).outTopic(outTopic).build());
   }
 
 

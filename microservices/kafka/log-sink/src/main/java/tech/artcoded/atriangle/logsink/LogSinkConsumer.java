@@ -10,19 +10,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
+import tech.artcoded.atriangle.api.dto.KafkaMessage;
 import tech.artcoded.atriangle.api.dto.LogEvent;
 import tech.artcoded.atriangle.core.elastic.ElasticSearchRdfService;
-import tech.artcoded.atriangle.core.kafka.ATriangleConsumer;
 import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
+import tech.artcoded.atriangle.core.kafka.KafkaSink;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
 @Component
 @Slf4j
-public class LogSinkConsumer implements ATriangleConsumer<String, String> {
+public class LogSinkConsumer implements KafkaSink<String, String> {
   private final ElasticSearchRdfService elasticSearchRdfService;
   @Getter
   private final KafkaTemplate<String, String> kafkaTemplate;
@@ -58,7 +60,7 @@ public class LogSinkConsumer implements ATriangleConsumer<String, String> {
 
 
   @Override
-  public Map<String, String> consume(ConsumerRecord<String, String> record) {
+  public List<KafkaMessage<String, String>> consume(ConsumerRecord<String, String> record) {
     String logEvent = record.value();
 
     LogEvent event = kafkaEventHelper.parseEvent(logEvent, LogEvent.class);
@@ -75,10 +77,7 @@ public class LogSinkConsumer implements ATriangleConsumer<String, String> {
       throw new RuntimeException("could not index");
     }
 
-    return Map.of(uuid, mapperWrapper.serialize(Map.of("message", "indexing success",
-                                                       "status", response.status()
-                                                                         .getStatus(),
-                                                       "id", uuid)));
+    return List.of(); // no need to do anything
   }
 
 

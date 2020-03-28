@@ -4,35 +4,35 @@ import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.annotation.Bean;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import tech.artcoded.atriangle.api.CheckedFunction;
+import tech.artcoded.atriangle.api.dto.KafkaMessage;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-public interface ATriangleConsumer<K, V> {
-  Logger LOGGER = LoggerFactory.getLogger(ATriangleConsumer.class);
+public interface KafkaSink<K, V> {
+  Logger LOGGER = LoggerFactory.getLogger(KafkaSink.class);
 
   KafkaTemplate<K, V> getKafkaTemplate();
 
-  String getOutTopic();
+  List<KafkaMessage<K,V>> consume(ConsumerRecord<K, V> record) throws Exception;
 
-  Map<K, V> consume(ConsumerRecord<K, V> record) throws Exception;
-
-  default Function<Map.Entry<K, V>, SendResult<K, V>> sendKafkaMessageForEachEntries() {
-    return CheckedFunction.toFunction((var response) -> getKafkaTemplate().send(new ProducerRecord<>(getOutTopic(), response.getKey(), response
+  default Function<KafkaMessage<K, V>, SendResult<K, V>> sendKafkaMessageForEachEntries() {
+    return CheckedFunction.toFunction((var response) -> getKafkaTemplate().send(new ProducerRecord<>(response.getOutTopic(), response.getKey(), response
       .getValue()))
                                                                           .get());
   }
 
-  @KafkaListener(topics = "${spring.kafka.template.default-topic}")
+  @KafkaListener(topics = "#{'${kafka.listener.topics}'.split(',')}")
   default void sink(ConsumerRecord<K, V> record) throws Exception {
     LOGGER.info("receiving key {} value {}", record.key(), record.value());
-    Map<K, V> responses = consume(record);
-    responses.entrySet()
-             .stream()
+    List<KafkaMessage<K,V>> responses = consume(record);
+    responses.stream()
              .map(this.sendKafkaMessageForEachEntries())
              .forEach(result -> LOGGER.info("result {}", result.toString()));
   }

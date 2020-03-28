@@ -12,7 +12,7 @@ import java.util.Date;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class KafkaEvent implements IKafkaEvent {
+public class KafkaEvent  {
   private String id;
   private String correlationId;
   private EventType eventType;

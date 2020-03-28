@@ -1,14 +1,14 @@
-out:
-  topic: event-sink-mongodb-out
+kafka:
+  listener:
+    topics: event-sink-mongodb
+  dispatcher:
+    mongodb-sink-topic-out: event-sink-mongodb-out
 
 spring:
   application:
     name: RDF_COLLECTION
   profiles:
     include: kafka, mongodb, feign, logging
-  kafka:
-    template:
-      default-topic: event-sink-mongodb
 
 application:
   basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/mongodb-sink}

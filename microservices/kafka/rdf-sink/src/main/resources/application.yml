@@ -1,11 +1,13 @@
-out:
-  topic: event-dispatcher
+kafka:
+  listener:
+    topics: event-sink-rdf
+  dispatcher:
+    elastic-sink-topic: event-sink-elastic
+    mongodb-sink-topic: event-sink-mongodb
+    rdf-sink-topic-out: event-sink-rdf-out
 spring:
   profiles:
     include: kafka, sparql, feign, logging
-  kafka:
-    template:
-      default-topic: event-sink-rdf
 
 application:
   basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/rdf-sink}
