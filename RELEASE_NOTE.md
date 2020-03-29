@@ -6,3 +6,4 @@
 * upgrade all dependencies
 * remove elastic sink as mongodb  & solr are already there
 * fix shacl validation during sink
+* increase default size for elastic search
