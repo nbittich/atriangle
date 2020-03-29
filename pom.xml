@@ -14,9 +14,11 @@
     <developer>
       <name>Nordine Bittich</name>
       <email>contact@bittich.be</email>
-      <organization>Artcoded</organization>
+      <organization>ARTCODED</organization>
+      <organizationUrl>https://artcoded.tech</organizationUrl>
+      <url>https://github.com/naterivah/atriangle</url>
       <roles>
-        <role>Main Developer</role>
+        <role>Developer</role>
         <role>Architect</role>
       </roles>
     </developer>
