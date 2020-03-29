@@ -2,7 +2,6 @@ kafka:
   listener:
     topics: event-sink-rdf
   dispatcher:
-    elastic-sink-topic: event-sink-elastic
     mongodb-sink-topic: event-sink-mongodb
     rdf-sink-topic-out: event-sink-rdf-out
 spring:

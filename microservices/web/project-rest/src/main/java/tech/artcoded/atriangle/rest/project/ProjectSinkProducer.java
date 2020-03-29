@@ -55,22 +55,16 @@ public class ProjectSinkProducer {
 
       RestEvent restRdfEvent = RestEvent.builder()
                                         .namespace(ns)
-                                        .elasticIndex(ns)
-                                        .sinkToElastic(sinkRequest.isSinkToElastic())
-                                        .elasticSettingsJson(projectRestService.getFileMetadata(projectId, sinkRequest.getElasticSettingsFileEventId())
-                                                                               .orElse(null))
-                                        .elasticMappingsJson(projectRestService.getFileMetadata(projectId, sinkRequest.getElasticMappingsFileEventId())
-                                                                               .orElse(null))
+                                        .inputToSink(projectRestService.getFileMetadata(projectId, sinkRequest.getRdfFileEventId())
+                                                                       .orElseThrow())
+                                        .shaclModel(projectRestService.getFileMetadata(projectId, sinkRequest.getShaclFileEventId())
+                                                                      .orElse(null))
                                         .build();
 
       KafkaEvent kafkaEvent = kafkaEventHelper.newKafkaEventBuilderWithoutRecord(projectId,
                                                                     buildProperties)
                                               .eventType(EventType.RDF_SINK)
                                               .id(IdGenerators.get())
-                                              .shaclModel(projectRestService.getFileMetadata(projectId, sinkRequest.getShaclFileEventId())
-                                                                            .orElse(null))
-                                              .inputToSink(projectRestService.getFileMetadata(projectId, sinkRequest.getRdfFileEventId())
-                                                                             .orElseThrow())
                                               .event(objectMapperWrapper.serialize(restRdfEvent))
                                               .build();
 

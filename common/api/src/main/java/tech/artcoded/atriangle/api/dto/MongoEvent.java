@@ -11,4 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class MongoEvent {
   private String collection;
+  private FileEvent inputToSink;
 }

@@ -10,9 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RestEvent {
-  private String elasticIndex;
-  private boolean sinkToElastic;
-  private FileEvent elasticMappingsJson;
-  private FileEvent elasticSettingsJson;
   private String namespace;
+  private FileEvent shaclModel;
+  private FileEvent inputToSink;
 }

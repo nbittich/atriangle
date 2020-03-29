@@ -13,7 +13,6 @@
 
   <packaging>pom</packaging>
   <modules>
-    <module>elastic-sink</module>
     <module>rdf-sink</module>
     <module>log-sink</module>
     <module>mongodb-sink</module>

@@ -11,10 +11,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SinkRequest {
   private String projectId;
-  private boolean sinkToElastic;
   private String namespace;
-  private String elasticSettingsFileEventId;
   private String shaclFileEventId;
-  private String elasticMappingsFileEventId;
   private String rdfFileEventId;
 }

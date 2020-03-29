@@ -100,23 +100,6 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
   # KAFKA
-  atriangleelasticsink:
-    restart: always
-    depends_on:
-      - atriangleelasticsearch
-      - kafkaserver
-    networks:
-      atriangle:
-        aliases:
-          - elasticsink
-    image: atriangle/elastic-sink
-    environment:
-      ELASTICSEARCH_HOSTNAME: "elasticsearch"
-      KAFKA_BOOTSTRAP_SERVER: "kafka"
-      FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
-      APPLICATION_BASE_PATH: "/usr/app/elastic-sink"
-    volumes:
-      - elastic-sink-storage:/user/app
   atrianglelogsink:
     restart: always
     depends_on:
@@ -279,7 +262,6 @@ services:
       - xls2rdf-storage:/user/app
 
 volumes:
-  elastic-sink-storage:
   rdf-sink-storage:
   mongodb-sink-storage:
   log-sink-storage:

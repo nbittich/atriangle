@@ -37,8 +37,7 @@ public class ProjectSinkConsumer {
   }
 
 
-  @KafkaListener(topics = {"${kafka.dispatcher.elastic-sink-topic-out}",
-    "${kafka.dispatcher.mongodb-sink-topic-out}"})
+  @KafkaListener(topics = {"${kafka.dispatcher.mongodb-sink-topic-out}"})
   public void sink(ConsumerRecord<String, String> record) throws Exception {
 
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(record.value());

@@ -70,13 +70,13 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
 
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(restEvent);
     RestEvent event = kafkaEventHelper.parseEvent(kafkaEvent, RestEvent.class);
-    FileEvent inputToSinkFileEvent = kafkaEvent.getInputToSink();
+    FileEvent inputToSinkFileEvent = event.getInputToSink();
 
     ResponseEntity<ByteArrayResource> inputToSink = fileRestFeignClient.download(inputToSinkFileEvent.getId(), kafkaEvent.getCorrelationId());
 
-    if (kafkaEvent.getShaclModel() != null) {
+    if (event.getShaclModel() != null) {
       log.info("shacl validation");
-      ResponseEntity<String> validate = shaclRestFeignClient.validate(inputToSinkFileEvent.getId(), kafkaEvent.getShaclModel()
+      ResponseEntity<String> validate = shaclRestFeignClient.validate(inputToSinkFileEvent.getId(), event.getShaclModel()
                                                                                                               .getId(), kafkaEvent.getCorrelationId());
       if (validate.getStatusCodeValue() != HttpStatus.OK.value() || StringUtils.isNotEmpty(validate.getBody())) {
         log.error("validation failed {}", validate.getBody());
@@ -98,7 +98,7 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
 
     log.info("create derivate json-ld rdf file");
 
-    String baseFileName = FilenameUtils.removeExtension(inputToSinkFileEvent.getOriginalFilename()) + "-" + RandomStringUtils.randomAlphanumeric(3);
+    String baseFileName = FilenameUtils.removeExtension(inputToSinkFileEvent.getOriginalFilename());
     String outputFilename = baseFileName.split(DERIVED_FILE_REGEX)[0] + DERIVED_FILE_JSON_LD_REGEX + DateHelper.formatCurrentDateForFilename() + ".json";
     String jsonld = ModelConverter.inputStreamToLang(inputToSinkFileEvent.getName(), inputToSink.getBody()::getInputStream, RDFFormat.JSONLD);
     MultipartFile rdfOutput = FeignMultipartFile.builder()

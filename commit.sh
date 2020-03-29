@@ -23,7 +23,7 @@ readmeTemplate=$(cat docs/DYNAMIC_README_TEMPLATE.md)
 readme="$readmeTemplate \n \`\`\` \n $clocResult \n \`\`\`"
 echo "$readme" >> README.md
 
-echo "* $1\n" >> RELEASE_NOTE.md
+echo "* $1" >> RELEASE_NOTE.md
 
 git add .
 git commit -m "$1"
