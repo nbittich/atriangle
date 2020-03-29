@@ -63,7 +63,8 @@ public interface ElasticSearchRdfService {
   @SneakyThrows
   default GetSettingsResponse getSettings(String index) {
     GetSettingsRequest request = new GetSettingsRequest().indices(index);
-    return getClient().indices().getSettings(request, RequestOptions.DEFAULT);
+    return getClient().indices()
+                      .getSettings(request, RequestOptions.DEFAULT);
   }
 
   @SneakyThrows
@@ -71,30 +72,34 @@ public interface ElasticSearchRdfService {
     UpdateSettingsRequest request = new UpdateSettingsRequest(index);
     request.settings(settings, XContentType.JSON);
     request.setPreserveExisting(preserveIndex);
-    return getClient().indices().putSettings(request, RequestOptions.DEFAULT);
+    return getClient().indices()
+                      .putSettings(request, RequestOptions.DEFAULT);
   }
 
   @SneakyThrows
   default GetMappingsResponse getMappings(String index) {
     GetMappingsRequest request = new GetMappingsRequest().indices(index);
-    return getClient().indices().getMapping(request, RequestOptions.DEFAULT);
+    return getClient().indices()
+                      .getMapping(request, RequestOptions.DEFAULT);
   }
 
   @SneakyThrows
   default AcknowledgedResponse updateMappings(String index, String mappings) {
     PutMappingRequest request = new PutMappingRequest(index);
     request.source(mappings, XContentType.JSON);
-    return getClient().indices().putMapping(request, RequestOptions.DEFAULT);
+    return getClient().indices()
+                      .putMapping(request, RequestOptions.DEFAULT);
   }
-
 
 
   @SneakyThrows
   default Set<String> indices() {
     GetIndexRequest request = new GetIndexRequest("*");
-    GetIndexResponse response = getClient().indices().get(request, RequestOptions.DEFAULT);
+    GetIndexResponse response = getClient().indices()
+                                           .get(request, RequestOptions.DEFAULT);
     String[] indices = response.getIndices();
-    return Stream.of(indices).collect(Collectors.toSet());
+    return Stream.of(indices)
+                 .collect(Collectors.toSet());
   }
 
   @SneakyThrows

@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import tech.artcoded.atriangle.api.dto.LogEvent;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public interface ElasticRestFeignClient {
@@ -68,5 +69,5 @@ public interface ElasticRestFeignClient {
   ResponseEntity<String> updateMapping(@PathVariable("indexName") String indexName, @RequestBody String mapping);
 
   @GetMapping("/mapping/{indexName}")
-  ResponseEntity<String> getMapping(@PathVariable("indexName") String indexName);
+  ResponseEntity<Map<String, Object>> getMapping(@PathVariable("indexName") String indexName);
 }

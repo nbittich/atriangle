@@ -144,9 +144,14 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
-  public ResponseEntity<String> getMapping(String indexName) {
+  public ResponseEntity<Map<String, Object>> getMapping(String indexName) {
     GetMappingsResponse mapping = elasticSearchRdfService.getMappings(indexName);
-    return ResponseEntity.ok(mapping.toString());
+    return ResponseEntity.ok(mapping.mappings()
+                                    .entrySet()
+                                    .stream()
+                                    .map(m -> Map.entry(m.getKey(), m.getValue()
+                                                                     .getSourceAsMap()))
+                                    .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
   }
 
 }
