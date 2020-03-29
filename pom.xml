@@ -27,15 +27,18 @@
   <properties>
     <java.version>11</java.version>
     <lombok.version>1.18.12</lombok.version>
-    <kafka.version>2.4.0</kafka.version>
+    <kafka.version>2.4.1</kafka.version>
     <spring.boot.starter.version>2.2.6.RELEASE</spring.boot.starter.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <jackson.version>2.10.2</jackson.version>
-    <micrometer.version>1.3.5</micrometer.version>
-    <spring-kafka.version>2.4.3.RELEASE</spring-kafka.version>
-    <elasticsearch.version>7.6.0</elasticsearch.version>
+    <jackson.version>2.10.3</jackson.version>
+    <spring-kafka.version>2.4.4.RELEASE</spring-kafka.version>
+    <elasticsearch.version>7.6.1</elasticsearch.version>
     <spring.cloud.version>Hoxton.SR3</spring.cloud.version>
     <feign-form.version>3.8.0</feign-form.version>
+    <ant.version>1.10.7</ant.version>
+    <bigdata-core.version>2.1.4</bigdata-core.version>
+    <jena-shacl.version>3.14.0</jena-shacl.version>
+    <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
   </properties>
 
   <scm>
@@ -50,7 +53,7 @@
       <dependency>
         <groupId>org.apache.ant</groupId>
         <artifactId>ant</artifactId>
-        <version>1.10.7</version>
+        <version>${ant.version}</version>
       </dependency>
       <dependency>
         <groupId>${project.groupId}</groupId>
@@ -169,12 +172,12 @@
       <dependency>
         <groupId>com.blazegraph</groupId>
         <artifactId>bigdata-core</artifactId>
-        <version>2.1.4</version>
+        <version>${bigdata-core.version}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.jena</groupId>
         <artifactId>jena-shacl</artifactId>
-        <version>3.14.0</version>
+        <version>${jena-shacl.version}</version>
       </dependency>
       <dependency>
         <groupId>org.springframework.cloud</groupId>
@@ -186,12 +189,12 @@
       <dependency>
         <groupId>io.springfox</groupId>
         <artifactId>springfox-swagger2</artifactId>
-        <version>2.9.2</version>
+        <version>${springfox-swagger2.version}</version>
       </dependency>
       <dependency>
         <groupId>io.springfox</groupId>
         <artifactId>springfox-swagger-ui</artifactId>
-        <version>2.9.2</version>
+        <version>${springfox-swagger2.version}</version>
       </dependency>
       <dependency>
         <groupId>org.elasticsearch.client</groupId>
