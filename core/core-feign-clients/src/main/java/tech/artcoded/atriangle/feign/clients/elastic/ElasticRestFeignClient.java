@@ -48,4 +48,25 @@ public interface ElasticRestFeignClient {
 
   @GetMapping("/all/{indexName}")
   ResponseEntity<String> findAll(@PathVariable("indexName") String indexName);
+
+  /**
+   * e.g {"index.number_of_replicas": "2"}
+   * @param indexName
+   * @param preserveSettings
+   * @param settings
+   * @return
+   */
+  @PostMapping("/settings/{indexName}")
+  ResponseEntity<String> updateSettings(@PathVariable("indexName") String indexName,
+                                        @RequestParam(value = "preserveSettings", defaultValue = "false") boolean preserveSettings,
+                                        @RequestBody String settings);
+  @GetMapping("/settings/{indexName}")
+  ResponseEntity<String> getSettings(@PathVariable("indexName") String indexName);
+
+
+  @PostMapping("/mapping/{indexName}")
+  ResponseEntity<String> updateMapping(@PathVariable("indexName") String indexName, @RequestBody String mapping);
+
+  @GetMapping("/mapping/{indexName}")
+  ResponseEntity<String> getMapping(@PathVariable("indexName") String indexName);
 }

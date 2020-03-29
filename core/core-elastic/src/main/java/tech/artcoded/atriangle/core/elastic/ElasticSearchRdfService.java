@@ -5,6 +5,9 @@ import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.admin.indices.settings.get.GetSettingsRequest;
+import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
+import org.elasticsearch.action.admin.indices.settings.put.UpdateSettingsRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
@@ -15,10 +18,7 @@ import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestHighLevelClient;
 import org.elasticsearch.client.core.MainResponse;
-import org.elasticsearch.client.indices.CreateIndexRequest;
-import org.elasticsearch.client.indices.CreateIndexResponse;
-import org.elasticsearch.client.indices.GetIndexRequest;
-import org.elasticsearch.client.indices.GetIndexResponse;
+import org.elasticsearch.client.indices.*;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -59,6 +59,35 @@ public interface ElasticSearchRdfService {
   default CreateIndexResponse createIndex(String index, InputStream source) {
     return createIndex(index, createIndexRequest -> createIndexRequest.source(inputStreamToString(source), XContentType.JSON));
   }
+
+  @SneakyThrows
+  default GetSettingsResponse getSettings(String index) {
+    GetSettingsRequest request = new GetSettingsRequest().indices(index);
+    return getClient().indices().getSettings(request, RequestOptions.DEFAULT);
+  }
+
+  @SneakyThrows
+  default AcknowledgedResponse updateSettings(String index, String settings, boolean preserveIndex) {
+    UpdateSettingsRequest request = new UpdateSettingsRequest(index);
+    request.settings(settings, XContentType.JSON);
+    request.setPreserveExisting(preserveIndex);
+    return getClient().indices().putSettings(request, RequestOptions.DEFAULT);
+  }
+
+  @SneakyThrows
+  default GetMappingsResponse getMappings(String index) {
+    GetMappingsRequest request = new GetMappingsRequest().indices(index);
+    return getClient().indices().getMapping(request, RequestOptions.DEFAULT);
+  }
+
+  @SneakyThrows
+  default AcknowledgedResponse updateMappings(String index, String mappings) {
+    PutMappingRequest request = new PutMappingRequest(index);
+    request.source(mappings, XContentType.JSON);
+    return getClient().indices().putMapping(request, RequestOptions.DEFAULT);
+  }
+
+
 
   @SneakyThrows
   default Set<String> indices() {

@@ -16,3 +16,5 @@
 
 * fix stackoverflow with indexAsync method
 
+* elastic endpoints
+

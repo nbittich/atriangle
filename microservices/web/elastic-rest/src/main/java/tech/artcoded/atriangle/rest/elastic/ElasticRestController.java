@@ -4,10 +4,12 @@ package tech.artcoded.atriangle.rest.elastic;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
+import org.elasticsearch.action.admin.indices.settings.get.GetSettingsResponse;
 import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.client.indices.CreateIndexResponse;
+import org.elasticsearch.client.indices.GetMappingsResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.http.ResponseEntity;
@@ -65,7 +67,7 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
     boolean indexExist = elasticSearchRdfService.indexExist(indexName);
 
     if (indexExist) {
-      if(!deleteIndexIfExist){
+      if (!deleteIndexIfExist) {
         return ResponseEntity.badRequest()
                              .body("index already exists");
       }
@@ -119,6 +121,32 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
     SearchResponse searchResponse = elasticSearchRdfService.searchAll(indexName);
     String jsonResponse = searchResponse.toString();
     return ResponseEntity.ok(jsonResponse);
+  }
+
+  @Override
+  public ResponseEntity<String> updateSettings(String indexName, boolean preserveSettings, String settings) {
+    AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.updateSettings(indexName, settings, preserveSettings);
+    log.info("acknowledge for update settings {}", acknowledgedResponse.isAcknowledged());
+    return ResponseEntity.ok("settings updated");
+  }
+
+  @Override
+  public ResponseEntity<String> getSettings(String indexName) {
+    GetSettingsResponse settings = elasticSearchRdfService.getSettings(indexName);
+    return ResponseEntity.ok(settings.toString());
+  }
+
+  @Override
+  public ResponseEntity<String> updateMapping(String indexName, String mapping) {
+    AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.updateMappings(indexName, mapping);
+    log.info("acknowledge for update mapping {}", acknowledgedResponse.isAcknowledged());
+    return ResponseEntity.ok("mapping updated");
+  }
+
+  @Override
+  public ResponseEntity<String> getMapping(String indexName) {
+    GetMappingsResponse mapping = elasticSearchRdfService.getMappings(indexName);
+    return ResponseEntity.ok(mapping.toString());
   }
 
 }
