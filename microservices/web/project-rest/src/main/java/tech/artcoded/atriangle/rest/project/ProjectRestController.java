@@ -5,14 +5,13 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
+import tech.artcoded.atriangle.feign.clients.project.ProjectRestFeignClient;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -21,7 +20,7 @@ import java.util.concurrent.CompletableFuture;
 @CrossOriginRestController
 @ApiOperation("Project Rest")
 @Slf4j
-public class ProjectRestController implements PingControllerTrait, BuildInfoControllerTrait {
+public class ProjectRestController implements PingControllerTrait, BuildInfoControllerTrait, ProjectRestFeignClient {
   private final ProjectRestService projectRestService;
   private final ProjectSinkProducer projectSinkProducer;
 
@@ -37,86 +36,74 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
     this.buildProperties = buildProperties;
   }
 
-  @PostMapping
-  public ResponseEntity<ProjectEvent> createProject(@RequestParam("name") String name) {
+  @Override
+  public ResponseEntity<ProjectEvent> createProject(String name) {
     return ResponseEntity.ok(projectRestService.newProject(name));
   }
 
-  @PutMapping(path = "/add-file",
-              consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  public ResponseEntity<ProjectEvent> addFile(@RequestParam("file") MultipartFile multipartFile,
-                                              @RequestParam("projectId") String projectId) {
+  @Override
+  public ResponseEntity<ProjectEvent> addFile(MultipartFile multipartFile,
+                                              String projectId) {
     return projectRestService.addFile(projectId, multipartFile)
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
 
-  @GetMapping("/by-name/{name}")
-  public ResponseEntity<ProjectEvent> findByName(@PathVariable("name") String name) {
+  @Override
+  public ResponseEntity<ProjectEvent> findByName(String name) {
     return projectRestService.findByName(name)
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.notFound()::build);
   }
 
-  @GetMapping("/{projectId}/logs")
-  public ResponseEntity<List<LogEvent>> getLogsForProject(@PathVariable("projectId") String projectId) {
+  @Override
+  public ResponseEntity<List<LogEvent>> getLogsForProject(String projectId) {
     return projectRestService.getLogsForProject(projectId)
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.notFound()::build);
   }
 
-  @GetMapping("/{projectId}/download-file/{fileId}")
-  public ResponseEntity<ByteArrayResource> downloadFile(@PathVariable("projectId") String projectId,
-                                                        @PathVariable("fileId") String fileId) {
+  @Override
+  public ResponseEntity<ByteArrayResource> downloadFile(String projectId,
+                                                        String fileId) {
     return projectRestService.downloadFile(projectId, fileId);
   }
 
-  @GetMapping("/{projectId}/shacl-validation")
-  public ResponseEntity<String> shaclValidation(@PathVariable("projectId") String projectId,
-                                                @RequestParam("shapesFileId") String shapesFileId,
-                                                @RequestParam("rdfModelFileId") String rdfModelFileId) {
+  @Override
+  public ResponseEntity<String> shaclValidation(String projectId, String shapesFileId, String rdfModelFileId) {
     return projectRestService.shaclValidation(projectId, shapesFileId, rdfModelFileId);
   }
 
-  @DeleteMapping("/{projectId}/delete-file/{fileId}")
-  public void deleteFile(@PathVariable("projectId") String projectId,
-                         @PathVariable("fileId") String fileId) {
+  @Override
+  public void deleteFile(String projectId, String fileId) {
     CompletableFuture.runAsync(() -> projectRestService.deleteFile(projectId, fileId));
   }
 
-  @DeleteMapping("/by-name/{name}")
-  public void deleteByName(@PathVariable("name") String name) {
+  @Override
+  public void deleteByName(String name) {
     projectRestService.deleteByName(name);
   }
 
-  @DeleteMapping("/by-id/{projectId}")
-  public void deleteById(@PathVariable("projectId") String id) {
+  @Override
+  public void deleteById(String id) {
     projectRestService.deleteById(id);
   }
 
-  @GetMapping("/by-id/{projectId}")
-  public ResponseEntity<ProjectEvent> findById(@PathVariable("projectId") String id) {
+  @Override
+  public ResponseEntity<ProjectEvent> findById(String id) {
     return projectRestService.findById(id)
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.notFound()::build);
   }
 
-  @GetMapping("/list")
+  @Override
   public List<ProjectEvent> findAll() {
     return projectRestService.findAll();
   }
 
-  @PostMapping("/skos-conversion")
-  public ResponseEntity<ProjectEvent> skosConversion(
-    @RequestParam("projectId") String projectId,
-    @RequestParam(value = "labelSkosXl",
-                  required = false,
-                  defaultValue = "false") boolean labelSkosXl,
-    @RequestParam(value = "ignorePostTreatmentsSkos",
-                  required = false,
-                  defaultValue = "false") boolean ignorePostTreatmentsSkos,
-    @RequestParam("xlsFileEventId") String xlsFileEventId
-  ) {
+  @Override
+  public ResponseEntity<ProjectEvent> skosConversion(String projectId, boolean labelSkosXl,
+                                                     boolean ignorePostTreatmentsSkos, String xlsFileEventId) {
     FileEvent xlsFileEvent = projectRestService.getFileMetadata(projectId, xlsFileEventId)
                                                .orElseThrow(() -> new RuntimeException("file  not found"));
     if (!CommonConstants.XLSX_MEDIA_TYPE.equals(xlsFileEvent.getContentType())) {
@@ -129,8 +116,8 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
 
-  @PostMapping("/{projectId}/sink")
-  public ResponseEntity<Void> sink(@RequestBody SinkRequest sinkRequest) {
+  @Override
+  public ResponseEntity<Void> sink(SinkRequest sinkRequest) {
     projectSinkProducer.sink(sinkRequest);
     return ResponseEntity.accepted()
                          .build();

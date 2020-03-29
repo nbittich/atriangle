@@ -74,7 +74,7 @@ public class ProjectSinkConsumer {
                                                .build();
     ProjectEvent updatedProjectEvent = this.mongoTemplate.save(newProjectEvent);
 
-    loggerAction.info(updatedProjectEvent::getId, "received jsonld file event  for project %s, mongo id: %s", projectEvent.getName(), updatedProjectEvent
+    loggerAction.info(updatedProjectEvent::getId, "Rdf sink success. received jsonld file event  for project %s, project id: %s", projectEvent.getName(), updatedProjectEvent
       .getId());
   }
 }

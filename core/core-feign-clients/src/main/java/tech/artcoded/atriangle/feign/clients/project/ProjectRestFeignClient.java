@@ -4,12 +4,12 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import tech.artcoded.atriangle.api.dto.LogEvent;
 import tech.artcoded.atriangle.api.dto.ProjectEvent;
 import tech.artcoded.atriangle.api.dto.SinkRequest;
 
-import java.io.File;
 import java.util.List;
-import java.util.Map;
 
 public interface ProjectRestFeignClient {
   @PostMapping
@@ -28,8 +28,11 @@ public interface ProjectRestFeignClient {
 
   @PutMapping(path = "/add-file",
               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  ResponseEntity<ProjectEvent> addFile(@RequestPart("file") File file,
+  ResponseEntity<ProjectEvent> addFile(@RequestPart("file") MultipartFile file,
                                        @RequestParam("projectId") String projectId);
+
+  @GetMapping("/{projectId}/logs")
+  ResponseEntity<List<LogEvent>> getLogsForProject(@PathVariable("projectId") String projectId);
 
 
   @GetMapping("/{projectId}/download-file/{fileId}")
@@ -50,9 +53,6 @@ public interface ProjectRestFeignClient {
   ResponseEntity<String> shaclValidation(@PathVariable("projectId") String projectId,
                                          @RequestParam("shapesFileId") String shapesFileId,
                                          @RequestParam("rdfModelFileId") String rdfModelFileId);
-
-  @GetMapping("/ping-skos")
-  ResponseEntity<Map<String, String>> pingSkos();
 
   @PostMapping("/conversion/skos")
   ResponseEntity<ProjectEvent> skosConversion(

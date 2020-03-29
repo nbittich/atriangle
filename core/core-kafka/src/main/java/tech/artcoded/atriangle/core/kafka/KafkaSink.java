@@ -12,7 +12,6 @@ import tech.artcoded.atriangle.api.dto.KafkaMessage;
 
 import java.util.List;
 import java.util.function.Function;
-import java.util.stream.StreamSupport;
 
 public interface KafkaSink<K, V> {
   Logger LOGGER = LoggerFactory.getLogger(KafkaSink.class);
