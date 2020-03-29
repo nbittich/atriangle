@@ -80,8 +80,7 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
       if (validate.getStatusCodeValue() != HttpStatus.OK.value() || StringUtils.isNotEmpty(validate.getBody())) {
         log.error("validation failed {}", validate.getBody());
         loggerAction.error(kafkaEvent::getCorrelationId, String.format("validation shacl failed for event %s, result %s", kafkaEvent
-          .getId(), validate
-                                                                         .getBody()));
+          .getId(), validate.getBody()));
         throw new RuntimeException();
       }
     }

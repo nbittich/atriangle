@@ -19,3 +19,9 @@ mvn --batch-mode -Dtag=$releaseVersion release:prepare \
 
 mvn release:clean
 git pull
+
+rm -f RELEASE_NOTE.md
+touch RELEASE_NOTE.md
+echo "# Release note\n\n##$2" >> RELEASE_NOTE.md
+git add RELEASE_NOTE.md
+git commit -m "next release note"
