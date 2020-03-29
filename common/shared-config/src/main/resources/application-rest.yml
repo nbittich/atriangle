@@ -14,11 +14,3 @@ management:
       enabled: false
     solr:
       enabled: false
-  endpoints:
-    web:
-      exposure:
-        include: "*"
-    enabled-by-default: ${ACTUATOR_ENABLED:true}
-  endpoint:
-    logfile:
-      external-file: ${logging.file.path}
