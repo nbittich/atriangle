@@ -9,3 +9,5 @@
 
 * add endpoint to elastic controller
 
+* cleanup elastic endpoint
+

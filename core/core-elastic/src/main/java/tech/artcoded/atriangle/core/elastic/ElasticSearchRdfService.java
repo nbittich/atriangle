@@ -58,7 +58,7 @@ public interface ElasticSearchRdfService {
   }
 
   @SneakyThrows
-  default DeleteResponse deleteEntity(String index, String id) {
+  default DeleteResponse deleteDocument(String index, String id) {
     DeleteRequest deleteRequest = new DeleteRequest(index).id(id);
     return getClient().delete(deleteRequest, RequestOptions.DEFAULT);
   }

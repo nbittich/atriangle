@@ -8,22 +8,23 @@ import java.util.List;
 
 public interface ElasticRestFeignClient {
 
-  @GetMapping
+  @GetMapping("/logs-by-correlation-id")
   List<LogEvent> getLogsByCorrelationId(@RequestParam("correlationId") String correlationId);
 
   @PostMapping("/create-index")
   ResponseEntity<String> createIndex(@RequestParam("indexName") String indexName,
-                                     @RequestParam(value = "deleteIndexIfExist", defaultValue = "false") boolean deleteIndexIfExist,
+                                     @RequestParam(value = "deleteIndexIfExist",
+                                                   defaultValue = "false") boolean deleteIndexIfExist,
                                      @RequestBody(required = false) String elasticConfiguration);
 
-  @DeleteMapping
+  @DeleteMapping("/index")
   ResponseEntity<String> deleteIndex(@RequestParam("indexName") String indexName);
 
-  @DeleteMapping("/entity")
-  ResponseEntity<String> deleteEntity(@RequestParam("indexName") String indexName,
-                                      @RequestParam("id") String uuid);
+  @DeleteMapping("/document")
+  ResponseEntity<String> deleteDocument(@RequestParam("indexName") String indexName,
+                                        @RequestParam("id") String uuid);
 
   @PostMapping("/index/{indexName}")
   ResponseEntity<String> index(@PathVariable("indexName") String indexName,
-                               @RequestBody String entityToIndex);
+                               @RequestBody String document);
 }

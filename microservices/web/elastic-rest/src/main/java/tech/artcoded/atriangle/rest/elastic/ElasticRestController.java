@@ -70,7 +70,7 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
                            .body("index already exists");
     }
     else {
-      log.info("deleting index {}",indexName);
+      log.info("deleting index {}", indexName);
       AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.deleteIndex(indexName);
       log.info("delete index response: {}", acknowledgedResponse.isAcknowledged());
       CreateIndexResponse response = elasticSearchRdfService.createIndex(indexName, IOUtils.toInputStream(Optional.ofNullable(elasticConfiguration)
@@ -84,20 +84,21 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
   @Override
   public ResponseEntity<String> deleteIndex(String indexName) {
     AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.deleteIndex(indexName);
-    log.info("delete index ack {}",acknowledgedResponse.isAcknowledged());
+    log.info("delete index ack {}", acknowledgedResponse.isAcknowledged());
     return ResponseEntity.ok("index deleted");
   }
 
   @Override
-  public ResponseEntity<String> deleteEntity(String indexName, String uuid) {
-    DeleteResponse deleteResponse = elasticSearchRdfService.deleteEntity(indexName, uuid);
-    log.info("delete entity result {}",deleteResponse.getResult().getLowercase());
-    return ResponseEntity.ok("entity deleted");
+  public ResponseEntity<String> deleteDocument(String indexName, String uuid) {
+    DeleteResponse deleteResponse = elasticSearchRdfService.deleteDocument(indexName, uuid);
+    log.info("delete document result {}", deleteResponse.getResult()
+                                                        .getLowercase());
+    return ResponseEntity.ok("document deleted");
   }
 
   @Override
-  public ResponseEntity<String> index(String indexName, String entityToIndex) {
-    elasticSearchRdfService.indexAsync(indexName, IdGenerators.get(), entityToIndex);
+  public ResponseEntity<String> index(String indexName, String document) {
+    elasticSearchRdfService.indexAsync(indexName, IdGenerators.get(), document);
     return ResponseEntity.ok("resource indexed on elastic");
   }
 
