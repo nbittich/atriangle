@@ -13,5 +13,6 @@
 
 * bug fix new elastic endpoints
 
-* bug fix new elastic endpoints
+
+* fix stackoverflow with indexAsync method
 

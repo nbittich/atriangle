@@ -142,13 +142,12 @@ public interface ElasticSearchRdfService {
     }
   }
 
-
   default IndexResponse index(String index, String id, String body) {
     return index(index, this.defaultIndexRequest(id, body));
   }
 
   default void indexAsync(String index, String id, String body) {
-    indexAsync(index, request -> request.id(id).source(body, XContentType.JSON));
+    indexAsync(index, this.defaultIndexRequest(id, body));
   }
 
   @SneakyThrows
