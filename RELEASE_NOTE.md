@@ -11,3 +11,5 @@
 
 * cleanup elastic endpoint
 
+* bug fix new elastic endpoints
+

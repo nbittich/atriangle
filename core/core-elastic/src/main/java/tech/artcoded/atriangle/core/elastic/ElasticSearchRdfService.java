@@ -4,6 +4,8 @@ import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteRequest;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
+import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -18,6 +20,7 @@ import org.elasticsearch.client.core.MainResponse;
 import org.elasticsearch.client.indices.CreateIndexRequest;
 import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetIndexRequest;
+import org.elasticsearch.client.indices.GetIndexResponse;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.unit.Fuzziness;
 import org.elasticsearch.common.xcontent.XContentType;
@@ -34,7 +37,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
@@ -55,6 +60,14 @@ public interface ElasticSearchRdfService {
 
   default CreateIndexResponse createIndex(String index, InputStream source) {
     return createIndex(index, createIndexRequest -> createIndexRequest.source(inputStreamToString(source), XContentType.JSON));
+  }
+
+  @SneakyThrows
+  default Set<String> indices() {
+    GetIndexRequest request = new GetIndexRequest("*");
+    GetIndexResponse response = getClient().indices().get(request, RequestOptions.DEFAULT);
+    String[] indices = response.getIndices();
+    return Stream.of(indices).collect(Collectors.toSet());
   }
 
   @SneakyThrows

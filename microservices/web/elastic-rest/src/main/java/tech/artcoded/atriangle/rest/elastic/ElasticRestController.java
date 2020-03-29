@@ -22,10 +22,7 @@ import tech.artcoded.atriangle.feign.clients.elastic.ElasticRestFeignClient;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -64,20 +61,23 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
   public ResponseEntity<String> createIndex(String indexName,
                                             boolean deleteIndexIfExist,
                                             String elasticConfiguration) {
+
     boolean indexExist = elasticSearchRdfService.indexExist(indexName);
-    if (indexExist && !deleteIndexIfExist) {
-      return ResponseEntity.badRequest()
-                           .body("index already exists");
-    }
-    else {
+
+    if (indexExist) {
+      if(!deleteIndexIfExist){
+        return ResponseEntity.badRequest()
+                             .body("index already exists");
+      }
       log.info("deleting index {}", indexName);
       AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.deleteIndex(indexName);
       log.info("delete index response: {}", acknowledgedResponse.isAcknowledged());
-      CreateIndexResponse response = elasticSearchRdfService.createIndex(indexName, IOUtils.toInputStream(Optional.ofNullable(elasticConfiguration)
-                                                                                                                  .orElse("{}"), StandardCharsets.UTF_8));
-      log.info("index creation response: {}", response.isAcknowledged());
-      return ResponseEntity.ok("elastic index created");
     }
+
+    CreateIndexResponse response = elasticSearchRdfService.createIndex(indexName, IOUtils.toInputStream(Optional.ofNullable(elasticConfiguration)
+                                                                                                                .orElse("{}"), StandardCharsets.UTF_8));
+    log.info("index creation response: {}", response.isAcknowledged());
+    return ResponseEntity.ok("elastic index created");
 
   }
 
@@ -100,6 +100,11 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
   public ResponseEntity<String> index(String indexName, String document) {
     elasticSearchRdfService.indexAsync(indexName, IdGenerators.get(), document);
     return ResponseEntity.ok("resource indexed on elastic");
+  }
+
+  @Override
+  public ResponseEntity<Set<String>> indices() {
+    return ResponseEntity.ok(elasticSearchRdfService.indices());
   }
 
 }
