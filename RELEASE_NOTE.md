@@ -13,3 +13,5 @@
 
 * bug fix new elastic endpoints
 
+* bug fix new elastic endpoints
+
