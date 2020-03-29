@@ -3,7 +3,6 @@ package tech.artcoded.atriangle.rdfsink;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.openrdf.rio.RDFFormat;
@@ -76,8 +75,8 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
 
     if (event.getShaclModel() != null) {
       log.info("shacl validation");
-      ResponseEntity<String> validate = shaclRestFeignClient.validate(inputToSinkFileEvent.getId(), event.getShaclModel()
-                                                                                                              .getId(), kafkaEvent.getCorrelationId());
+      ResponseEntity<String> validate = shaclRestFeignClient.validate(kafkaEvent.getCorrelationId(), event.getShaclModel()
+                                                                                                          .getId(), inputToSinkFileEvent.getId());
       if (validate.getStatusCodeValue() != HttpStatus.OK.value() || StringUtils.isNotEmpty(validate.getBody())) {
         log.error("validation failed {}", validate.getBody());
         loggerAction.error(kafkaEvent::getCorrelationId, String.format("validation shacl failed for event %s, result %s", kafkaEvent
