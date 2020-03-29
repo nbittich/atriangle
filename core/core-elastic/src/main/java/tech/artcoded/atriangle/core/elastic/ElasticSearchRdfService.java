@@ -4,8 +4,6 @@ import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteRequest;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthRequest;
-import org.elasticsearch.action.admin.cluster.health.ClusterHealthResponse;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
 import org.elasticsearch.action.delete.DeleteRequest;
 import org.elasticsearch.action.delete.DeleteResponse;
@@ -156,6 +154,15 @@ public interface ElasticSearchRdfService {
     SearchRequest request = new SearchRequest();
     request.indices(indexes);
     return getClient().search(requestTransformer.apply(request), RequestOptions.DEFAULT);
+  }
+
+  @SneakyThrows
+  default SearchResponse rawSearch(String index, String requestJson) {
+    SearchRequest request = new SearchRequest().indices(index)
+                                               .source(new SearchSourceBuilder().query(
+                                                 QueryBuilders.wrapperQuery(requestJson)
+                                               ));
+    return getClient().search(request, RequestOptions.DEFAULT);
   }
 
   @SneakyThrows

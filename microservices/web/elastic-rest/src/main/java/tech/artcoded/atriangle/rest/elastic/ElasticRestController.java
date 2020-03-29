@@ -107,4 +107,18 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
     return ResponseEntity.ok(elasticSearchRdfService.indices());
   }
 
+  @Override
+  public ResponseEntity<String> search(String indexName, String request) {
+    SearchResponse searchResponse = elasticSearchRdfService.rawSearch(indexName, request);
+    String jsonResponse = searchResponse.toString();
+    return ResponseEntity.ok(jsonResponse);
+  }
+
+  @Override
+  public ResponseEntity<String> findAll(String indexName) {
+    SearchResponse searchResponse = elasticSearchRdfService.searchAll(indexName);
+    String jsonResponse = searchResponse.toString();
+    return ResponseEntity.ok(jsonResponse);
+  }
+
 }

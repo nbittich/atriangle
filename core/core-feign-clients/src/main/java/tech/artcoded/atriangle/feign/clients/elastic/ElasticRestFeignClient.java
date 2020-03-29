@@ -28,6 +28,24 @@ public interface ElasticRestFeignClient {
   @PostMapping("/index/{indexName}")
   ResponseEntity<String> index(@PathVariable("indexName") String indexName,
                                @RequestBody String document);
+
   @GetMapping("/indices")
   ResponseEntity<Set<String>> indices();
+
+  /**
+   * e.g:
+   * {
+   * "term" : { "firstname" : "nordine" }
+   * }
+   *
+   * @param indexName
+   * @param request
+   * @return
+   */
+  @PostMapping("/search/{indexName}")
+  ResponseEntity<String> search(@PathVariable("indexName") String indexName,
+                                @RequestBody String request);
+
+  @GetMapping("/all/{indexName}")
+  ResponseEntity<String> findAll(@PathVariable("indexName") String indexName);
 }
