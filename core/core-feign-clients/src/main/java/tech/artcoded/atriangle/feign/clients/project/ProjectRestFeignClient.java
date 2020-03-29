@@ -12,12 +12,12 @@ import tech.artcoded.atriangle.api.dto.SinkRequest;
 import java.util.List;
 
 public interface ProjectRestFeignClient {
+
   @PostMapping
   ResponseEntity<ProjectEvent> createProject(@RequestParam("name") String name);
 
   @GetMapping("/list")
   List<ProjectEvent> findAll();
-
 
   @GetMapping("/by-name/{name}")
   ResponseEntity<ProjectEvent> findByName(@PathVariable("name") String name);

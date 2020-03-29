@@ -11,9 +11,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 
-/**
- * this class to avoid the sinks that needs feign clients to not depend to core-rest
- */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
