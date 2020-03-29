@@ -5,6 +5,8 @@ import org.apache.commons.io.IOUtils;
 import org.elasticsearch.action.ActionListener;
 import org.elasticsearch.action.DocWriteRequest;
 import org.elasticsearch.action.admin.indices.delete.DeleteIndexRequest;
+import org.elasticsearch.action.delete.DeleteRequest;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.index.IndexRequest;
 import org.elasticsearch.action.index.IndexResponse;
 import org.elasticsearch.action.search.SearchRequest;
@@ -53,6 +55,12 @@ public interface ElasticSearchRdfService {
 
   default CreateIndexResponse createIndex(String index, InputStream source) {
     return createIndex(index, createIndexRequest -> createIndexRequest.source(inputStreamToString(source), XContentType.JSON));
+  }
+
+  @SneakyThrows
+  default DeleteResponse deleteEntity(String index, String id) {
+    DeleteRequest deleteRequest = new DeleteRequest(index).id(id);
+    return getClient().delete(deleteRequest, RequestOptions.DEFAULT);
   }
 
   default CreateIndexResponse createIndex(String index,

@@ -3,9 +3,15 @@ package tech.artcoded.atriangle.rest.elastic;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
+import org.elasticsearch.action.delete.DeleteResponse;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
+import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
+import org.springframework.http.ResponseEntity;
+import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.dto.LogEvent;
 import tech.artcoded.atriangle.core.elastic.ElasticSearchRdfService;
@@ -15,6 +21,7 @@ import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.feign.clients.elastic.ElasticRestFeignClient;
 
 import javax.inject.Inject;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
@@ -51,6 +58,47 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
                  .flatMap(Optional::stream)
                  .sorted(Comparator.comparing(LogEvent::getCreationDate, Date::compareTo))
                  .collect(Collectors.toUnmodifiableList());
+  }
+
+  @Override
+  public ResponseEntity<String> createIndex(String indexName,
+                                            boolean deleteIndexIfExist,
+                                            String elasticConfiguration) {
+    boolean indexExist = elasticSearchRdfService.indexExist(indexName);
+    if (indexExist && !deleteIndexIfExist) {
+      return ResponseEntity.badRequest()
+                           .body("index already exists");
+    }
+    else {
+      log.info("deleting index {}",indexName);
+      AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.deleteIndex(indexName);
+      log.info("delete index response: {}", acknowledgedResponse.isAcknowledged());
+      CreateIndexResponse response = elasticSearchRdfService.createIndex(indexName, IOUtils.toInputStream(Optional.ofNullable(elasticConfiguration)
+                                                                                                                  .orElse("{}"), StandardCharsets.UTF_8));
+      log.info("index creation response: {}", response.isAcknowledged());
+      return ResponseEntity.ok("elastic index created");
+    }
+
+  }
+
+  @Override
+  public ResponseEntity<String> deleteIndex(String indexName) {
+    AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.deleteIndex(indexName);
+    log.info("delete index ack {}",acknowledgedResponse.isAcknowledged());
+    return ResponseEntity.ok("index deleted");
+  }
+
+  @Override
+  public ResponseEntity<String> deleteEntity(String indexName, String uuid) {
+    DeleteResponse deleteResponse = elasticSearchRdfService.deleteEntity(indexName, uuid);
+    log.info("delete entity result {}",deleteResponse.getResult().getLowercase());
+    return ResponseEntity.ok("entity deleted");
+  }
+
+  @Override
+  public ResponseEntity<String> index(String indexName, String entityToIndex) {
+    elasticSearchRdfService.indexAsync(indexName, IdGenerators.get(), entityToIndex);
+    return ResponseEntity.ok("resource indexed on elastic");
   }
 
 }
