@@ -14,7 +14,7 @@ import java.util.UUID;
 @NoArgsConstructor
 public class RawJsonWrappedResponse {
   @Builder.Default
-  private final String id = UUID.randomUUID()
+  private String id = UUID.randomUUID()
                                 .toString();
   @JsonRawValue
   private String data;

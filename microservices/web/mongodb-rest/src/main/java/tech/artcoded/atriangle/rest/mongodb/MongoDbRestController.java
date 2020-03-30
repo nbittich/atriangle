@@ -95,7 +95,7 @@ public class MongoDbRestController implements PingControllerTrait,
   @Override
   public ResponseEntity<RawJsonWrappedResponse> findById(String collectionName, String id) {
     RawJsonWrappedResponse object = mongoTemplate.findOne(Query.query(Criteria.where("id")
-                                                                              .is(id)), RawJsonWrappedResponse.class);
+                                                                              .is(id)), RawJsonWrappedResponse.class, collectionName);
     return Optional.ofNullable(object)
                    .map(ResponseEntity::ok)
                    .orElseGet(ResponseEntity.notFound()::build);
