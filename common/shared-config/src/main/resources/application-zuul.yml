@@ -9,6 +9,9 @@ zuul:
     elasticrest:
       path: /api/elastic/**
       serviceId: ElasticRestPublicEndpoint
+    mongodbrest:
+      path: /api/mongodb/**
+      serviceId: MongoDbRestPublicEndpoint
     shaclrest:
       path: /api/shacl/**
       serviceId: ShaclRestPublicEndpoint
