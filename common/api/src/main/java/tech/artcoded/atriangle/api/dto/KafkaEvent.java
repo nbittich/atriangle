@@ -1,6 +1,7 @@
 package tech.artcoded.atriangle.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,6 +20,7 @@ public class KafkaEvent  {
   @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
   @Builder.Default
   private Date creationDate = new Date();
+  @JsonRawValue
   private String event;
   private KafkaEventMetadata eventMetadata;
 

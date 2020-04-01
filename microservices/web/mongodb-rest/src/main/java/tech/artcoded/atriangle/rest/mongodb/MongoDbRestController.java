@@ -1,9 +1,11 @@
 package tech.artcoded.atriangle.rest.mongodb;
 
 
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.result.DeleteResult;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.bson.types.ObjectId;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.BasicQuery;
@@ -21,6 +23,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @CrossOriginRestController
 @Slf4j
@@ -64,39 +67,44 @@ public class MongoDbRestController implements PingControllerTrait,
 
   @Override
   public ResponseEntity<String> delete(String collectionName, String id) {
-    DeleteResult deleteResult = mongoTemplate.remove(Query.query(Criteria.where("id")
-                                                                         .is(id)), collectionName);
+    DeleteResult deleteResult = mongoTemplate.remove(Query.query(Criteria.where("_id")
+                                                                         .is(new ObjectId(id))), collectionName);
     log.info("object with id {} deleted. acknowledge {}", id, deleteResult.wasAcknowledged());
     return ResponseEntity.ok(String.format("%s object has been deleted", deleteResult.getDeletedCount()));
   }
 
   @Override
   public ResponseEntity<RawJsonWrappedResponse> save(String collectionName, String objectToSave) {
-    RawJsonWrappedResponse obj = RawJsonWrappedResponse.builder()
-                                                       .data(objectToSave)
-                                                       .build();
-    RawJsonWrappedResponse savedObject = mongoTemplate.save(obj, collectionName);
-    return ResponseEntity.ok(savedObject);
+    BasicDBObject dbObject = BasicDBObject.parse(objectToSave);
+    BasicDBObject savedObject = mongoTemplate.save(dbObject, collectionName);
+    return ResponseEntity.ok(new RawJsonWrappedResponse(savedObject.toJson()));
   }
 
   @Override
   public ResponseEntity<List<RawJsonWrappedResponse>> query(String collectionName, String query) {
     BasicQuery basicQuery = new BasicQuery(query);
-    return ResponseEntity.ok(mongoTemplate.find(basicQuery, RawJsonWrappedResponse.class, collectionName));
+    return ResponseEntity.ok(mongoTemplate.find(basicQuery, BasicDBObject.class, collectionName).stream()
+                                          .map(BasicDBObject::toJson)
+                                          .map(RawJsonWrappedResponse::new)
+    .collect(Collectors.toUnmodifiableList()));
   }
 
   @Override
   public ResponseEntity<Set<RawJsonWrappedResponse>> findAll(String collectionName) {
-    List<RawJsonWrappedResponse> list = mongoTemplate.findAll(RawJsonWrappedResponse.class, collectionName);
-    Set<RawJsonWrappedResponse> result = new HashSet<>(list);
-    return ResponseEntity.ok(result);
+    List<BasicDBObject> list = mongoTemplate.findAll(BasicDBObject.class, collectionName);
+    return ResponseEntity.ok(list.stream()
+                                 .map(BasicDBObject::toJson)
+                                 .map(RawJsonWrappedResponse::new)
+                                 .collect(Collectors.toSet()));
   }
 
   @Override
   public ResponseEntity<RawJsonWrappedResponse> findById(String collectionName, String id) {
-    RawJsonWrappedResponse object = mongoTemplate.findOne(Query.query(Criteria.where("id")
-                                                                              .is(id)), RawJsonWrappedResponse.class, collectionName);
+    BasicDBObject object = mongoTemplate.findOne(Query.query(Criteria.where("_id")
+                                                                     .is(new ObjectId(id))), BasicDBObject.class, collectionName);
     return Optional.ofNullable(object)
+                   .map(BasicDBObject::toJson)
+                   .map(RawJsonWrappedResponse::new)
                    .map(ResponseEntity::ok)
                    .orElseGet(ResponseEntity.notFound()::build);
   }
