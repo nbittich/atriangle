@@ -1,0 +1,9 @@
+application:
+  basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/sparql-rest}
+server:
+  port: 0
+spring:
+  application:
+    name: SparqlRestPublicEndpoint
+  profiles:
+    include: kafka, zookeeper, rest, feign, logging, sparql

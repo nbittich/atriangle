@@ -112,10 +112,6 @@ public interface SimpleSparqlService {
         }
       }
     }
-    catch (Exception e) {
-      LOGGER.error("error", e);
-      return false;
-    }
     finally {
       Optional.ofNullable(res)
               .ifPresent(CheckedConsumer.toConsumer(GraphQueryResult::close));

@@ -15,6 +15,7 @@
   <modules>
     <module>shacl-rest</module>
     <module>mongodb-rest</module>
+    <module>sparql-rest</module>
     <module>xls2rdf-rest</module>
     <module>upload-rest</module>
     <module>elastic-rest</module>
