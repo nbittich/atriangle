@@ -165,6 +165,7 @@ services:
           - sparqlrest
     image: atriangle/sparql-rest
     environment:
+      SPARQL_ENDPOINT_URL: "http://blazegraph:8080/bigdata"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
       APPLICATION_BASE_PATH: "/usr/app/sparql"
