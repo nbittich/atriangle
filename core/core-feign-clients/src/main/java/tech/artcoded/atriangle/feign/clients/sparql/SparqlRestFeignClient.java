@@ -4,6 +4,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.artcoded.atriangle.api.dto.LogEvent;
+import tech.artcoded.atriangle.api.dto.RdfType;
 
 import java.util.List;
 import java.util.Map;
@@ -20,7 +21,7 @@ public interface SparqlRestFeignClient {
   ResponseEntity<String> insertRdfAsJsonLd(@RequestBody String jsonLdModel, @PathVariable("namespace") String namespace );
 
   @PostMapping("/convert")
-  ResponseEntity<String> convert(@RequestBody String jsonLdModel, @RequestParam("rdfFormat") String rdfFormat );
+  ResponseEntity<String> convert(@RequestBody String jsonLdModel, @RequestParam("rdfFormat") RdfType rdfType );
 
 
 /*

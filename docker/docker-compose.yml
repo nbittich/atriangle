@@ -149,7 +149,6 @@ services:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
       APPLICATION_BASE_PATH: "/usr/app/mongodb-sink"
-
     volumes:
       - mongodb-sink-storage:/user/app
   # WEB
@@ -157,6 +156,7 @@ services:
     restart: always
     depends_on:
       - kafkaserver
+      - blazegraph
       - atrianglezookeeper
       - atriangleuploadrest
     networks:

@@ -4,3 +4,4 @@
 * init sparql endpoint
 * add sparql endpoints to load rdf
 * fix docker
+* working endpoints

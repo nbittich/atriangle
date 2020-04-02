@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.dto.FileEvent;
+import tech.artcoded.atriangle.api.dto.RdfType;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
@@ -68,8 +69,8 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
   }
 
   @Override
-  public ResponseEntity<String> convert(String jsonLdModel, String rdfFormat) {
-    RDFFormat format = RDFFormat.valueOf(rdfFormat);
+  public ResponseEntity<String> convert(String jsonLdModel, RdfType rdfFormat) {
+    RDFFormat format = RDFFormat.valueOf(rdfFormat.name());
     String defaultMIMEType = format.getDefaultMIMEType();
     Model model = ModelConverter.toModel(jsonLdModel, RDFFormat.JSONLD);
     String converted = ModelConverter.modelToLang(model, format);
