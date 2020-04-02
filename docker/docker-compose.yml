@@ -168,11 +168,15 @@ services:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
       APPLICATION_BASE_PATH: "/usr/app/sparql"
+      FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
+    volumes:
+      - sparql-rest-storage:/user/app
   atriangleuploadrest:
     restart: always
     depends_on:
       - kafkaserver
       - atrianglezookeeper
+      - atrianglemongo
       - atrianglemongo
     networks:
       atriangle:
@@ -185,6 +189,8 @@ services:
       ZOOKEEPER_URL: "zookeeper:2181"
       APPLICATION_BASE_PATH: "/usr/app/fileupload"
       MONGO_DB_HOST: "mongo"
+  volumes:
+    - upload-rest-storage:/user/app
   atriangleprojectrest:
     restart: always
     depends_on:
@@ -299,6 +305,7 @@ volumes:
   log-sink-storage:
   rest-storage:
   upload-rest-storage:
+  sparql-rest-storage:
   project-rest-storage:
   shacl-rest-storage:
   elastic-rest-storage:
