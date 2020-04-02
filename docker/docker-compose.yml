@@ -177,7 +177,6 @@ services:
       - kafkaserver
       - atrianglezookeeper
       - atrianglemongo
-      - atrianglemongo
     networks:
       atriangle:
         aliases:
@@ -189,8 +188,8 @@ services:
       ZOOKEEPER_URL: "zookeeper:2181"
       APPLICATION_BASE_PATH: "/usr/app/fileupload"
       MONGO_DB_HOST: "mongo"
-  volumes:
-    - upload-rest-storage:/user/app
+    volumes:
+      - upload-rest-storage:/user/app
   atriangleprojectrest:
     restart: always
     depends_on:
