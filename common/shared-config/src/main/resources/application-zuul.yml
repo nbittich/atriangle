@@ -1,5 +1,8 @@
 zuul:
   routes:
+    sparqlrest:
+      path: /api/sparql/**
+      serviceId: SparqlRestPublicEndpoint
     filerestupload:
       path: /api/upload/**
       serviceId: FileRestPublicEndpoint
