@@ -32,6 +32,7 @@ echo "docker logs -f docker_atriangleelasticrest_1"
 echo "docker logs -f docker_atrianglemongodbrest_1"
 echo "docker logs -f docker_atriangleprojectrest_1"
 echo "docker logs -f docker_atriangleshaclrest_1"
+echo "docker logs -f docker_atrianglesparqlrest_1"
 echo "docker logs -f docker_atrianglerestxls2rdf_1"
 
 echo "PORTAINER: http://localhost:9000"

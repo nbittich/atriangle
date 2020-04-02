@@ -3,6 +3,8 @@ feign:
     connection-timeout: 45000
 
 endpoint:
+  sparql:
+    url: ${SPARQL_ENDPOINT_URL:http://localhost:8088/api/sparql}
   file:
     url: ${FILE_ENDPOINT_URL:http://localhost:8088/api/upload}
   project:

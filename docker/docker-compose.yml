@@ -153,6 +153,21 @@ services:
     volumes:
       - mongodb-sink-storage:/user/app
   # WEB
+  atrianglesparqlrest:
+    restart: always
+    depends_on:
+      - kafkaserver
+      - atrianglezookeeper
+      - atriangleuploadrest
+    networks:
+      atriangle:
+        aliases:
+          - sparqlrest
+    image: atriangle/sparql-rest
+    environment:
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
+      ZOOKEEPER_URL: "zookeeper:2181"
+      APPLICATION_BASE_PATH: "/usr/app/sparql"
   atriangleuploadrest:
     restart: always
     depends_on:
