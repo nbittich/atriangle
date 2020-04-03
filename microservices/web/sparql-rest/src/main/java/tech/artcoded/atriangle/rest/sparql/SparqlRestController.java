@@ -6,6 +6,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.openrdf.model.Model;
+import org.openrdf.model.Value;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.rio.RDFFormat;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
@@ -24,7 +27,11 @@ import tech.artcoded.atriangle.feign.clients.sparql.SparqlRestFeignClient;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
-import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @CrossOriginRestController
 @Slf4j
@@ -75,6 +82,26 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
     Model model = ModelConverter.toModel(jsonLdModel, RDFFormat.JSONLD);
     String converted = ModelConverter.modelToLang(model, format);
     return ResponseEntity.ok().contentType(MediaType.parseMediaType(defaultMIMEType)).body(converted);
+  }
+
+  @Override
+  public ResponseEntity<Boolean> askQuery(String askQuery, String namespace) {
+    return ResponseEntity.ok(simpleSparqlService.booleanQuery(namespace, askQuery));
+  }
+
+  @SneakyThrows
+  @Override
+  public ResponseEntity<Map<String, Object>> selectQuery(String selectQuery, String namespace) {
+    TupleQueryResult tupleQueryResult = simpleSparqlService.tupleQuery(namespace, selectQuery);
+    Map<String, Object> response = new HashMap<>();
+    while (tupleQueryResult.hasNext()){
+      BindingSet next = tupleQueryResult.next();
+      Map<String, Value> result = StreamSupport.stream(next.spliterator(), false)
+                                                .map(iterator -> Map.entry(iterator.getName(), iterator.getValue()))
+                                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+      response.putAll(result);
+    }
+    return ResponseEntity.ok(response);
   }
 
 }

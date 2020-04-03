@@ -5,3 +5,4 @@
 * add sparql endpoints to load rdf
 * fix docker
 * working endpoints
+* first query endpoints still to be tested

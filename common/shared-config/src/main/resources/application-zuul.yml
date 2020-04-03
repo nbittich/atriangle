@@ -25,7 +25,7 @@ zuul:
       path: /proxy/mongo/**
       url: http://${mongoexpress.host}:${mongoexpress.port}/proxy/mongo/
     sparql:
-      path: /proxy/sparql/**
+      path: /proxy/sparql-endpoint/**
       url: ${sparql.endpoint.proxy.url}
     xls2rdf:
       path: /api/xls2rdf/**

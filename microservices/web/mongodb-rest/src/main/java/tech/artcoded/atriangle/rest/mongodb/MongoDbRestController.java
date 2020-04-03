@@ -19,7 +19,6 @@ import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.feign.clients.mongodb.MongoDbRestFeignClient;
 
 import javax.inject.Inject;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;

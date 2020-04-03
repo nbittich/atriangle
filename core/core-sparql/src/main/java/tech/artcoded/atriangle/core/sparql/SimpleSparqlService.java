@@ -135,6 +135,5 @@ public interface SimpleSparqlService {
     final ConnectOptions opts = new ConnectOptions(getServiceUrl() + "/status");
     opts.method = "GET";
     return getRemoteRepositoryManager().doConnect(opts);
-
   }
 }

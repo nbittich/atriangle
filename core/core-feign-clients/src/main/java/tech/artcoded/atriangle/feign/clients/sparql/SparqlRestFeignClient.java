@@ -1,14 +1,10 @@
 package tech.artcoded.atriangle.feign.clients.sparql;
 
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import tech.artcoded.atriangle.api.dto.LogEvent;
 import tech.artcoded.atriangle.api.dto.RdfType;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public interface SparqlRestFeignClient {
   @PostMapping("/create-namespace")
@@ -23,20 +19,11 @@ public interface SparqlRestFeignClient {
   @PostMapping("/convert")
   ResponseEntity<String> convert(@RequestBody String jsonLdModel, @RequestParam("rdfFormat") RdfType rdfType );
 
+  @PostMapping("/ask-query")
+  ResponseEntity<Boolean> askQuery(@RequestBody String askQuery, @RequestParam("namespace") String namespace );
 
-/*
-  @DeleteMapping("/index")
-  ResponseEntity<String> deleteIndex(@RequestParam("indexName") String indexName);
+  @PostMapping("/select-query")
+  ResponseEntity<Map<String, Object>> selectQuery(@RequestBody String selectQuery, @RequestParam("namespace") String namespace );
 
-  @GetMapping("/logs-by-correlation-id")
-  List<LogEvent> getLogsByCorrelationId(@RequestParam("correlationId") String correlationId);
-
-  @DeleteMapping("/document")
-  ResponseEntity<String> deleteDocument(@RequestParam("indexName") String indexName,
-                                        @RequestParam("id") String uuid);
-
-  @PostMapping("/index/{indexName}")
-  ResponseEntity<String> index(@PathVariable("indexName") String indexName,
-                               @RequestBody String document);*/
 
 }
