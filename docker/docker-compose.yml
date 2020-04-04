@@ -6,7 +6,7 @@ services:
     image: portainer/portainer:latest
     ports:
       - "9000:9000"
-    command: --admin-password '$$2y$$05$$aJ1TVevLH/EyGM7bOLehyOR50USU5rZxEH9pZVPMJI8DGoJGlLSoi' # password is 11111111
+    #command: --admin-password '$$2y$$05$$aJ1TVevLH/EyGM7bOLehyOR50USU5rZxEH9pZVPMJI8DGoJGlLSoi' # password is 11111111
     networks:
       atriangle:
         aliases:
