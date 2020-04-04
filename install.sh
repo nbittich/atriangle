@@ -2,7 +2,7 @@
 set -e # fail script on error
 
 # SPARNA WORKAROUND
-sh xls2rdf-workaround.sh
+bash xls2rdf-workaround.sh
 # SPARNA WORKAROUND
 
 docker-compose -f docker/docker-compose-local.yml stop
