@@ -12,7 +12,7 @@ then
   unzip 2.0.3.zip
   cd xls2rdf-2.0.3
   mvn clean install -DskipTests
-  cd currentDir
+  cd $currentDir
 else
   echo "xls2rdf already installed"
 fi
