@@ -24,7 +24,8 @@ import java.util.function.Function;
 public interface SimpleSparqlService {
 
   Function<String, PropertyStore> CREATE_NAMESPACE_PROPERTIES = ns -> () -> Map.of("com.bigdata.rdf.sail.namespace", ns,
-                                                                                   "com.bigdata.rdf.sail.truthMaintenance", "true",
+                                                                                   "com.bigdata.rdf.store.AbstractTripleStore.quads","true",
+                                                                                   "com.bigdata.rdf.sail.truthMaintenance", "false",
                                                                                    "com.bigdata.rdf.store.AbstractTripleStore.textIndex", "true");
 
   String getServiceUrl();

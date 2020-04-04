@@ -6,3 +6,4 @@
 * fix docker
 * working endpoints
 * first query endpoints still to be tested
+* bugfix
