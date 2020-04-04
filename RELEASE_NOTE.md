@@ -6,3 +6,4 @@
 * update sparna lib
 * fix maven central
 * fix maven central
+* sparna lib broken
