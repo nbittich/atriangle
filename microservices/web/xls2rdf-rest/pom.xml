@@ -10,13 +10,10 @@
 
   <artifactId>atriangle-xls2rdf-rest</artifactId>
   <properties>
+    <rdf4j.version>2.5.2</rdf4j.version>
     <docker.image.name>atriangle/xls2rdf</docker.image.name>
   </properties>
   <repositories>
-    <repository>
-      <id>maven.central</id>
-      <url>https://repo1.maven.org/maven2/</url>
-    </repository>
     <repository>
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
@@ -41,10 +38,19 @@
       <version>0.13.0</version>
     </dependency>
     <dependency>
+      <groupId>org.eclipse.rdf4j</groupId>
+      <artifactId>rdf4j-runtime</artifactId>
+      <version>${rdf4j.version}</version>
+    </dependency>
+    <dependency>
       <groupId>com.github.sparna-git.xls2rdf</groupId>
       <artifactId>xls2rdf-lib</artifactId>
       <version>2.0.3</version>
       <exclusions>
+        <exclusion>
+          <groupId>org.eclipse.rdf4j</groupId>
+          <artifactId>rdf4j-runtime</artifactId>
+        </exclusion>
         <exclusion>
           <groupId>ch.qos.logback</groupId>
           <artifactId>logback-classic</artifactId>
