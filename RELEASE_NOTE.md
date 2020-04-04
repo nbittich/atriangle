@@ -7,3 +7,4 @@
 * working endpoints
 * first query endpoints still to be tested
 * bugfix
+* bug fix & switch to quad mode
