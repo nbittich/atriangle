@@ -1,5 +1,8 @@
 zuul:
   routes:
+    xls2rdf:
+      path: /api/xls2rdf/**
+      serviceId: Xls2RdfRestPublicEndpoint
     sparqlrest:
       path: /api/sparql/**
       serviceId: SparqlRestPublicEndpoint
@@ -27,9 +30,6 @@ zuul:
     sparql:
       path: /proxy/sparql-endpoint/**
       url: ${sparql.endpoint.proxy.url}
-    xls2rdf:
-      path: /api/xls2rdf/**
-      serviceId: Xls2RdfRestPublicEndpoint
   host:
     connect-timeout-millis: 45000
     socket-timeout-millis: 45000
