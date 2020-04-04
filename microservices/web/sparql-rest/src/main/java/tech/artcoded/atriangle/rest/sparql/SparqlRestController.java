@@ -7,8 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.openrdf.model.Model;
 import org.openrdf.model.Value;
-import org.openrdf.query.BindingSet;
-import org.openrdf.query.TupleQueryResult;
+import org.openrdf.query.*;
 import org.openrdf.rio.RDFFormat;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
@@ -27,7 +26,9 @@ import tech.artcoded.atriangle.feign.clients.sparql.SparqlRestFeignClient;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -91,17 +92,28 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
 
   @SneakyThrows
   @Override
-  public ResponseEntity<Map<String, Object>> selectQuery(String selectQuery, String namespace) {
+  public ResponseEntity<List<Map<String, String>>> selectQuery(String selectQuery, String namespace) {
     TupleQueryResult tupleQueryResult = simpleSparqlService.tupleQuery(namespace, selectQuery);
-    Map<String, Object> response = new HashMap<>();
+    List<Map<String, String>> response = new ArrayList<>();
     while (tupleQueryResult.hasNext()){
       BindingSet next = tupleQueryResult.next();
-      Map<String, Value> result = StreamSupport.stream(next.spliterator(), false)
-                                                .map(iterator -> Map.entry(iterator.getName(), iterator.getValue()))
+      Map<String, String> result = StreamSupport.stream(next.spliterator(), false)
+                                                .map(iterator -> Map.entry(iterator.getName(), iterator.getValue().stringValue()))
                                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-      response.putAll(result);
+      response.add(result);
     }
+    tupleQueryResult.close();
     return ResponseEntity.ok(response);
   }
+
+  @SneakyThrows
+  @Override
+  public ResponseEntity<String> constructQuery(String constructQuery, String namespace) {
+    GraphQueryResult result = simpleSparqlService.graphQuery(namespace, constructQuery);
+    Model model = QueryResults.asModel(result);
+    result.close();
+    return ResponseEntity.ok(ModelConverter.modelToLang(model, RDFFormat.JSONLD));
+  }
+
 
 }

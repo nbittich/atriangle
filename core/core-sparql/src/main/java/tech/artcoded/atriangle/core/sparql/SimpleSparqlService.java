@@ -67,7 +67,7 @@ public interface SimpleSparqlService {
   }
 
   @SneakyThrows
-  default GraphQueryResult graphQuery(String namespace, String query, UUID uuid) {
+  default GraphQueryResult graphQuery(String namespace, String query) {
     return getRemoteRepositoryManager().getRepositoryForNamespace(namespace)
                                        .prepareGraphQuery(query)
                                        .evaluate();

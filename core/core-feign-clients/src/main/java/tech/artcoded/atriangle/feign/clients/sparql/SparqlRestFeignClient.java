@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.artcoded.atriangle.api.dto.RdfType;
 
+import java.util.List;
 import java.util.Map;
 
 public interface SparqlRestFeignClient {
@@ -23,7 +24,10 @@ public interface SparqlRestFeignClient {
   ResponseEntity<Boolean> askQuery(@RequestBody String askQuery, @RequestParam("namespace") String namespace );
 
   @PostMapping("/select-query")
-  ResponseEntity<Map<String, Object>> selectQuery(@RequestBody String selectQuery, @RequestParam("namespace") String namespace );
+  ResponseEntity<List<Map<String, String>>> selectQuery(@RequestBody String selectQuery, @RequestParam("namespace") String namespace );
+
+  @PostMapping("/construct-query")
+  ResponseEntity<String> constructQuery(@RequestBody String constructQuery, @RequestParam("namespace") String namespace );
 
 
 }
