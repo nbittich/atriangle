@@ -17,14 +17,6 @@
       <id>jitpack.io</id>
       <url>https://jitpack.io</url>
     </repository>
-    <repository>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-      <id>central</id>
-      <name>bintray</name>
-      <url>https://jcenter.bintray.com</url>
-    </repository>
   </repositories>
   <dependencies>
     <dependency>
@@ -40,6 +32,11 @@
       <artifactId>atriangle-core-kafka</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.github.jsonld-java</groupId>
+      <artifactId>jsonld-java</artifactId>
+      <version>0.13.0</version>
+    </dependency>
+    <dependency>
       <groupId>com.github.sparna-git.xls2rdf</groupId>
       <artifactId>xls2rdf-lib</artifactId>
       <version>2.0.3</version>
@@ -47,6 +44,10 @@
         <exclusion>
           <groupId>ch.qos.logback</groupId>
           <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>com.github.jsonld-java</groupId>
+          <artifactId>jsonld-java</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
