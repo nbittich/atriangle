@@ -44,8 +44,8 @@ public interface KafkaEventHelper {
                                                             Headers headers,
                                                             BuildProperties buildProperties) {
     Map<String, String> headersMap = StreamSupport.stream(headers.spliterator(), false)
-                                               .map(header -> Map.entry(header.key(), new String(header.value())))
-                                               .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+                                                  .map(header -> Map.entry(header.key(), new String(header.value())))
+                                                  .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     return KafkaEvent.builder()
                      .correlationId(correlationId)
                      .eventMetadata(KafkaEventMetadata.builder()
@@ -58,8 +58,9 @@ public interface KafkaEventHelper {
                                                       .headers(headersMap)
                                                       .build());
   }
+
   default KafkaEvent.KafkaEventBuilder newKafkaEventBuilderWithoutRecord(String correlationId,
-                                                            BuildProperties buildProperties) {
+                                                                         BuildProperties buildProperties) {
     return KafkaEvent.builder()
                      .correlationId(correlationId)
                      .eventMetadata(KafkaEventMetadata.builder()

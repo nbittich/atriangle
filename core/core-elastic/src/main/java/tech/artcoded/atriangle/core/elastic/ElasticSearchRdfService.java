@@ -204,7 +204,8 @@ public interface ElasticSearchRdfService {
   @SneakyThrows
   default SearchResponse searchAll(String... indexes) {
     return transformAndSearch(searchSourceBuilder -> {
-      return searchSourceBuilder.query(QueryBuilders.matchAllQuery()).size(DEFAULT_SEARCH_SIZE);
+      return searchSourceBuilder.query(QueryBuilders.matchAllQuery())
+                                .size(DEFAULT_SEARCH_SIZE);
     }, indexes);
   }
 
@@ -212,13 +213,15 @@ public interface ElasticSearchRdfService {
   default SearchResponse fuzzyQuery(String key, Object value, Fuzziness fuzziness, float boost, String... indexes) {
     return transformAndSearch(searchSourceBuilder -> searchSourceBuilder.query(QueryBuilders.fuzzyQuery(key, value)
                                                                                             .fuzziness(fuzziness)
-                                                                                            .boost(boost)).size(DEFAULT_SEARCH_SIZE)
+                                                                                            .boost(boost))
+                                                                        .size(DEFAULT_SEARCH_SIZE)
       , indexes);
   }
 
   @SneakyThrows
   default SearchResponse termQuery(String key, Object term, String... indexes) {
-    return transformAndSearch(searchSourceBuilder -> searchSourceBuilder.query(QueryBuilders.termQuery(key, term)).size(DEFAULT_SEARCH_SIZE), indexes);
+    return transformAndSearch(searchSourceBuilder -> searchSourceBuilder.query(QueryBuilders.termQuery(key, term))
+                                                                        .size(DEFAULT_SEARCH_SIZE), indexes);
   }
 
   @SneakyThrows
@@ -235,7 +238,8 @@ public interface ElasticSearchRdfService {
 
   @SneakyThrows
   default SearchResponse matchQuery(String key, Object text, String... indexes) {
-    return transformAndSearch(searchSourceBuilder -> searchSourceBuilder.query(QueryBuilders.matchQuery(key, text)).size(DEFAULT_SEARCH_SIZE), indexes);
+    return transformAndSearch(searchSourceBuilder -> searchSourceBuilder.query(QueryBuilders.matchQuery(key, text))
+                                                                        .size(DEFAULT_SEARCH_SIZE), indexes);
   }
 
   @SneakyThrows

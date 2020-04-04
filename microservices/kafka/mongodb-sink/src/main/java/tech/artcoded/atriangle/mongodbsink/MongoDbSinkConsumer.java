@@ -66,7 +66,7 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
     MongoEvent event = kafkaEventHelper.parseEvent(kafkaEvent, MongoEvent.class);
 
     ResponseEntity<ByteArrayResource> inputToSink = fileRestFeignClient.download(event.getInputToSink()
-                                                                                           .getId(), kafkaEvent.getCorrelationId());
+                                                                                      .getId(), kafkaEvent.getCorrelationId());
 
 
     BasicDBObject objectToSave = BasicDBObject.parse(IOUtils.toString(inputToSink.getBody()
@@ -79,7 +79,7 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
     SinkResponse sinkResponse = SinkResponse.builder()
                                             .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
                                             .finishedDate(new Date())
-                                            .response(mapperWrapper.serialize(Map.of("message","rdf saved to the mongodb")))
+                                            .response(mapperWrapper.serialize(Map.of("message", "rdf saved to the mongodb")))
                                             .responseType(EventType.MONGODB_SINK_OUT)
                                             .build();//todo think about failure..
 

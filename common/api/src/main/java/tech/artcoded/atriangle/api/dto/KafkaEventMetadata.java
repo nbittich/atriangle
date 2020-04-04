@@ -18,5 +18,5 @@ public class KafkaEventMetadata {
   private String moduleName;
   private long offset;
   private int partition;
-  private Map<String,String> headers;
+  private Map<String, String> headers;
 }

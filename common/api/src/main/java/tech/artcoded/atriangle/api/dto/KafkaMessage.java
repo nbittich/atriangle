@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class KafkaMessage<K,V> {
+public class KafkaMessage<K, V> {
   private String outTopic;
   private K key;
   private V value;

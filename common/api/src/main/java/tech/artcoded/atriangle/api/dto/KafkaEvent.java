@@ -1,7 +1,6 @@
 package tech.artcoded.atriangle.api.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,7 +12,7 @@ import java.util.Date;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class KafkaEvent  {
+public class KafkaEvent {
   private String id;
   private String correlationId;
   private EventType eventType;

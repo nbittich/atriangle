@@ -6,8 +6,10 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.openrdf.model.Model;
-import org.openrdf.model.Value;
-import org.openrdf.query.*;
+import org.openrdf.query.BindingSet;
+import org.openrdf.query.GraphQueryResult;
+import org.openrdf.query.QueryResults;
+import org.openrdf.query.TupleQueryResult;
 import org.openrdf.rio.RDFFormat;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
@@ -27,11 +29,9 @@ import tech.artcoded.atriangle.feign.clients.sparql.SparqlRestFeignClient;
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @CrossOriginRestController
@@ -62,10 +62,12 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
   @Override
   @SneakyThrows
   public ResponseEntity<String> loadRdfFile(String rdfFileEvent, String namespace) {
-    FileEvent rdfFile = fileRestFeignClient.findById(rdfFileEvent).getBody();
+    FileEvent rdfFile = fileRestFeignClient.findById(rdfFileEvent)
+                                           .getBody();
     ResponseEntity<ByteArrayResource> rdf = fileRestFeignClient.download(rdfFile.getId(), IdGenerators.get());
 
-    simpleSparqlService.load(namespace, rdf.getBody().getInputStream(), RDFFormat.forFileName(rdfFile.getName()));
+    simpleSparqlService.load(namespace, rdf.getBody()
+                                           .getInputStream(), RDFFormat.forFileName(rdfFile.getName()));
     return ResponseEntity.ok("rdf loaded");
   }
 
@@ -77,12 +79,17 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
   }
 
   @Override
-  public ResponseEntity<String> convert(String jsonLdModel, RdfType rdfFormat) {
-    RDFFormat format = RDFFormat.valueOf(rdfFormat.name());
-    String defaultMIMEType = format.getDefaultMIMEType();
-    Model model = ModelConverter.toModel(jsonLdModel, RDFFormat.JSONLD);
-    String converted = ModelConverter.modelToLang(model, format);
-    return ResponseEntity.ok().contentType(MediaType.parseMediaType(defaultMIMEType)).body(converted);
+  public ResponseEntity<String> convert(String jsonLdModel,
+                                        RdfType rdfFormatInput,
+                                        RdfType rdfFormaOutput) {
+    RDFFormat formatInput = RDFFormat.valueOf(rdfFormatInput.getValue());
+    RDFFormat formatOutput = RDFFormat.valueOf(rdfFormaOutput.getValue());
+    String defaultMIMEType = formatOutput.getDefaultMIMEType();
+    Model model = ModelConverter.toModel(jsonLdModel, formatInput);
+    String converted = ModelConverter.modelToLang(model, formatOutput);
+    return ResponseEntity.ok()
+                         .contentType(MediaType.parseMediaType(defaultMIMEType))
+                         .body(converted);
   }
 
   @Override
@@ -95,10 +102,11 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
   public ResponseEntity<List<Map<String, String>>> selectQuery(String selectQuery, String namespace) {
     TupleQueryResult tupleQueryResult = simpleSparqlService.tupleQuery(namespace, selectQuery);
     List<Map<String, String>> response = new ArrayList<>();
-    while (tupleQueryResult.hasNext()){
+    while (tupleQueryResult.hasNext()) {
       BindingSet next = tupleQueryResult.next();
       Map<String, String> result = StreamSupport.stream(next.spliterator(), false)
-                                                .map(iterator -> Map.entry(iterator.getName(), iterator.getValue().stringValue()))
+                                                .map(iterator -> Map.entry(iterator.getName(), iterator.getValue()
+                                                                                                       .stringValue()))
                                                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
       response.add(result);
     }

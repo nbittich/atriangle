@@ -82,10 +82,11 @@ public class MongoDbRestController implements PingControllerTrait,
   @Override
   public ResponseEntity<List<RawJsonWrappedResponse>> query(String collectionName, String query) {
     BasicQuery basicQuery = new BasicQuery(query);
-    return ResponseEntity.ok(mongoTemplate.find(basicQuery, BasicDBObject.class, collectionName).stream()
+    return ResponseEntity.ok(mongoTemplate.find(basicQuery, BasicDBObject.class, collectionName)
+                                          .stream()
                                           .map(BasicDBObject::toJson)
                                           .map(RawJsonWrappedResponse::new)
-    .collect(Collectors.toUnmodifiableList()));
+                                          .collect(Collectors.toUnmodifiableList()));
   }
 
   @Override

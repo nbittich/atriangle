@@ -18,15 +18,14 @@ import tech.artcoded.atriangle.api.PropertyStore;
 import java.io.InputStream;
 import java.util.Map;
 import java.util.Optional;
-import java.util.UUID;
 import java.util.function.Function;
 
 public interface SimpleSparqlService {
 
   Function<String, PropertyStore> CREATE_NAMESPACE_PROPERTIES = ns -> () -> Map.of("com.bigdata.rdf.sail.namespace", ns,
-                                                                                   "com.bigdata.rdf.store.AbstractTripleStore.axiomsClass","com.bigdata.rdf.axioms.NoAxioms",
-                                                                                   "com.bigdata.rdf.store.AbstractTripleStore.quads","true",
-                                                                                   "com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers","false",
+                                                                                   "com.bigdata.rdf.store.AbstractTripleStore.axiomsClass", "com.bigdata.rdf.axioms.NoAxioms",
+                                                                                   "com.bigdata.rdf.store.AbstractTripleStore.quads", "true",
+                                                                                   "com.bigdata.rdf.store.AbstractTripleStore.statementIdentifiers", "false",
                                                                                    "com.bigdata.rdf.sail.truthMaintenance", "false",
                                                                                    "com.bigdata.rdf.store.AbstractTripleStore.textIndex", "true");
 

@@ -62,7 +62,7 @@ public class ProjectSinkProducer {
                                         .build();
 
       KafkaEvent kafkaEvent = kafkaEventHelper.newKafkaEventBuilderWithoutRecord(projectId,
-                                                                    buildProperties)
+                                                                                 buildProperties)
                                               .eventType(EventType.RDF_SINK)
                                               .id(IdGenerators.get())
                                               .event(objectMapperWrapper.serialize(restRdfEvent))

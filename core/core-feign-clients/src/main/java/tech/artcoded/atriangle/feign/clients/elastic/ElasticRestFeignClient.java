@@ -52,6 +52,7 @@ public interface ElasticRestFeignClient {
 
   /**
    * e.g {"index.number_of_replicas": "2"}
+   *
    * @param indexName
    * @param preserveSettings
    * @param settings
@@ -59,8 +60,10 @@ public interface ElasticRestFeignClient {
    */
   @PostMapping("/settings/{indexName}")
   ResponseEntity<String> updateSettings(@PathVariable("indexName") String indexName,
-                                        @RequestParam(value = "preserveSettings", defaultValue = "false") boolean preserveSettings,
+                                        @RequestParam(value = "preserveSettings",
+                                                      defaultValue = "false") boolean preserveSettings,
                                         @RequestBody String settings);
+
   @GetMapping("/settings/{indexName}")
   ResponseEntity<String> getSettings(@PathVariable("indexName") String indexName);
 
