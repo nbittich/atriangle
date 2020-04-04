@@ -39,6 +39,7 @@
     <bigdata-core.version>2.1.4</bigdata-core.version>
     <jena-shacl.version>3.14.0</jena-shacl.version>
     <springfox-swagger2.version>2.9.2</springfox-swagger2.version>
+    <jsonld-java.version>0.13.0</jsonld-java.version>
   </properties>
 
   <scm>
@@ -55,6 +56,12 @@
         <artifactId>ant</artifactId>
         <version>${ant.version}</version>
       </dependency>
+      <dependency>
+        <groupId>com.github.jsonld-java</groupId>
+        <artifactId>jsonld-java</artifactId>
+        <version>${jsonld-java.version}</version>
+      </dependency>
+
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>atriangle-core-elastic</artifactId>

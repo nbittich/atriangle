@@ -12,6 +12,14 @@
   <properties>
     <docker.image.name>atriangle/xls2rdf</docker.image.name>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+  </repositories>
+
   <dependencies>
     <dependency>
       <groupId>tech.artcoded</groupId>
@@ -26,7 +34,7 @@
       <artifactId>atriangle-core-kafka</artifactId>
     </dependency>
     <dependency>
-      <groupId>fr.sparna.rdf.xls2rdf</groupId>
+      <groupId>com.github.sparna-git.xls2rdf</groupId>
       <artifactId>xls2rdf-lib</artifactId>
       <version>2.0.3</version>
       <exclusions>
@@ -35,6 +43,10 @@
           <artifactId>logback-classic</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.github.jsonld-java</groupId>
+      <artifactId>jsonld-java</artifactId>
     </dependency>
     <dependency>
       <groupId>tech.artcoded</groupId>
