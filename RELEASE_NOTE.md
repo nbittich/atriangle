@@ -4,3 +4,4 @@
 * prepare deployment
 * update sparna lib
 * update sparna lib
+* fix maven central
