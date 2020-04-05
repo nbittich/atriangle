@@ -9,3 +9,4 @@
 * sparna lib broken
 * simplify api for xls2rdf
 * do not allow to override namespace in project
+* small fixes
