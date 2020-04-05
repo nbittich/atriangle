@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @Builder
 public class SinkRequest {
   private String projectId;
-  private String namespace;
   private String shaclFileEventId;
   private String rdfFileEventId;
 }

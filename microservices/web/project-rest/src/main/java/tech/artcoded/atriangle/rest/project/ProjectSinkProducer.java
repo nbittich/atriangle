@@ -48,9 +48,7 @@ public class ProjectSinkProducer {
       log.info("sink {}, request {}", projectId, sinkRequest.getRdfFileEventId());
       ProjectEvent projectEvent = projectRestService.findById(projectId)
                                                     .orElseThrow();
-      String ns = Optional.ofNullable(sinkRequest.getNamespace())
-                          .filter(StringUtils::isNotEmpty)
-                          .orElseGet(projectEvent::getName);
+      String ns = projectEvent.getName();
 
 
       RestEvent restRdfEvent = RestEvent.builder()
