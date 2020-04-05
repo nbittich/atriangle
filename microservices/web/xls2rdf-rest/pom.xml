@@ -39,6 +39,10 @@
       <version>2.0.3</version>
       <exclusions>
         <exclusion>
+          <groupId>com.github.jsonld-java</groupId>
+          <artifactId>jsonld-java</artifactId>
+        </exclusion>
+        <exclusion>
           <groupId>ch.qos.logback</groupId>
           <artifactId>logback-classic</artifactId>
         </exclusion>

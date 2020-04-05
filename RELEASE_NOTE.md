@@ -7,3 +7,4 @@
 * fix maven central
 * fix maven central
 * sparna lib broken
+* simplify api for xls2rdf

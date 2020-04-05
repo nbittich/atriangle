@@ -27,23 +27,23 @@ public interface Xls2RdfRestFeignClient {
                   method = RequestMethod.POST,
                   consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<ByteArrayResource> convertRDF(
-    @RequestParam(value = "source") String sourceString, // FILE or URL
+    @RequestParam(value = "source", defaultValue = "file") String sourceString, // FILE or URL
     @RequestPart(value = "file",
                  required = false) MultipartFile file,
     @RequestParam(value = "language",
-                  required = false) String language,
+                  required = false, defaultValue = "fr") String language,
     @RequestParam(value = "url",
                   required = false) String url,
     @RequestParam(value = "output",
-                  required = false) String format,
+                  required = false, defaultValue = "text/turtle") String format,
     @RequestParam(value = "useskosxl",
-                  required = false) boolean useskosxl,
+                  required = false, defaultValue = "false") boolean useskosxl,
     @RequestParam(value = "usezip",
-                  required = false) boolean useZip,
+                  required = false,defaultValue = "false") boolean useZip,
     @RequestParam(value = "usegraph",
-                  required = false) boolean useGraph,
+                  required = false, defaultValue = "false") boolean useGraph,
     @RequestParam(value = "ignorePostProc",
-                  required = false) boolean ignorePostProc
+                  required = false, defaultValue = "false") boolean ignorePostProc
   ) throws Exception;
 
 
