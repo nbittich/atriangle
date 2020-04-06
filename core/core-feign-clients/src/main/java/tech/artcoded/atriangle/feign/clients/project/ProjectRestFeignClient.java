@@ -10,6 +10,7 @@ import tech.artcoded.atriangle.api.dto.ProjectEvent;
 import tech.artcoded.atriangle.api.dto.SinkRequest;
 
 import java.util.List;
+import java.util.Map;
 
 public interface ProjectRestFeignClient {
 
@@ -26,10 +27,21 @@ public interface ProjectRestFeignClient {
   ResponseEntity<ProjectEvent> findById(@PathVariable("projectId") String projectId);
 
 
-  @PutMapping(path = "/add-file",
+  @PostMapping(path = "/add-file",
               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<ProjectEvent> addFile(@RequestPart("file") MultipartFile file,
                                        @RequestParam("projectId") String projectId);
+
+  @PostMapping(path = "/add-sparql-query-template",
+              consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  ResponseEntity<ProjectEvent> addFreemarkerSparqlTemplate(@RequestPart("file") MultipartFile file,
+                                       @RequestParam("projectId") String projectId);
+
+  @PostMapping(path = "/execute-select-sparql-query",
+              consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  ResponseEntity<List<Map<String, String>>> executeSelectSparqlQuery(@PathVariable("projectId") String projectId,
+                                                  @PathVariable("freemarkerTemplateFileId") String freemarkerTemplateFileId,
+                                                  @RequestBody Map<String,String> variables);
 
   @GetMapping("/{projectId}/logs")
   ResponseEntity<List<LogEvent>> getLogsForProject(@PathVariable("projectId") String projectId);

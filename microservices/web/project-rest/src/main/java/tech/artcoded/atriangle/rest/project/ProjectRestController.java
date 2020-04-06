@@ -3,6 +3,7 @@ package tech.artcoded.atriangle.rest.project;
 import io.swagger.annotations.ApiOperation;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,7 @@ import tech.artcoded.atriangle.feign.clients.project.ProjectRestFeignClient;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
 @CrossOriginRestController
@@ -47,6 +49,24 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
     return projectRestService.addFile(projectId, multipartFile)
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.badRequest()::build);
+  }
+  @Override
+  public ResponseEntity<ProjectEvent> addFreemarkerSparqlTemplate(MultipartFile multipartFile,
+                                              String projectId) {
+
+    if (!FilenameUtils.getExtension(multipartFile.getOriginalFilename()).equals(".ftl")){
+      return ResponseEntity.badRequest().build();
+    }
+
+    return projectRestService.addFile(projectId, multipartFile, FileEventType.FREEMARKER_TEMPLATE_FILE)
+                             .map(ResponseEntity::ok)
+                             .orElseGet(ResponseEntity.badRequest()::build);
+  }
+
+  @Override
+  public ResponseEntity<List<Map<String, String>>> executeSelectSparqlQuery(String projectId, String freemarkerTemplateFileId,
+                                                   Map<String, String> variables) {
+    return ResponseEntity.ok(projectRestService.executeSelectSparqlQuery(projectId, freemarkerTemplateFileId, variables));
   }
 
   @Override

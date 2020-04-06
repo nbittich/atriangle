@@ -10,6 +10,7 @@ import tech.artcoded.atriangle.core.rest.config.SwaggerConfig;
 import tech.artcoded.atriangle.feign.clients.elastic.DiscoverableElasticRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.file.DiscoverableFileRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.shacl.DiscoverableShaclRestFeignClient;
+import tech.artcoded.atriangle.feign.clients.sparql.DiscoverableSparqlRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.xls2rdf.DiscoverableXls2RdfRestFeignClient;
 
 @SpringBootApplication
@@ -19,7 +20,8 @@ import tech.artcoded.atriangle.feign.clients.xls2rdf.DiscoverableXls2RdfRestFeig
   DiscoverableElasticRestFeignClient.class,
   DiscoverableFileRestFeignClient.class,
   DiscoverableXls2RdfRestFeignClient.class,
-  DiscoverableShaclRestFeignClient.class})
+  DiscoverableShaclRestFeignClient.class,
+  DiscoverableSparqlRestFeignClient.class})
 public class ProjectRestApplicaton {
   public static void main(String[] args) {
     SpringApplication.run(ProjectRestApplicaton.class, args);

@@ -1,8 +1,11 @@
 package tech.artcoded.atriangle.rest.project;
 
+import freemarker.template.Configuration;
+import freemarker.template.Template;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -11,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.CheckedSupplier;
@@ -23,12 +27,16 @@ import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.feign.clients.elastic.ElasticRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.shacl.ShaclRestFeignClient;
+import tech.artcoded.atriangle.feign.clients.sparql.SparqlRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.util.FeignMultipartFile;
 import tech.artcoded.atriangle.feign.clients.xls2rdf.Xls2RdfRestFeignClient;
 
 import javax.inject.Inject;
+import java.io.StringReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
 
@@ -47,6 +55,7 @@ public class ProjectRestService {
   private final ElasticRestFeignClient elasticRestFeignClient;
   private final ShaclRestFeignClient shaclRestFeignClient;
   private final Xls2RdfRestFeignClient skosPlayRestFeignClient;
+  private final SparqlRestFeignClient sparqlRestFeignClient;
 
   private final LoggerAction loggerAction;
 
@@ -57,12 +66,14 @@ public class ProjectRestService {
                             ElasticRestFeignClient elasticRestFeignClient,
                             ShaclRestFeignClient shaclRestFeignClient,
                             Xls2RdfRestFeignClient skosPlayRestFeignClient,
+                            SparqlRestFeignClient sparqlRestFeignClient,
                             LoggerAction loggerAction) {
     this.mongoTemplate = mongoTemplate;
     this.fileRestFeignClient = fileRestFeignClient;
     this.elasticRestFeignClient = elasticRestFeignClient;
     this.shaclRestFeignClient = shaclRestFeignClient;
     this.skosPlayRestFeignClient = skosPlayRestFeignClient;
+    this.sparqlRestFeignClient = sparqlRestFeignClient;
     this.loggerAction = loggerAction;
   }
 
@@ -235,4 +246,20 @@ public class ProjectRestService {
     return this.addFile(projectId, rdfOutput, FileEventType.SKOS_PLAY_CONVERTER_OUTPUT);
   }
 
+  @SneakyThrows
+  public List<Map<String, String>> executeSelectSparqlQuery(String projectId, String freemarkerTemplateFileId,
+                                                   Map<String, String> variables) {
+    ProjectEvent project = findById(projectId).orElseThrow();
+    ResponseEntity<ByteArrayResource> freemarkerTemplate = downloadFile(projectId, freemarkerTemplateFileId);
+    String templateQuery = IOUtils.toString(freemarkerTemplate.getBody().getInputStream(), StandardCharsets.UTF_8);
+    Configuration cfg = new Configuration(Configuration.VERSION_2_3_21);
+    Template selectSparqlQuery = new Template("selectSparqlQuery", new StringReader(templateQuery),
+                                              cfg);
+
+    String compiledQuery = FreeMarkerTemplateUtils.processTemplateIntoString(selectSparqlQuery, variables);
+
+    ResponseEntity<List<Map<String, String>>> response = sparqlRestFeignClient.selectQuery(compiledQuery, project.getName());
+    return response.getBody();
+
+  }
 }
