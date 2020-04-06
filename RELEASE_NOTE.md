@@ -11,3 +11,4 @@
 * do not allow to override namespace in project
 * small fixes
 * add freemarker query template (not tested yet)
+* add construct & ask query

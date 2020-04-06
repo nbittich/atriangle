@@ -70,6 +70,18 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  public ResponseEntity<String> executeConstructSparqlQuery(String projectId, String freemarkerTemplateFileId,
+                                                            Map<String, String> variables) {
+    return ResponseEntity.ok(projectRestService.executeConstructSparqlQuery(projectId, freemarkerTemplateFileId, variables));
+  }
+
+  @Override
+  public ResponseEntity<Boolean> executeAskSparqlQuery(String projectId, String freemarkerTemplateFileId,
+                                                       Map<String, String> variables) {
+    return ResponseEntity.ok(projectRestService.executeAskSparqlQuery(projectId, freemarkerTemplateFileId, variables));
+  }
+
+  @Override
   public ResponseEntity<ProjectEvent> findByName(String name) {
     return projectRestService.findByName(name)
                              .map(ResponseEntity::ok)

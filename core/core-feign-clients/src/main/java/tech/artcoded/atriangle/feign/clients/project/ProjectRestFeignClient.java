@@ -28,20 +28,35 @@ public interface ProjectRestFeignClient {
 
 
   @PostMapping(path = "/add-file",
-              consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<ProjectEvent> addFile(@RequestPart("file") MultipartFile file,
                                        @RequestParam("projectId") String projectId);
 
   @PostMapping(path = "/add-sparql-query-template",
-              consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<ProjectEvent> addFreemarkerSparqlTemplate(@RequestPart("file") MultipartFile file,
-                                       @RequestParam("projectId") String projectId);
+                                                           @RequestParam("projectId") String projectId);
 
   @PostMapping(path = "/execute-select-sparql-query",
-              consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<List<Map<String, String>>> executeSelectSparqlQuery(@PathVariable("projectId") String projectId,
-                                                  @PathVariable("freemarkerTemplateFileId") String freemarkerTemplateFileId,
-                                                  @RequestBody Map<String,String> variables);
+                                                                     @PathVariable(
+                                                                       "freemarkerTemplateFileId") String freemarkerTemplateFileId,
+                                                                     @RequestBody Map<String, String> variables);
+
+  @PostMapping(path = "/execute-construct-sparql-query",
+               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  ResponseEntity<String> executeConstructSparqlQuery(@PathVariable("projectId") String projectId,
+                                                     @PathVariable(
+                                                       "freemarkerTemplateFileId") String freemarkerTemplateFileId,
+                                                     @RequestBody Map<String, String> variables);
+
+  @PostMapping(path = "/execute-ask-sparql-query",
+               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  ResponseEntity<Boolean> executeAskSparqlQuery(@PathVariable("projectId") String projectId,
+                                                @PathVariable(
+                                                  "freemarkerTemplateFileId") String freemarkerTemplateFileId,
+                                                @RequestBody Map<String, String> variables);
 
   @GetMapping("/{projectId}/logs")
   ResponseEntity<List<LogEvent>> getLogsForProject(@PathVariable("projectId") String projectId);
