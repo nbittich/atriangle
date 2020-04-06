@@ -12,3 +12,4 @@
 * small fixes
 * add freemarker query template (not tested yet)
 * add construct & ask query
+* refactoring construct & ask query

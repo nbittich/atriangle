@@ -247,11 +247,7 @@ public class ProjectRestService {
   }
 
   @SneakyThrows
-  public List<Map<String, String>> executeSelectSparqlQuery(String projectId, String freemarkerTemplateFileId,
-                                                            Map<String, String> variables) {
-    ProjectEvent project = findById(projectId).orElseThrow();
-
-    String compiledQuery = compileQuery(project, freemarkerTemplateFileId, variables);
+  public List<Map<String, String>> executeSelectSparqlQuery(ProjectEvent project, String compiledQuery) {
 
     ResponseEntity<List<Map<String, String>>> response = sparqlRestFeignClient.selectQuery(compiledQuery, project.getName());
 
@@ -260,11 +256,7 @@ public class ProjectRestService {
   }
 
   @SneakyThrows
-  public String executeConstructSparqlQuery(String projectId, String freemarkerTemplateFileId,
-                                            Map<String, String> variables) {
-    ProjectEvent project = findById(projectId).orElseThrow();
-
-    String compiledQuery = compileQuery(project, freemarkerTemplateFileId, variables);
+  public String executeConstructSparqlQuery(ProjectEvent project, String compiledQuery) {
 
     ResponseEntity<String> response = sparqlRestFeignClient.constructQuery(compiledQuery, project.getName());
 
@@ -273,11 +265,7 @@ public class ProjectRestService {
   }
 
   @SneakyThrows
-  public Boolean executeAskSparqlQuery(String projectId, String freemarkerTemplateFileId,
-                                       Map<String, String> variables) {
-    ProjectEvent project = findById(projectId).orElseThrow();
-
-    String compiledQuery = compileQuery(project, freemarkerTemplateFileId, variables);
+  public Boolean executeAskSparqlQuery(ProjectEvent project, String compiledQuery) {
 
     ResponseEntity<Boolean> response = sparqlRestFeignClient.askQuery(compiledQuery, project.getName());
 
@@ -286,8 +274,8 @@ public class ProjectRestService {
   }
 
   @SneakyThrows
-  private String compileQuery(ProjectEvent project, String freemarkerTemplateFileId,
-                              Map<String, String> variables) {
+  public String compileQuery(ProjectEvent project, String freemarkerTemplateFileId,
+                             Map<String, String> variables) {
 
     ResponseEntity<ByteArrayResource> freemarkerTemplate = downloadFile(project.getId(), freemarkerTemplateFileId);
     String templateQuery = IOUtils.toString(freemarkerTemplate.getBody()
@@ -298,4 +286,5 @@ public class ProjectRestService {
 
     return FreeMarkerTemplateUtils.processTemplateIntoString(selectSparqlQuery, variables);
   }
+
 }

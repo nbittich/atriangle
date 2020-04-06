@@ -50,12 +50,15 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
+
   @Override
   public ResponseEntity<ProjectEvent> addFreemarkerSparqlTemplate(MultipartFile multipartFile,
-                                              String projectId) {
+                                                                  String projectId) {
 
-    if (!FilenameUtils.getExtension(multipartFile.getOriginalFilename()).equals(".ftl")){
-      return ResponseEntity.badRequest().build();
+    if (!FilenameUtils.getExtension(multipartFile.getOriginalFilename())
+                      .equals(".ftl")) {
+      return ResponseEntity.badRequest()
+                           .build();
     }
 
     return projectRestService.addFile(projectId, multipartFile, FileEventType.FREEMARKER_TEMPLATE_FILE)
@@ -64,21 +67,33 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
-  public ResponseEntity<List<Map<String, String>>> executeSelectSparqlQuery(String projectId, String freemarkerTemplateFileId,
-                                                   Map<String, String> variables) {
-    return ResponseEntity.ok(projectRestService.executeSelectSparqlQuery(projectId, freemarkerTemplateFileId, variables));
+  public ResponseEntity<List<Map<String, String>>> executeSelectSparqlQuery(String projectId,
+                                                                            String freemarkerTemplateFileId,
+                                                                            Map<String, String> variables) {
+    ProjectEvent projectEvent = projectRestService.findById(projectId)
+                                                  .orElseThrow();
+    String query = projectRestService.compileQuery(projectEvent, freemarkerTemplateFileId, variables);
+    return ResponseEntity.ok(projectRestService.executeSelectSparqlQuery(projectEvent, query));
   }
 
   @Override
   public ResponseEntity<String> executeConstructSparqlQuery(String projectId, String freemarkerTemplateFileId,
                                                             Map<String, String> variables) {
-    return ResponseEntity.ok(projectRestService.executeConstructSparqlQuery(projectId, freemarkerTemplateFileId, variables));
+
+    ProjectEvent projectEvent = projectRestService.findById(projectId)
+                                                  .orElseThrow();
+    String query = projectRestService.compileQuery(projectEvent, freemarkerTemplateFileId, variables);
+    return ResponseEntity.ok(projectRestService.executeConstructSparqlQuery(projectEvent, query));
   }
 
   @Override
   public ResponseEntity<Boolean> executeAskSparqlQuery(String projectId, String freemarkerTemplateFileId,
                                                        Map<String, String> variables) {
-    return ResponseEntity.ok(projectRestService.executeAskSparqlQuery(projectId, freemarkerTemplateFileId, variables));
+    ProjectEvent projectEvent = projectRestService.findById(projectId)
+                                                  .orElseThrow();
+    String query = projectRestService.compileQuery(projectEvent, freemarkerTemplateFileId, variables);
+
+    return ResponseEntity.ok(projectRestService.executeAskSparqlQuery(projectEvent, query));
   }
 
   @Override
