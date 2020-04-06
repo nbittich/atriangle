@@ -14,3 +14,8 @@ spring:
   kafka:
     template:
       default-topic: event-sink-rdf
+  cache:
+    cache-names: selectSparqlQuery, constructSparqlQuery, askSparqlQuery
+    type: caffeine
+    caffeine:
+      spec: maximumSize=500,expireAfterAccess=1800s

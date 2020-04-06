@@ -13,3 +13,4 @@
 * add freemarker query template (not tested yet)
 * add construct & ask query
 * refactoring construct & ask query
+* adding a cache mechanism for sparql response

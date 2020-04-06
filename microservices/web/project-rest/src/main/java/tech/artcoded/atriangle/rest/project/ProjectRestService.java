@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -247,7 +248,9 @@ public class ProjectRestService {
   }
 
   @SneakyThrows
-  public List<Map<String, String>> executeSelectSparqlQuery(ProjectEvent project, String compiledQuery) {
+  @Cacheable(cacheNames = "selectSparqlQuery", key = "#cacheKey")
+  public List<Map<String, String>> executeSelectSparqlQuery(ProjectEvent project, String compiledQuery,
+                                                            String cacheKey) {
 
     ResponseEntity<List<Map<String, String>>> response = sparqlRestFeignClient.selectQuery(compiledQuery, project.getName());
 
@@ -256,7 +259,8 @@ public class ProjectRestService {
   }
 
   @SneakyThrows
-  public String executeConstructSparqlQuery(ProjectEvent project, String compiledQuery) {
+  @Cacheable(cacheNames = "constructSparqlQuery", key = "#cacheKey")
+  public String executeConstructSparqlQuery(ProjectEvent project, String compiledQuery, String cacheKey) {
 
     ResponseEntity<String> response = sparqlRestFeignClient.constructQuery(compiledQuery, project.getName());
 
@@ -265,7 +269,8 @@ public class ProjectRestService {
   }
 
   @SneakyThrows
-  public Boolean executeAskSparqlQuery(ProjectEvent project, String compiledQuery) {
+  @Cacheable(cacheNames = "askSparqlQuery", key = "#cacheKey")
+  public Boolean executeAskSparqlQuery(ProjectEvent project, String compiledQuery, String cacheKey) {
 
     ResponseEntity<Boolean> response = sparqlRestFeignClient.askQuery(compiledQuery, project.getName());
 

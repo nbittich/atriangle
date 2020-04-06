@@ -1,5 +1,7 @@
 package tech.artcoded.atriangle.rest.project;
 
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import io.swagger.annotations.ApiOperation;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,7 @@ import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.feign.clients.project.ProjectRestFeignClient;
 
 import javax.inject.Inject;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -73,7 +76,9 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
     ProjectEvent projectEvent = projectRestService.findById(projectId)
                                                   .orElseThrow();
     String query = projectRestService.compileQuery(projectEvent, freemarkerTemplateFileId, variables);
-    return ResponseEntity.ok(projectRestService.executeSelectSparqlQuery(projectEvent, query));
+    HashCode hashCode = Hashing.murmur3_32()
+                               .hashString(query, StandardCharsets.UTF_8);
+    return ResponseEntity.ok(projectRestService.executeSelectSparqlQuery(projectEvent, query, hashCode.toString()));
   }
 
   @Override
@@ -83,7 +88,9 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
     ProjectEvent projectEvent = projectRestService.findById(projectId)
                                                   .orElseThrow();
     String query = projectRestService.compileQuery(projectEvent, freemarkerTemplateFileId, variables);
-    return ResponseEntity.ok(projectRestService.executeConstructSparqlQuery(projectEvent, query));
+    HashCode hashCode = Hashing.murmur3_32()
+                               .hashString(query, StandardCharsets.UTF_8);
+    return ResponseEntity.ok(projectRestService.executeConstructSparqlQuery(projectEvent, query, hashCode.toString()));
   }
 
   @Override
@@ -92,8 +99,9 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
     ProjectEvent projectEvent = projectRestService.findById(projectId)
                                                   .orElseThrow();
     String query = projectRestService.compileQuery(projectEvent, freemarkerTemplateFileId, variables);
-
-    return ResponseEntity.ok(projectRestService.executeAskSparqlQuery(projectEvent, query));
+    HashCode hashCode = Hashing.murmur3_32()
+                               .hashString(query, StandardCharsets.UTF_8);
+    return ResponseEntity.ok(projectRestService.executeAskSparqlQuery(projectEvent, query, hashCode.toString()));
   }
 
   @Override
