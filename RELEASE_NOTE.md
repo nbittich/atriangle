@@ -14,3 +14,4 @@
 * add construct & ask query
 * refactoring construct & ask query
 * adding a cache mechanism for sparql response
+* replace cache key generation algorithm
