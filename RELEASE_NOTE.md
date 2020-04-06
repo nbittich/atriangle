@@ -1,19 +1,3 @@
 # Release note
 
-## 0.2.6
-* prepare deployment
-* update sparna lib
-* update sparna lib
-* fix maven central
-* fix maven central
-* sparna lib broken
-* simplify api for xls2rdf
-* do not allow to override namespace in project
-* small fixes
-* add freemarker query template (not tested yet)
-* add construct & ask query
-* refactoring construct & ask query
-* adding a cache mechanism for sparql response
-* replace cache key generation algorithm
-* bugfix blazegraph needs a servlet container
-* bugfix
+## 0.2.7
