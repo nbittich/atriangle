@@ -251,8 +251,9 @@ public class ProjectRestService {
                                                    Map<String, String> variables) {
     ProjectEvent project = findById(projectId).orElseThrow();
     ResponseEntity<ByteArrayResource> freemarkerTemplate = downloadFile(projectId, freemarkerTemplateFileId);
-    String templateQuery = IOUtils.toString(freemarkerTemplate.getBody().getInputStream(), StandardCharsets.UTF_8);
-    Configuration cfg = new Configuration(Configuration.VERSION_2_3_21);
+    String templateQuery = IOUtils.toString(freemarkerTemplate.getBody()
+                                                              .getInputStream(), StandardCharsets.UTF_8);
+    Configuration cfg = new Configuration(Configuration.VERSION_2_3_30);
     Template selectSparqlQuery = new Template("selectSparqlQuery", new StringReader(templateQuery),
                                               cfg);
 
