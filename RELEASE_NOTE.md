@@ -16,3 +16,4 @@
 * adding a cache mechanism for sparql response
 * replace cache key generation algorithm
 * bugfix blazegraph needs a servlet container
+* bugfix
