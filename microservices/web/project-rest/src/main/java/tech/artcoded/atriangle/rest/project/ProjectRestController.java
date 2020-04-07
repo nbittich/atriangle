@@ -9,6 +9,7 @@ import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
+import tech.artcoded.atriangle.api.FileHelper;
 import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
@@ -18,6 +19,7 @@ import tech.artcoded.atriangle.feign.clients.project.ProjectRestFeignClient;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @CrossOriginRestController
@@ -56,8 +58,9 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   public ResponseEntity<ProjectEvent> addFreemarkerSparqlTemplate(MultipartFile multipartFile,
                                                                   String projectId) {
 
-    if (!FilenameUtils.getExtension(multipartFile.getOriginalFilename())
-                      .equals(".ftl")) {
+    String extension = FileHelper.getExtension(multipartFile.getOriginalFilename()).orElse("N/A");
+    if (!extension.equals("ftl")) {
+      log.info("file extension not valid: {}, file name {}, original file name {}", extension, multipartFile.getName(), multipartFile.getOriginalFilename());
       return ResponseEntity.badRequest()
                            .build();
     }

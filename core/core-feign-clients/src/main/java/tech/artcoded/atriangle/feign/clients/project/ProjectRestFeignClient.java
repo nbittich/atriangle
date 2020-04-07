@@ -38,24 +38,21 @@ public interface ProjectRestFeignClient {
                                                            @RequestParam("projectId") String projectId);
 
   @PostMapping(path = "/execute-select-sparql-query",
-               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  ResponseEntity<List<Map<String, String>>> executeSelectSparqlQuery(@PathVariable("projectId") String projectId,
-                                                                     @PathVariable(
-                                                                       "freemarkerTemplateFileId") String freemarkerTemplateFileId,
+               consumes = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<List<Map<String, String>>> executeSelectSparqlQuery(@RequestParam("projectId") String projectId,
+                                                                     @RequestParam("freemarkerTemplateFileId") String freemarkerTemplateFileId,
                                                                      @RequestBody Map<String, String> variables);
 
   @PostMapping(path = "/execute-construct-sparql-query",
-               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  ResponseEntity<String> executeConstructSparqlQuery(@PathVariable("projectId") String projectId,
-                                                     @PathVariable(
-                                                       "freemarkerTemplateFileId") String freemarkerTemplateFileId,
+               consumes = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<String> executeConstructSparqlQuery(@RequestParam("projectId") String projectId,
+                                                     @RequestParam("freemarkerTemplateFileId") String freemarkerTemplateFileId,
                                                      @RequestBody Map<String, String> variables);
 
   @PostMapping(path = "/execute-ask-sparql-query",
-               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  ResponseEntity<Boolean> executeAskSparqlQuery(@PathVariable("projectId") String projectId,
-                                                @PathVariable(
-                                                  "freemarkerTemplateFileId") String freemarkerTemplateFileId,
+               consumes = MediaType.APPLICATION_JSON_VALUE)
+  ResponseEntity<Boolean> executeAskSparqlQuery(@RequestParam("projectId") String projectId,
+                                                @RequestParam("freemarkerTemplateFileId") String freemarkerTemplateFileId,
                                                 @RequestBody Map<String, String> variables);
 
   @GetMapping("/{projectId}/logs")
