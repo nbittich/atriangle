@@ -16,7 +16,7 @@ import javax.inject.Named;
 @Slf4j
 public class SparqlConfig {
 
-  @Value("${sparql.endpoint.url}")
+  @Value("${sparql.endpoint.proxy.url}")
   private String sparqlEndpointUrl;
 
   @Inject

@@ -68,7 +68,10 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
 
     simpleSparqlService.load(namespace, rdf.getBody()
                                            .getInputStream(), RDFFormat.forFileName(rdfFile.getName()));
-    return ResponseEntity.ok("rdf loaded");
+
+    String jsonLd = ModelConverter.inputStreamToLang(rdfFile.getName(), rdf.getBody()::getInputStream, RDFFormat.JSONLD);
+
+    return ResponseEntity.ok(jsonLd);
   }
 
   @Override

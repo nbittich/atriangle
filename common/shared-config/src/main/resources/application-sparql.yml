@@ -1,5 +1,4 @@
 sparql:
   endpoint:
-    url: ${SPARQL_ENDPOINT_URL:http://192.168.99.102:8889/bigdata}
     proxy:
       url: ${SPARQL_ENDPOINT_PROXY_URL:http://192.168.99.102:8889/bigdata}

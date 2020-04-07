@@ -33,9 +33,6 @@ zuul:
   host:
     connect-timeout-millis: 45000
     socket-timeout-millis: 45000
-  ribbon:
-    eager-load:
-      enabled: on
 hystrix.command.default.execution.timeout.enabled: false
 ribbon:
   ConnectTimeout: 45000

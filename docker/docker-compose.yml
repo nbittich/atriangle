@@ -127,8 +127,8 @@ services:
           - rdfsink
     image: atriangle/rdf-sink
     environment:
-      SPARQL_ENDPOINT_URL: "http://blazegraph:8080/bigdata"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
+      SPARQL_ENDPOINT_URL: "http://restgateway:8088/api/sparql"
       SHACL_ENDPOINT_URL: "http://restgateway:8088/api/shacl"
       FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
       APPLICATION_BASE_PATH: "/usr/app/rdf-sink"
@@ -165,7 +165,7 @@ services:
           - sparqlrest
     image: atriangle/sparql-rest
     environment:
-      SPARQL_ENDPOINT_URL: "http://blazegraph:8080/bigdata"
+      SPARQL_ENDPOINT_PROXY_URL: "http://blazegraph:8080/bigdata"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
       APPLICATION_BASE_PATH: "/usr/app/sparql"

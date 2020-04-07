@@ -6,7 +6,7 @@ kafka:
     rdf-sink-topic-out: event-sink-rdf-out
 spring:
   profiles:
-    include: kafka, sparql, feign, logging
+    include: kafka, feign, logging
 
 application:
   basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/rdf-sink}
