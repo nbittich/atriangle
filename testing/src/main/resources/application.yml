@@ -1,0 +1,10 @@
+server:
+  port: 9999
+spring:
+  application:
+    name: TestingApplication
+  profiles:
+    include: rest
+
+backend:
+  url: http://atriangle:8088/api

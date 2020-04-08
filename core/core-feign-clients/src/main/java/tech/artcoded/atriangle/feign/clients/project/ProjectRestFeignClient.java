@@ -88,6 +88,6 @@ public interface ProjectRestFeignClient {
     @RequestParam("xlsFileEventId") String xlsFileEventId
   );
 
-  @PostMapping("/{projectId}/sink")
+  @PostMapping("/sink")
   ResponseEntity<Void> sink(@RequestBody SinkRequest sinkRequest);
 }
