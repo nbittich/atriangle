@@ -1,5 +1,3 @@
 # Release note
 
-## 0.2.8
-* init testing project
-* cleanup
+## 0.2.9
