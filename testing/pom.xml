@@ -10,9 +10,6 @@
   <name>A Triangle - TESTING</name>
 
   <artifactId>atriangle-testing</artifactId>
-  <properties>
-  </properties>
-
 
   <dependencies>
     <dependency>
