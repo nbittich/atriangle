@@ -2,17 +2,14 @@ package tech.artcoded.atriangle.testing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Preconditions;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.core.io.Resource;
-import org.springframework.http.*;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import tech.artcoded.atriangle.api.CheckedThreadHelper;
 import tech.artcoded.atriangle.api.dto.FileEvent;
@@ -30,8 +27,7 @@ import static java.util.Objects.requireNonNull;
 public class BasicScenario implements CommandLineRunner {
   private final RestTemplate restTemplate;
   private final ObjectMapper mapper;
-
-
+  private final TestingUtils testingUtils;
   @Value("${backend.url}")
   private String backendUrl;
 
@@ -40,9 +36,10 @@ public class BasicScenario implements CommandLineRunner {
 
   @Inject
   public BasicScenario(RestTemplate restTemplate,
-                       ObjectMapper mapper) {
+                       ObjectMapper mapper, TestingUtils testingUtils) {
     this.restTemplate = restTemplate;
     this.mapper = mapper;
+    this.testingUtils = testingUtils;
   }
 
   @Override
@@ -50,11 +47,11 @@ public class BasicScenario implements CommandLineRunner {
     // create project
     log.info("project creation");
     ProjectEvent projectEvent = restTemplate.postForObject(backendUrl + "/project?name=" + RandomStringUtils.randomAlphabetic(7)
-                                                                                                            .toLowerCase(), requestWithEmptyBody(), ProjectEvent.class);
+                                                                                                            .toLowerCase(), testingUtils.requestWithEmptyBody(), ProjectEvent.class);
     log.info("project with id {} and name {} created", projectEvent.getId(), projectEvent.getName());
     // add rdf file
     log.info("add rdf example");
-    ResponseEntity<ProjectEvent> response = postFileToProject(projectEvent.getId(), backendUrl + "/project/add-file", rdfExampleFile.getFilename(), IOUtils.toByteArray(rdfExampleFile.getInputStream()));
+    ResponseEntity<ProjectEvent> response = testingUtils.postFileToProject(projectEvent.getId(), backendUrl + "/project/add-file", rdfExampleFile.getFilename(), IOUtils.toByteArray(rdfExampleFile.getInputStream()));
     log.info("response status {}", response.getStatusCodeValue());
     projectEvent = response.getBody();
     Preconditions.checkArgument(projectEvent.getFileEvents()
@@ -68,7 +65,7 @@ public class BasicScenario implements CommandLineRunner {
                                          .projectId(projectEvent.getId())
                                          .rdfFileEventId(fileEvent.getId())
                                          .build();
-    restTemplate.postForLocation(backendUrl + "/project/sink", requestWithBody(sinkRequest));
+    restTemplate.postForLocation(backendUrl + "/project/sink", testingUtils.requestWithBody(sinkRequest));
     // log output
     CheckedThreadHelper.FIVE_SECONDS.sleep();
     log.info("check logs");
@@ -79,43 +76,4 @@ public class BasicScenario implements CommandLineRunner {
     System.exit(0);
   }
 
-  public HttpEntity<String> requestWithEmptyBody() {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    return new HttpEntity<>(headers);
-  }
-
-  @SneakyThrows
-  public HttpEntity<String> requestWithBody(Object requestBody) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.APPLICATION_JSON);
-    return new HttpEntity<>(mapper.writeValueAsString(requestBody), headers);
-  }
-
-  public ResponseEntity<ProjectEvent> postFileToProject(String projectId, String url, String filename, byte[] bytes) {
-    HttpHeaders headers = new HttpHeaders();
-    headers.setContentType(MediaType.MULTIPART_FORM_DATA);
-
-    // This nested HttpEntiy is important to create the correct
-    // Content-Disposition entry with metadata "name" and "filename"
-    MultiValueMap<String, String> fileMap = new LinkedMultiValueMap<>();
-    ContentDisposition contentDisposition = ContentDisposition
-      .builder("form-data")
-      .name("file")
-      .filename(filename)
-      .build();
-    fileMap.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
-    HttpEntity<byte[]> fileEntity = new HttpEntity<>(bytes, fileMap);
-
-    MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-    body.add("file", fileEntity);
-    body.add("projectId", projectId);
-
-    HttpEntity<MultiValueMap<String, Object>> requestEntity =
-      new HttpEntity<>(body, headers);
-    return restTemplate.exchange(url,
-                                 HttpMethod.POST,
-                                 requestEntity,
-                                 ProjectEvent.class);
-  }
 }

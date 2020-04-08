@@ -13,6 +13,11 @@ public class TestMain {
     return new RestTemplate();
   }
 
+  @Bean
+  public TestingUtils testingUtils() {
+    return this::restTemplate;
+  }
+
 
   public static void main(String[] args) {
     SpringApplication.run(TestMain.class);
