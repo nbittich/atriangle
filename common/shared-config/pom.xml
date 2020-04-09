@@ -3,7 +3,7 @@
   <parent>
     <artifactId>atriangle-common</artifactId>
     <groupId>tech.artcoded</groupId>
-    <version>0.2.10</version>
+    <version>0.3.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
