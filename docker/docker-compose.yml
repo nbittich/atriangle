@@ -128,9 +128,9 @@ services:
     image: atriangle/rdf-sink
     environment:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
-      SPARQL_ENDPOINT_URL: "http://restgateway:8088/api/sparql"
-      SHACL_ENDPOINT_URL: "http://restgateway:8088/api/shacl"
-      FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
+      SPARQL_ENDPOINT_URL: "http://sparqlrest"
+      SHACL_ENDPOINT_URL: "http://shaclrest"
+      FILE_ENDPOINT_URL: "http://uploadrest"
       APPLICATION_BASE_PATH: "/usr/app/rdf-sink"
     volumes:
       - rdf-sink-storage:/user/app
@@ -147,7 +147,7 @@ services:
     environment:
       MONGO_DB_HOST: "mongo"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
-      FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
+      FILE_ENDPOINT_URL: "http://uploadrest"
       APPLICATION_BASE_PATH: "/usr/app/mongodb-sink"
     volumes:
       - mongodb-sink-storage:/user/app
@@ -172,7 +172,7 @@ services:
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
       APPLICATION_BASE_PATH: "/usr/app/sparql"
-      FILE_ENDPOINT_URL: "http://restgateway:8088/api/upload"
+      FILE_ENDPOINT_URL: "http://uploadrest"
     volumes:
       - sparql-rest-storage:/user/app
   atriangleuploadrest:

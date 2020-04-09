@@ -34,8 +34,10 @@ echo "docker logs -f docker_atriangleshaclrest_1"
 echo "docker logs -f docker_atrianglesparqlrest_1"
 echo "docker logs -f docker_atrianglerestxls2rdf_1"
 
-echo "PORTAINER: http://localhost:9000"
-echo "APP: http://localhost:8088/api/project/swagger-ui.html"
+echo "NOTE: make sure that you are mapping hostname atriangle"
+
+echo "PORTAINER: http://atriangle:9000"
+echo "APP: http://atriangle:8088/api/project/swagger-ui.html"
 
 
 
