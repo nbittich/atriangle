@@ -5,7 +5,8 @@ spring:
     multipart:
       max-request-size: ${MAX_REQUEST_SIZE:500MB}
       max-file-size:  ${MAX_FILE_SIZE:500MB}
-
+server:
+  port: ${SERVER_PORT:0}
 management:
   health:
     mail:

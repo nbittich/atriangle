@@ -4,8 +4,6 @@ kafka:
     rdf-sink-topic-out: event-sink-rdf-out
 application:
   basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/project-rest}
-server:
-  port: 0
 spring:
   application:
     name: ProjectRestPublicEndpoint

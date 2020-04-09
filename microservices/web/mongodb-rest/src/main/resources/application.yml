@@ -1,7 +1,5 @@
 application:
   basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/mongodb-rest}
-server:
-  port: 0
 spring:
   application:
     name: MongoDbRestPublicEndpoint

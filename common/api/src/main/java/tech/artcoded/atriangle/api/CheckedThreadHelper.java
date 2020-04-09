@@ -6,6 +6,8 @@ import lombok.SneakyThrows;
 import java.util.concurrent.TimeUnit;
 
 public enum CheckedThreadHelper {
+  ONE_SECONDS(1, TimeUnit.SECONDS),
+  TWO_SECONDS(2, TimeUnit.SECONDS),
   FIVE_SECONDS(5, TimeUnit.SECONDS),
   THIRTY_SECONDS(30, TimeUnit.SECONDS),
   ONE_MIN(1, TimeUnit.MINUTES),

@@ -10,6 +10,15 @@ then
   exit -1;
 fi
 
+echo "install application"
+bash install.sh
+
+echo "wait till app is running"
+sleep 90
+
+echo "running test"
+mvn clean install -Dtestsuite=integration
+
 echo "release" $releaseVersion ", next" $nextVersion
 mvn release:clean
 

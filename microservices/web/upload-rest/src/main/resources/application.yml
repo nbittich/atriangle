@@ -1,8 +1,6 @@
 application:
   basePath: ${UPLOAD_BASE_PATH:${java.io.tmpdir}/upload-rest}
   filePath: ${application.basePath}/uploads
-server:
-  port: 0
 spring:
   application:
     name: FileRestPublicEndpoint
