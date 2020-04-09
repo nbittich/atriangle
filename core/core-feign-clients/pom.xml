@@ -3,7 +3,7 @@
   <parent>
     <artifactId>atriangle-core</artifactId>
     <groupId>tech.artcoded</groupId>
-    <version>0.3.0-SNAPSHOT</version>
+    <version>0.2.10</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <name>A Triangle - CORE-FEIGN-CLIENTS</name>
