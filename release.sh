@@ -13,11 +13,11 @@ fi
 echo "install application"
 bash install.sh
 
-echo "wait till app is running"
+echo "wait till app is running (90s)"
 sleep 90
 
 echo "running test"
-mvn clean install -Dtestsuite=integration
+mvn clean install -DtestSuite=integration
 
 echo "release" $releaseVersion ", next" $nextVersion
 mvn release:clean

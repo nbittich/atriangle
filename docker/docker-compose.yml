@@ -164,7 +164,10 @@ services:
         aliases:
           - sparqlrest
     image: atriangle/sparql-rest
+    ports:
+      - 80
     environment:
+      SERVER_PORT: "80"
       SPARQL_ENDPOINT_PROXY_URL: "http://blazegraph:8080/bigdata"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
@@ -183,7 +186,10 @@ services:
         aliases:
           - uploadrest
     image: atriangle/upload-rest
+    ports:
+      - 80
     environment:
+      SERVER_PORT: "80"
       ELASTICSEARCH_HOSTNAME: "elasticsearch"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
@@ -202,7 +208,10 @@ services:
         aliases:
           - projectrest
     image: atriangle/project-rest
+    ports:
+      - 80
     environment:
+      SERVER_PORT: "80"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
       APPLICATION_BASE_PATH: "/usr/app/project"
@@ -219,7 +228,10 @@ services:
         aliases:
           - shaclrest
     image: atriangle/shacl-rest
+    ports:
+      - 80
     environment:
+      SERVER_PORT: "80"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
       APPLICATION_BASE_PATH: "/usr/app/shacl"
@@ -236,7 +248,10 @@ services:
         aliases:
           - elasticrest
     image: atriangle/elastic-rest
+    ports:
+      - 80
     environment:
+      SERVER_PORT: "80"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
       ELASTICSEARCH_HOSTNAME: "elasticsearch"
@@ -254,13 +269,34 @@ services:
         aliases:
           - mongodbrest
     image: atriangle/mongodb-rest
+    ports:
+      - 80
     environment:
+      SERVER_PORT: "80"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
       ZOOKEEPER_URL: "zookeeper:2181"
       MONGO_DB_HOST: "mongo"
       APPLICATION_BASE_PATH: "/usr/app/mongodb"
     volumes:
       - mongodb-rest-storage:/user/app
+  atrianglerestxls2rdf:
+    restart: always
+    depends_on:
+      - kafkaserver
+    networks:
+      atriangle:
+        aliases:
+          - xls2rdf
+    image: atriangle/xls2rdf
+    ports:
+      - 80
+    environment:
+      SERVER_PORT: "80"
+      KAFKA_BOOTSTRAP_SERVER: "kafka"
+      ZOOKEEPER_URL: "zookeeper:2181"
+      APPLICATION_BASE_PATH: "/usr/app/xls2rdf"
+    volumes:
+      - xls2rdf-storage:/user/app
   atrianglerestgateway:
     restart: always
     depends_on:
@@ -275,6 +311,7 @@ services:
     ports:
       - "8088:8088"
     environment:
+      SERVER_PORT: "8088"
       ELASTICSEARCH_HOSTNAME: "elasticsearch"
       SPARQL_ENDPOINT_PROXY_URL: "http://blazegraph:8080/bigdata"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
@@ -283,21 +320,6 @@ services:
       APPLICATION_BASE_PATH: "/usr/app/rest-gateway"
     volumes:
       - rest-storage:/user/app
-  atrianglerestxls2rdf:
-    restart: always
-    depends_on:
-      - kafkaserver
-    networks:
-      atriangle:
-        aliases:
-          - xls2rdf
-    image: atriangle/xls2rdf
-    environment:
-      KAFKA_BOOTSTRAP_SERVER: "kafka"
-      ZOOKEEPER_URL: "zookeeper:2181"
-      APPLICATION_BASE_PATH: "/usr/app/xls2rdf"
-    volumes:
-      - xls2rdf-storage:/user/app
 
 volumes:
   rdf-sink-storage:

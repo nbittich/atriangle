@@ -27,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(classes = TestConfig.class)
 @Slf4j
-@EnabledIfSystemProperty(named = "testsuite", matches = "integration")
+@EnabledIfSystemProperty(named = "testSuite", matches = "integration")
 public class ProjectTest {
 
   @Inject
