@@ -1,5 +1,6 @@
 package tech.artcoded.atriangle.rdfsink;
 
+import feign.FeignException;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -60,6 +61,7 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
     this.loggerAction = loggerAction;
   }
 
+
   @Override
   public List<KafkaMessage<String, String>> consume(ConsumerRecord<String, String> record) throws Exception {
     String restEvent = record.value();
@@ -68,19 +70,11 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
     RestEvent event = kafkaEventHelper.parseEvent(kafkaEvent, RestEvent.class);
     FileEvent inputToSinkFileEvent = event.getInputToSink();
 
-    if (event.getShaclModel() != null) {
-      log.info("shacl validation");
-      ResponseEntity<String> validate = shaclRestFeignClient.validate(kafkaEvent.getCorrelationId(), event.getShaclModel()
-                                                                                                          .getId(), inputToSinkFileEvent.getId());
-      if (validate.getStatusCodeValue() != HttpStatus.OK.value() || StringUtils.isNotEmpty(validate.getBody())) {
-        log.error("validation failed {}", validate.getBody());
-        loggerAction.error(kafkaEvent::getCorrelationId, String.format("validation shacl failed for event %s, result %s", kafkaEvent
-          .getId(), validate.getBody()));
-        throw new RuntimeException();
-      }
-    }
+    boolean shaclValidationResult = shaclValidation(kafkaEvent, event, inputToSinkFileEvent);
 
-    loggerAction.info(kafkaEvent::getCorrelationId, "shacl validation ok");
+    if (!shaclValidationResult) {
+      return List.of();
+    }
 
     log.info("saving to triplestore");
 
@@ -97,7 +91,8 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
                                                 .contentType(MediaType.APPLICATION_JSON_VALUE)
                                                 .name(outputFilename)
                                                 .originalFilename(outputFilename)
-                                                .bytes(jsonLdResponse.getBody().getBytes())
+                                                .bytes(jsonLdResponse.getBody()
+                                                                     .getBytes())
                                                 .build();
 
     ResponseEntity<FileEvent> derivatedFile = fileRestFeignClient.upload(rdfOutput, FileEventType.RDF_TO_JSON_LD_OUTPUT, kafkaEvent.getCorrelationId());
@@ -110,5 +105,33 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
 
   }
 
+  private boolean shaclValidation(KafkaEvent kafkaEvent, RestEvent event, FileEvent inputToSinkFileEvent) {
+    if (event.getShaclModel() != null) {
+      log.info("shacl validation");
+      try {
+        ResponseEntity<String> validate = shaclRestFeignClient.validate(kafkaEvent.getCorrelationId(), event.getShaclModel()
+                                                                                                            .getId(), inputToSinkFileEvent.getId());
+
+        if (validate.getStatusCodeValue() != HttpStatus.OK.value() || StringUtils.isNotEmpty(validate.getBody())) {
+          loggerAction.error(kafkaEvent::getCorrelationId, String.format("validation shacl failed for correlationId %s, result %s", kafkaEvent
+            .getCorrelationId(), validate.getBody()));
+          return false;
+        }
+
+        loggerAction.info(kafkaEvent::getCorrelationId, "shacl validation ok");
+      }
+      catch (FeignException exception) {
+        exception.responseBody()
+                 .ifPresent(body -> {
+                   String responseBodyAsString = new String(body.array());
+                   loggerAction.error(kafkaEvent::getCorrelationId, responseBodyAsString);
+                 });
+        return false;
+      }
+
+    }
+    return true;
+
+  }
 
 }

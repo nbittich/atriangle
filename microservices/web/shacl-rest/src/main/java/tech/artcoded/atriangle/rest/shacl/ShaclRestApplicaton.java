@@ -8,9 +8,10 @@ import org.springframework.context.annotation.Import;
 import tech.artcoded.atriangle.core.kafka.KafkaConfig;
 import tech.artcoded.atriangle.core.rest.config.SwaggerConfig;
 import tech.artcoded.atriangle.feign.clients.file.DiscoverableFileRestFeignClient;
+import tech.artcoded.atriangle.feign.clients.util.FeignExceptionHandler;
 
 @SpringBootApplication
-@Import({KafkaConfig.class, SwaggerConfig.class})
+@Import({KafkaConfig.class, FeignExceptionHandler.class, SwaggerConfig.class})
 @EnableFeignClients(clients = {DiscoverableFileRestFeignClient.class})
 @EnableDiscoveryClient
 public class ShaclRestApplicaton {

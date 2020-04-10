@@ -12,10 +12,11 @@ import tech.artcoded.atriangle.feign.clients.elastic.DiscoverableElasticRestFeig
 import tech.artcoded.atriangle.feign.clients.file.DiscoverableFileRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.shacl.DiscoverableShaclRestFeignClient;
 import tech.artcoded.atriangle.feign.clients.sparql.DiscoverableSparqlRestFeignClient;
+import tech.artcoded.atriangle.feign.clients.util.FeignExceptionHandler;
 import tech.artcoded.atriangle.feign.clients.xls2rdf.DiscoverableXls2RdfRestFeignClient;
 
 @SpringBootApplication
-@Import({KafkaConfig.class, SwaggerConfig.class})
+@Import({KafkaConfig.class, FeignExceptionHandler.class, SwaggerConfig.class})
 @EnableDiscoveryClient
 @EnableFeignClients(clients = {
   DiscoverableElasticRestFeignClient.class,

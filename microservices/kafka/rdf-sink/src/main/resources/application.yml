@@ -7,6 +7,8 @@ kafka:
 spring:
   profiles:
     include: kafka, feign, logging
+  main:
+    web-application-type: none
 
 application:
   basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/rdf-sink}

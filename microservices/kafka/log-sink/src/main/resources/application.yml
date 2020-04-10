@@ -2,6 +2,8 @@ kafka:
   listener:
     topics: event-sink-log
 spring:
+  main:
+    web-application-type: none
   profiles:
     include: kafka, elasticsearch, logging
 application:

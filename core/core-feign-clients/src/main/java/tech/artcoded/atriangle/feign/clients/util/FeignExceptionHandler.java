@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.rest.project;
+package tech.artcoded.atriangle.feign.clients.util;
 
 import feign.FeignException;
 import lombok.SneakyThrows;
@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import javax.servlet.http.HttpServletResponse;
 
-/*
- * todo probably could go to rest-gateway to make it global, to be tested
- */
 @RestControllerAdvice
 public class FeignExceptionHandler {
 

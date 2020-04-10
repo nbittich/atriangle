@@ -46,7 +46,8 @@
     </dependency>
     <dependency>
       <groupId>tech.artcoded</groupId>
-      <artifactId>atriangle-shared-config</artifactId>
+      <artifactId>atriangle-core-sparql</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>tech.artcoded</groupId>

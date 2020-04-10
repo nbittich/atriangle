@@ -5,6 +5,8 @@ kafka:
     mongodb-sink-topic-out: event-sink-mongodb-out
 
 spring:
+  main:
+    web-application-type: none
   application:
     name: RDF_COLLECTION
   profiles:

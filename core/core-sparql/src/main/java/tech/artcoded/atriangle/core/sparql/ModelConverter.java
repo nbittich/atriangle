@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openrdf.model.Model;
 import org.openrdf.model.impl.TreeModel;
+import org.openrdf.model.util.ModelUtil;
 import org.openrdf.rio.*;
 import org.openrdf.rio.helpers.JSONLDMode;
 import org.openrdf.rio.helpers.JSONLDSettings;
@@ -32,6 +33,10 @@ public interface ModelConverter {
   static Model toModel(String value, RDFFormat lang) {
     if (StringUtils.isEmpty(value)) throw new RuntimeException("model cannot be empty");
     return toModel(() -> IOUtils.toInputStream(value, StandardCharsets.UTF_8), lang);
+  }
+
+  static boolean equals(Model firstModel, Model secondModel) {
+    return ModelUtil.equals(firstModel, secondModel);
   }
 
   @SneakyThrows
