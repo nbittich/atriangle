@@ -1,8 +1,6 @@
 kafka:
   listener:
     topics: event-sink-mongodb
-  dispatcher:
-    mongodb-sink-topic-out: event-sink-mongodb-out
 
 spring:
   main:

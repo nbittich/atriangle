@@ -33,13 +33,9 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
   private final KafkaEventHelper kafkaEventHelper;
   private final LoggerAction loggerAction;
 
-  @Value("${kafka.dispatcher.mongodb-sink-topic-out}")
-  private String outTopic;
 
   @Getter
   private final KafkaTemplate<String, String> kafkaTemplate;
-  private final ObjectMapperWrapper mapperWrapper;
-  private final BuildProperties buildProperties;
 
 
   @Inject
@@ -47,16 +43,12 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
                              FileRestFeignClient fileRestFeignClient,
                              KafkaEventHelper kafkaEventHelper,
                              LoggerAction loggerAction,
-                             KafkaTemplate<String, String> kafkaTemplate,
-                             ObjectMapperWrapper mapperWrapper,
-                             BuildProperties buildProperties) {
+                             KafkaTemplate<String, String> kafkaTemplate) {
     this.mongoTemplate = mongoTemplate;
     this.fileRestFeignClient = fileRestFeignClient;
     this.kafkaEventHelper = kafkaEventHelper;
     this.loggerAction = loggerAction;
     this.kafkaTemplate = kafkaTemplate;
-    this.mapperWrapper = mapperWrapper;
-    this.buildProperties = buildProperties;
   }
 
 
