@@ -23,8 +23,6 @@ services:
       atriangle:
         aliases:
           - blazegraph
-    ports:
-      - 8080
   atrianglemongo:
     image: mongo
     restart: always
@@ -37,13 +35,9 @@ services:
       atriangle:
         aliases:
           - mongo
-    ports:
-      - 27017
   atrianglemongoexpress:
     image: mongo-express
     restart: always
-    ports:
-      - 8081
     networks:
       atriangle:
         aliases:
@@ -66,14 +60,9 @@ services:
     environment:
       - "ES_JAVA_OPTS=-Xms3072m -Xmx4196m"
       - "discovery.type=single-node"
-    ports:
-      - "9200"
-      - "9300"
   atrianglezookeeper:
     restart: always
     image: zookeeper
-    ports:
-      - "2181"
     networks:
       atriangle:
         aliases:
@@ -83,9 +72,6 @@ services:
     build: kafka-docker/.
     depends_on:
       - atrianglezookeeper
-    ports:
-      - "9092"
-      - "9093"
     networks:
       atriangle:
         aliases:
@@ -164,8 +150,6 @@ services:
         aliases:
           - sparqlrest
     image: atriangle/sparql-rest
-    ports:
-      - 80
     environment:
       SERVER_PORT: "80"
       SPARQL_ENDPOINT_PROXY_URL: "http://blazegraph:8080/bigdata"
@@ -186,8 +170,6 @@ services:
         aliases:
           - uploadrest
     image: atriangle/upload-rest
-    ports:
-      - 80
     environment:
       SERVER_PORT: "80"
       ELASTICSEARCH_HOSTNAME: "elasticsearch"
@@ -208,8 +190,6 @@ services:
         aliases:
           - projectrest
     image: atriangle/project-rest
-    ports:
-      - 80
     environment:
       SERVER_PORT: "80"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
@@ -228,8 +208,6 @@ services:
         aliases:
           - shaclrest
     image: atriangle/shacl-rest
-    ports:
-      - 80
     environment:
       SERVER_PORT: "80"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
@@ -248,8 +226,6 @@ services:
         aliases:
           - elasticrest
     image: atriangle/elastic-rest
-    ports:
-      - 80
     environment:
       SERVER_PORT: "80"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
@@ -269,8 +245,6 @@ services:
         aliases:
           - mongodbrest
     image: atriangle/mongodb-rest
-    ports:
-      - 80
     environment:
       SERVER_PORT: "80"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
@@ -288,8 +262,6 @@ services:
         aliases:
           - xls2rdf
     image: atriangle/xls2rdf
-    ports:
-      - 80
     environment:
       SERVER_PORT: "80"
       KAFKA_BOOTSTRAP_SERVER: "kafka"
