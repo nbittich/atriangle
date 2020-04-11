@@ -2,12 +2,17 @@ package tech.artcoded.atriangle.testing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
+import org.apache.commons.io.IOUtils;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import tech.artcoded.atriangle.api.dto.ProjectEvent;
+import tech.artcoded.atriangle.core.rest.util.RestUtil;
+
+import static java.util.Objects.requireNonNull;
 
 public interface TestingUtils {
   ObjectMapper MAPPER = new ObjectMapper();
@@ -18,6 +23,18 @@ public interface TestingUtils {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.APPLICATION_JSON);
     return new HttpEntity<>(headers);
+  }
+
+  default ResponseEntity<ByteArrayResource> downloadFile(String url) {
+    return restTemplate().execute(url, HttpMethod.GET, null, clientHttpResponse -> {
+      String filename = clientHttpResponse.getHeaders()
+                                          .getContentDisposition()
+                                          .getFilename();
+      String contentType = requireNonNull(clientHttpResponse.getHeaders()
+                                                            .getContentType())
+        .toString();
+      return RestUtil.transformToByteArrayResource(filename, contentType, IOUtils.toByteArray(clientHttpResponse.getBody()));
+    });
   }
 
   @SneakyThrows

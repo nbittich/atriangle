@@ -32,8 +32,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-web</artifactId>
+      <groupId>tech.artcoded</groupId>
+      <artifactId>atriangle-core-rest</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>

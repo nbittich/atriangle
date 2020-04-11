@@ -2,6 +2,7 @@ package tech.artcoded.atriangle.testing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.openrdf.model.Model;
 import org.openrdf.rio.RDFFormat;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -28,6 +30,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.junit.jupiter.api.Assertions.*;
@@ -50,8 +53,12 @@ public class ProjectTest {
 
   @Value("classpath:rdf-example.rdf")
   private Resource rdfExampleFile;
+
   @Value("classpath:excel2skos-exemple-1.xlsx")
   private Resource xlsSkosExampleFile;
+
+  @Value("classpath:expected-output-skos-conversion.ttl")
+  private Resource expectedOutputSkosConversion;
 
   @Value("classpath:shacl-shapes-example.ttl")
   private Resource shaclShapesExampleFile;
@@ -92,9 +99,23 @@ public class ProjectTest {
                                                                                      .filter(file -> FileEventType.SKOS_PLAY_CONVERTER_OUTPUT.equals(file.getEventType()))
                                                                                      .findFirst();
     assertTrue(optionalSkosConvertedFile.isPresent());
+    Model expectedModel = ModelConverter.toModel(IOUtils.toString(expectedOutputSkosConversion.getInputStream(), UTF_8), RDFFormat.TURTLE);
     FileEvent skosOutput = optionalSkosConvertedFile.get();
+    ResponseEntity<ByteArrayResource> file = downloadFile(projectEventWithSkosFileConverted.getId(), skosOutput);
+    String modelConverted = IOUtils.toString(file.getBody()
+                                                 .getInputStream(), UTF_8);
+    assertFalse(StringUtils.isEmpty(modelConverted));
+    log.info("model converted:\n{}", modelConverted);
+    Model model = ModelConverter.toModel(modelConverted, RDFFormat.TURTLE);
+    assertTrue(ModelConverter.equals(expectedModel, model));
+  }
 
-
+  @Test
+  public void downloadFile() throws Exception {
+    String projectName = RandomStringUtils.randomAlphabetic(7);
+    ProjectEvent projectEvent = createProjectEvent(projectName);
+    FileEvent fileEvent = addFileToProject(projectEvent.getId(), rdfExampleFile);
+    downloadFile(projectEvent.getId(), fileEvent);
   }
 
   @Test
@@ -240,5 +261,20 @@ public class ProjectTest {
     assertEquals(resource.getFilename(), fileEvent.getName());
     log.info("file event: {}", fileEvent);
     return fileEvent;
+  }
+
+  private ResponseEntity<ByteArrayResource> downloadFile(String projectId, FileEvent fileEvent) {
+    String url = String.format("%s/project/%s/download-file/%s", backendUrl, projectId, fileEvent.getId());
+    log.info("url {}", url);
+    ResponseEntity<ByteArrayResource> file = testingUtils.downloadFile(url);
+    assertEquals(HttpStatus.OK, file.getStatusCode());
+    assertNotNull(file.getBody());
+    assertEquals(fileEvent.getContentType(), file.getHeaders()
+                                                 .getContentType()
+                                                 .toString());
+    assertEquals(fileEvent.getOriginalFilename(), file.getHeaders()
+                                                      .getContentDisposition()
+                                                      .getFilename());
+    return file;
   }
 }
