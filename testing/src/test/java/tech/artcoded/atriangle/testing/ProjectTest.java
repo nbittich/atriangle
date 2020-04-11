@@ -2,7 +2,6 @@ package tech.artcoded.atriangle.testing;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Test;
@@ -20,10 +19,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestTemplate;
 import tech.artcoded.atriangle.api.CheckedThreadHelper;
-import tech.artcoded.atriangle.api.dto.FileEvent;
-import tech.artcoded.atriangle.api.dto.LogEvent;
-import tech.artcoded.atriangle.api.dto.ProjectEvent;
-import tech.artcoded.atriangle.api.dto.SinkRequest;
+import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.sparql.ModelConverter;
 
 import javax.inject.Inject;
@@ -54,6 +50,8 @@ public class ProjectTest {
 
   @Value("classpath:rdf-example.rdf")
   private Resource rdfExampleFile;
+  @Value("classpath:excel2skos-exemple-1.xlsx")
+  private Resource xlsSkosExampleFile;
 
   @Value("classpath:shacl-shapes-example.ttl")
   private Resource shaclShapesExampleFile;
@@ -78,6 +76,24 @@ public class ProjectTest {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
     addFileToProject(projectEvent.getId(), rdfExampleFile);
+
+  }
+
+  @Test
+  public void xls2rdfTransformationTest() throws Exception {
+    String projectName = RandomStringUtils.randomAlphabetic(7);
+    ProjectEvent projectEvent = createProjectEvent(projectName);
+    FileEvent xlsFileEvent = addFileToProject(projectEvent.getId(), xlsSkosExampleFile);
+    ProjectEvent projectEventWithSkosFileConverted = restTemplate.postForObject(backendUrl + String.format("/project/conversion/skos?projectId=%s&xlsFileEventId=%s", projectEvent.getId(), xlsFileEvent.getId()),
+                                                                                testingUtils.requestWithEmptyBody(), ProjectEvent.class);
+    log.info("project {}", projectEventWithSkosFileConverted);
+    Optional<FileEvent> optionalSkosConvertedFile = projectEventWithSkosFileConverted.getFileEvents()
+                                                                                     .stream()
+                                                                                     .filter(file -> FileEventType.SKOS_PLAY_CONVERTER_OUTPUT.equals(file.getEventType()))
+                                                                                     .findFirst();
+    assertTrue(optionalSkosConvertedFile.isPresent());
+    FileEvent skosOutput = optionalSkosConvertedFile.get();
+
 
   }
 
@@ -205,7 +221,7 @@ public class ProjectTest {
     // add rdf file
     log.info("add file {} to project {}", resource.getFilename(), projectId);
     ResponseEntity<ProjectEvent> response = testingUtils.postFileToProject(projectId, backendUrl + "/project/add-file", resource.getFilename(),
-                                                                           IOUtils.toByteArray(resource.getInputStream()));
+                                                                           resource);
     log.info("response status {}", response.getStatusCodeValue());
     assertEquals(HttpStatus.OK, response.getStatusCode());
     ProjectEvent updatedProjectEvent = response.getBody();

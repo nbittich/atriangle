@@ -43,6 +43,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>tech.artcoded</groupId>
@@ -52,10 +53,12 @@
     <dependency>
       <groupId>tech.artcoded</groupId>
       <artifactId>atriangle-api</artifactId>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
   <build>
