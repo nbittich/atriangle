@@ -1,5 +1,3 @@
 # Release note
 
-## 0.3.1
-* improve test before adding security & query testing
-* Implement Security
+## 0.3.2
