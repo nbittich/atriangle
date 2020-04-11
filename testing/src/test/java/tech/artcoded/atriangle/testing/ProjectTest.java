@@ -111,7 +111,7 @@ public class ProjectTest {
   }
 
   @Test
-  public void downloadFile() throws Exception {
+  public void downloadFileTest() throws Exception {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
     FileEvent fileEvent = addFileToProject(projectEvent.getId(), rdfExampleFile);
