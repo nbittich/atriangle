@@ -100,8 +100,8 @@ public class ProjectTest {
     Model expectedModel = ModelConverter.toModel(IOUtils.toString(expectedOutputSkosConversion.getInputStream(), UTF_8), RDFFormat.TURTLE);
     FileEvent skosOutput = optionalSkosConvertedFile.get();
     ResponseEntity<ByteArrayResource> file = downloadFile(projectEventWithSkosFileConverted.getId(), skosOutput);
-    String modelConverted = IOUtils.toString(file.getBody()
-                                                 .getInputStream(), UTF_8);
+    assertNotNull(file.getBody());
+    String modelConverted = IOUtils.toString(file.getBody().getInputStream(), UTF_8);
     assertFalse(StringUtils.isEmpty(modelConverted));
     log.info("model converted:\n{}", modelConverted);
     Model model = ModelConverter.toModel(modelConverted, RDFFormat.TURTLE);

@@ -25,6 +25,8 @@ import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
+import static java.util.Objects.requireNonNull;
+
 @Component
 @Slf4j
 public class MongoDbSinkConsumer implements KafkaSink<String, String> {
@@ -63,7 +65,7 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
                                                                                       .getId(), kafkaEvent.getCorrelationId());
 
 
-    BasicDBObject objectToSave = BasicDBObject.parse(IOUtils.toString(inputToSink.getBody()
+    BasicDBObject objectToSave = BasicDBObject.parse(IOUtils.toString(requireNonNull(inputToSink.getBody())
                                                                                  .getInputStream(), StandardCharsets.UTF_8));
 
     BasicDBObject saved = mongoTemplate.save(objectToSave, event.getCollection());
