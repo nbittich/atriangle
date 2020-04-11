@@ -5,5 +5,5 @@ spring:
       port: ${MONGO_DB_PORT:27017}
       username: ${MONGO_DB_USERNAME:root}
       password: ${MONGO_DB_USERNAME:root}
-      database: ${spring.application.name:DEFAULT_COLLECTION}
+      database: ${mongodb.database.name:atriangle}
       authentication-database: admin

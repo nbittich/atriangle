@@ -1,3 +1,6 @@
+mongodb:
+  database:
+    name: ${spring.application.name}
 application:
   basePath: ${UPLOAD_BASE_PATH:${java.io.tmpdir}/upload-rest}
   filePath: ${application.basePath}/uploads

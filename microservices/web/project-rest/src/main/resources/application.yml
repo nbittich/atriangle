@@ -1,3 +1,6 @@
+mongodb:
+  database:
+    name: ${spring.application.name}
 kafka:
   dispatcher:
     mongodb-sink-topic-out: event-sink-mongodb-out
