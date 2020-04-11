@@ -12,19 +12,18 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
-import tech.artcoded.atriangle.api.CheckedSupplier;
-import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
-import tech.artcoded.atriangle.api.dto.*;
+import tech.artcoded.atriangle.api.dto.KafkaEvent;
+import tech.artcoded.atriangle.api.dto.KafkaMessage;
+import tech.artcoded.atriangle.api.dto.MongoEvent;
 import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
 import tech.artcoded.atriangle.core.kafka.KafkaSink;
+import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
 
 import javax.inject.Inject;
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 @Component
 @Slf4j
@@ -32,6 +31,7 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
   private final MongoTemplate mongoTemplate;
   private final FileRestFeignClient fileRestFeignClient;
   private final KafkaEventHelper kafkaEventHelper;
+  private final LoggerAction loggerAction;
 
   @Value("${kafka.dispatcher.mongodb-sink-topic-out}")
   private String outTopic;
@@ -46,12 +46,14 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
   public MongoDbSinkConsumer(MongoTemplate mongoTemplate,
                              FileRestFeignClient fileRestFeignClient,
                              KafkaEventHelper kafkaEventHelper,
+                             LoggerAction loggerAction,
                              KafkaTemplate<String, String> kafkaTemplate,
                              ObjectMapperWrapper mapperWrapper,
                              BuildProperties buildProperties) {
     this.mongoTemplate = mongoTemplate;
     this.fileRestFeignClient = fileRestFeignClient;
     this.kafkaEventHelper = kafkaEventHelper;
+    this.loggerAction = loggerAction;
     this.kafkaTemplate = kafkaTemplate;
     this.mapperWrapper = mapperWrapper;
     this.buildProperties = buildProperties;
@@ -77,31 +79,10 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
 
     log.info("saved {}", saved.toJson());
 
-    SinkResponse sinkResponse = SinkResponse.builder()
-                                            .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
-                                            .finishedDate(new Date())
-                                            .response(mapperWrapper.serialize(Map.of("message", "rdf saved to the mongodb")))
-                                            .responseType(EventType.MONGODB_SINK_OUT)
-                                            .build();//todo think about failure..
 
+    loggerAction.info(kafkaEvent::getCorrelationId, "rdf saved to mongodb");
 
-    KafkaEvent kafkaEventForSinkOut = kafkaEventHelper.newKafkaEventBuilder(kafkaEvent.getCorrelationId(),
-                                                                            record.partition(),
-                                                                            record.offset(),
-                                                                            record.headers(),
-                                                                            buildProperties)
-                                                      .id(IdGenerators.get())
-                                                      .eventType(EventType.MONGODB_SINK_OUT)
-                                                      .event(mapperWrapper.serialize(sinkResponse))
-                                                      .build();
-
-    CheckedSupplier<KafkaMessage.KafkaMessageBuilder<String, String>> builder = KafkaMessage::builder;
-
-    return List.of(builder.safeGet()
-                          .key(IdGenerators.get())
-                          .value(mapperWrapper.serialize(kafkaEventForSinkOut))
-                          .outTopic(outTopic)
-                          .build());
+    return List.of();
   }
 
 

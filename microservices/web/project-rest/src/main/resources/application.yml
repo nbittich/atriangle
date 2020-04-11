@@ -4,7 +4,6 @@ mongodb:
 kafka:
   dispatcher:
     mongodb-sink-topic-out: event-sink-mongodb-out
-    rdf-sink-topic-out: event-sink-rdf-out
 application:
   basePath: ${PROJECT_BASE_PATH:${java.io.tmpdir}/project-rest}
 spring:

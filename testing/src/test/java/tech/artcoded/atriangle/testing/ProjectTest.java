@@ -110,9 +110,11 @@ public class ProjectTest {
     List<LogEvent> logEvents = getLogs(projectEvent);
 
     assertTrue(logEvents.stream()
-                        .anyMatch(logEvent -> String.format("received sink response with status SUCCESS, for project %s",
-                                                            projectEvent.getId())
-                                                    .equals(logEvent.getMessage())));
+                        .anyMatch(logEvent -> "rdf saved to triplestore"
+                          .equals(logEvent.getMessage())));
+    assertTrue(logEvents.stream()
+                        .anyMatch(logEvent -> "rdf saved to mongodb"
+                          .equals(logEvent.getMessage())));
     assertFalse(logEvents.stream()
                          .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
   }
@@ -136,9 +138,11 @@ public class ProjectTest {
     List<LogEvent> logEvents = getLogs(projectEvent);
 
     assertTrue(logEvents.stream()
-                        .anyMatch(logEvent -> String.format("received sink response with status SUCCESS, for project %s",
-                                                            projectEvent.getId())
-                                                    .equals(logEvent.getMessage())));
+                        .anyMatch(logEvent -> "rdf saved to triplestore"
+                          .equals(logEvent.getMessage())));
+    assertTrue(logEvents.stream()
+                        .anyMatch(logEvent -> "rdf saved to mongodb"
+                          .equals(logEvent.getMessage())));
     assertFalse(logEvents.stream()
                          .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
   }
@@ -164,9 +168,8 @@ public class ProjectTest {
     List<LogEvent> logEvents = getLogs(projectEvent);
 
     assertTrue(logEvents.stream()
-                        .anyMatch(logEvent -> String.format("received sink response with status SUCCESS, for project %s",
-                                                            projectEvent.getId())
-                                                    .equals(logEvent.getMessage())));
+                        .anyMatch(logEvent -> "rdf saved to mongodb"
+                          .equals(logEvent.getMessage())));
     assertTrue(logEvents.stream()
                         .anyMatch(logEvent -> "shacl validation ok".equals(logEvent.getMessage())));
 

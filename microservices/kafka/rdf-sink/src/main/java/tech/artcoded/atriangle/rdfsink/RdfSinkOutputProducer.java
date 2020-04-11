@@ -10,9 +10,9 @@ import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
+import tech.artcoded.atriangle.core.kafka.LoggerAction;
 
 import javax.inject.Inject;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,19 +27,20 @@ public class RdfSinkOutputProducer {
   private final ObjectMapperWrapper mapperWrapper;
   private final BuildProperties buildProperties;
   private final KafkaEventHelper kafkaEventHelper;
+  private final LoggerAction loggerAction;
 
-  @Value("${kafka.dispatcher.rdf-sink-topic-out}")
-  private String rdfSinkTopicOut;
   @Value("${kafka.dispatcher.mongodb-sink-topic}")
   private String mongoSinkTopic;
 
   @Inject
   public RdfSinkOutputProducer(ObjectMapperWrapper mapperWrapper,
                                BuildProperties buildProperties,
-                               KafkaEventHelper kafkaEventHelper) {
+                               KafkaEventHelper kafkaEventHelper,
+                               LoggerAction loggerAction) {
     this.mapperWrapper = mapperWrapper;
     this.buildProperties = buildProperties;
     this.kafkaEventHelper = kafkaEventHelper;
+    this.loggerAction = loggerAction;
   }
 
   public List<KafkaMessage<String, String>> produce(KafkaEvent kafkaEvent,
@@ -67,29 +68,12 @@ public class RdfSinkOutputProducer {
                                                           .event(mapperWrapper.serialize(mongoEvent))
                                                           .build());
 
-    SinkResponse sinkResponse = SinkResponse.builder()
-                                            .sinkResponsestatus(SinkResponse.SinkResponseStatus.SUCCESS)
-                                            .finishedDate(new Date())
-                                            .inputToSink(jsonLdFile)
-                                            .response(mapperWrapper.serialize(jsonLdFile))
-                                            .responseType(EventType.RDF_SINK_OUT)
-                                            .build();//todo think about failure..
-
-
-    String kafkaEventForSinkOut = mapperWrapper.serialize(kafkaEventBuilder
-                                                            .id(IdGenerators.get())
-                                                            .eventType(EventType.RDF_SINK_OUT)
-                                                            .event(mapperWrapper.serialize(sinkResponse))
-                                                            .build());
 
     CheckedSupplier<KafkaMessage.KafkaMessageBuilder<String, String>> builder = KafkaMessage::builder;
 
+    loggerAction.info(kafkaEvent::getCorrelationId, "rdf saved to triplestore");
+
     return Stream.of(builder.safeGet()
-                            .outTopic(rdfSinkTopicOut)
-                            .key(IdGenerators.get())
-                            .value(kafkaEventForSinkOut)
-                            .build(),
-                     builder.safeGet()
                             .outTopic(mongoSinkTopic)
                             .key(mongoSinkEventId)
                             .value(kafkaEventForMongo)

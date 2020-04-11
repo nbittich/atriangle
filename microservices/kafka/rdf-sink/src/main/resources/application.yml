@@ -3,7 +3,6 @@ kafka:
     topics: event-sink-rdf
   dispatcher:
     mongodb-sink-topic: event-sink-mongodb
-    rdf-sink-topic-out: event-sink-rdf-out
 spring:
   profiles:
     include: kafka, feign, logging
