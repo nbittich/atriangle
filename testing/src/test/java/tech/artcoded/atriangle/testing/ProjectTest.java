@@ -107,6 +107,15 @@ public class ProjectTest {
     log.info("model converted:\n{}", modelConverted);
     Model model = ModelConverter.toModel(modelConverted, RDFFormat.TURTLE);
     assertTrue(ModelConverter.equals(expectedModel, model));
+    sink(projectEventWithSkosFileConverted,skosOutput, null );
+    List<LogEvent> logEvents = getLogs(projectEvent);
+
+    assertTrue(logEvents.stream()
+                        .anyMatch(logEvent -> String.format("received sink response with status SUCCESS, for project %s",
+                                                            projectEvent.getId())
+                                                    .equals(logEvent.getMessage())));
+    assertFalse(logEvents.stream()
+                         .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
   }
 
   @Test

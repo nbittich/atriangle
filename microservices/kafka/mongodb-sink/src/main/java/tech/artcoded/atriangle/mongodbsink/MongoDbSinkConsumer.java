@@ -71,6 +71,7 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
 
     BasicDBObject objectToSave = BasicDBObject.parse(IOUtils.toString(inputToSink.getBody()
                                                                                  .getInputStream(), StandardCharsets.UTF_8));
+
     BasicDBObject saved = mongoTemplate.save(objectToSave, event.getCollection());
 
 

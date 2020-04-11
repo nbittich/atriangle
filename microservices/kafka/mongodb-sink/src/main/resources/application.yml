@@ -8,7 +8,7 @@ spring:
   main:
     web-application-type: none
   application:
-    name: RDF_COLLECTION
+    name: MongoDbSink
   profiles:
     include: kafka, mongodb, feign, logging
 
