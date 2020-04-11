@@ -101,17 +101,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
   }
 
   @Inject
-  public void configureGlobal(AuthenticationManagerBuilder auth,
-                              BCryptPasswordEncoder passwordEncoder) throws Exception {
+  public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
     auth.userDetailsService(userRepository)
-        .passwordEncoder(passwordEncoder);
+        .passwordEncoder(passwordEncoder());
   }
 
   @Inject
   UserRepository userRepository;
-
-  @Inject
-  BCryptPasswordEncoder passwordEncoder;
 
   @Inject
   Environment env;
