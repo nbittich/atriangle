@@ -83,7 +83,6 @@ public class ProjectTest {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
     addFileToProject(projectEvent.getId(), rdfExampleFile);
-
   }
 
   @Test
