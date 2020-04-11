@@ -1,0 +1,20 @@
+jwt:
+  secret: 8%pf9x(>?F{5khtc9HZM?C`U2gf3/`^?J#zyscR][^_f&:}ZdR!B7<sMf"hG_L)#
+  header: Authorization
+  prefix: Bearer
+  type: jwt
+  issuer: authentication-server
+  audience: authenticated-app
+  expireAfter: 120000 # 2 minutes
+
+fixture:
+  users:
+    - username: ${SECURITY_USERNAME:user}
+      password: ${SECURITY_PASSWORD:user}
+      roles:
+        - USER
+    - username: ${SECURITY_USERNAME:admin}
+      password: ${SECURITY_PASSWORD:admin}
+      roles:
+        - ADMIN
+        - USER

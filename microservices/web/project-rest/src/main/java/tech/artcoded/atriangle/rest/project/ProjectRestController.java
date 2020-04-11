@@ -4,7 +4,6 @@ import io.swagger.annotations.ApiOperation;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.FileHelper;
 import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
+import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.feign.clients.project.ProjectRestFeignClient;
@@ -19,7 +19,6 @@ import tech.artcoded.atriangle.feign.clients.project.ProjectRestFeignClient;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 @CrossOriginRestController
@@ -42,11 +41,13 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<ProjectEvent> createProject(String name) {
     return ResponseEntity.ok(projectRestService.newProject(name));
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<ProjectEvent> addFile(MultipartFile multipartFile,
                                               String projectId) {
     return projectRestService.addFile(projectId, multipartFile)
@@ -55,6 +56,7 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<ProjectEvent> addFreemarkerSparqlTemplate(MultipartFile multipartFile,
                                                                   String projectId) {
 
@@ -71,6 +73,7 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<List<Map<String, String>>> executeSelectSparqlQuery(String projectId,
                                                                             String freemarkerTemplateFileId,
                                                                             Map<String, String> variables) {
@@ -82,6 +85,7 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> executeConstructSparqlQuery(String projectId, String freemarkerTemplateFileId,
                                                             Map<String, String> variables) {
 
@@ -93,6 +97,7 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<Boolean> executeAskSparqlQuery(String projectId, String freemarkerTemplateFileId,
                                                        Map<String, String> variables) {
     ProjectEvent projectEvent = projectRestService.findById(projectId)
@@ -103,6 +108,7 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<ProjectEvent> findByName(String name) {
     return projectRestService.findByName(name)
                              .map(ResponseEntity::ok)
@@ -110,6 +116,7 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<List<LogEvent>> getLogsForProject(String projectId) {
     return projectRestService.getLogsForProject(projectId)
                              .map(ResponseEntity::ok)
@@ -117,32 +124,38 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<ByteArrayResource> downloadFile(String projectId,
                                                         String fileId) {
     return projectRestService.downloadFile(projectId, fileId);
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> shaclValidation(String projectId, String shapesFileId, String rdfModelFileId) {
     return projectRestService.shaclValidation(projectId, shapesFileId, rdfModelFileId);
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public void deleteFile(String projectId, String fileId) {
     CompletableFuture.runAsync(() -> projectRestService.deleteFile(projectId, fileId));
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public void deleteByName(String name) {
     projectRestService.deleteByName(name);
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public void deleteById(String id) {
     projectRestService.deleteById(id);
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<ProjectEvent> findById(String id) {
     return projectRestService.findById(id)
                              .map(ResponseEntity::ok)
@@ -150,11 +163,13 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public List<ProjectEvent> findAll() {
     return projectRestService.findAll();
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<ProjectEvent> skosConversion(String projectId, boolean labelSkosXl,
                                                      boolean ignorePostTreatmentsSkos, String xlsFileEventId) {
     FileEvent xlsFileEvent = projectRestService.getFileMetadata(projectId, xlsFileEventId)
@@ -170,6 +185,7 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<Void> sink(SinkRequest sinkRequest) {
     projectSinkProducer.sink(sinkRequest);
     return ResponseEntity.accepted()

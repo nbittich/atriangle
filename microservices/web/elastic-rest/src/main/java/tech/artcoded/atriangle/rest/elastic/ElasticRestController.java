@@ -18,6 +18,7 @@ import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.dto.LogEvent;
 import tech.artcoded.atriangle.core.elastic.ElasticSearchRdfService;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
+import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.feign.clients.elastic.ElasticRestFeignClient;
@@ -49,6 +50,7 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public List<LogEvent> getLogsByCorrelationId(String correlationId) {
     SearchResponse searchResponse = elasticSearchRdfService.matchQuery("correlationId", correlationId, logSinkIndex);
     return Stream.of(searchResponse.getHits()
@@ -60,6 +62,7 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> createIndex(String indexName,
                                             boolean deleteIndexIfExist,
                                             String elasticConfiguration) {
@@ -84,6 +87,7 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> deleteIndex(String indexName) {
     AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.deleteIndex(indexName);
     log.info("delete index ack {}", acknowledgedResponse.isAcknowledged());
@@ -91,6 +95,7 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> deleteDocument(String indexName, String uuid) {
     DeleteResponse deleteResponse = elasticSearchRdfService.deleteDocument(indexName, uuid);
     log.info("delete document result {}", deleteResponse.getResult()
@@ -99,17 +104,20 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> index(String indexName, String document) {
     elasticSearchRdfService.indexAsync(indexName, IdGenerators.get(), document);
     return ResponseEntity.ok("resource indexed on elastic");
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<Set<String>> indices() {
     return ResponseEntity.ok(elasticSearchRdfService.indices());
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> search(String indexName, String request) {
     SearchResponse searchResponse = elasticSearchRdfService.rawSearch(indexName, request);
     String jsonResponse = searchResponse.toString();
@@ -117,6 +125,7 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> findAll(String indexName) {
     SearchResponse searchResponse = elasticSearchRdfService.searchAll(indexName);
     String jsonResponse = searchResponse.toString();
@@ -124,6 +133,7 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> updateSettings(String indexName, boolean preserveSettings, String settings) {
     AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.updateSettings(indexName, settings, preserveSettings);
     log.info("acknowledge for update settings {}", acknowledgedResponse.isAcknowledged());
@@ -131,12 +141,14 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> getSettings(String indexName) {
     GetSettingsResponse settings = elasticSearchRdfService.getSettings(indexName);
     return ResponseEntity.ok(settings.toString());
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> updateMapping(String indexName, String mapping) {
     AcknowledgedResponse acknowledgedResponse = elasticSearchRdfService.updateMappings(indexName, mapping);
     log.info("acknowledge for update mapping {}", acknowledgedResponse.isAcknowledged());
@@ -144,6 +156,7 @@ public class ElasticRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<Map<String, Object>> getMapping(String indexName) {
     GetMappingsResponse mapping = elasticSearchRdfService.getMappings(indexName);
     return ResponseEntity.ok(mapping.mappings()

@@ -14,6 +14,7 @@ import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
 import tech.artcoded.atriangle.api.RawJsonWrappedResponse;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
+import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.feign.clients.mongodb.MongoDbRestFeignClient;
@@ -40,6 +41,7 @@ public class MongoDbRestController implements PingControllerTrait,
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> createCollection(String collectionName) {
     if (mongoTemplate.collectionExists(collectionName)) {
       return ResponseEntity.badRequest()
@@ -50,11 +52,13 @@ public class MongoDbRestController implements PingControllerTrait,
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<Set<String>> listCollections() {
     return ResponseEntity.ok(mongoTemplate.getCollectionNames());
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> deleteCollection(String collectionName) {
     if (!mongoTemplate.collectionExists(collectionName)) {
       return ResponseEntity.badRequest()
@@ -65,6 +69,7 @@ public class MongoDbRestController implements PingControllerTrait,
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> delete(String collectionName, String id) {
     DeleteResult deleteResult = mongoTemplate.remove(Query.query(Criteria.where("_id")
                                                                          .is(new ObjectId(id))), collectionName);
@@ -73,6 +78,7 @@ public class MongoDbRestController implements PingControllerTrait,
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<RawJsonWrappedResponse> save(String collectionName, String objectToSave) {
     BasicDBObject dbObject = BasicDBObject.parse(objectToSave);
     BasicDBObject savedObject = mongoTemplate.save(dbObject, collectionName);
@@ -80,6 +86,7 @@ public class MongoDbRestController implements PingControllerTrait,
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<List<RawJsonWrappedResponse>> query(String collectionName, String query) {
     BasicQuery basicQuery = new BasicQuery(query);
     return ResponseEntity.ok(mongoTemplate.find(basicQuery, BasicDBObject.class, collectionName)
@@ -90,6 +97,7 @@ public class MongoDbRestController implements PingControllerTrait,
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<Set<RawJsonWrappedResponse>> findAll(String collectionName) {
     List<BasicDBObject> list = mongoTemplate.findAll(BasicDBObject.class, collectionName);
     return ResponseEntity.ok(list.stream()
@@ -99,6 +107,7 @@ public class MongoDbRestController implements PingControllerTrait,
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<RawJsonWrappedResponse> findById(String collectionName, String id) {
     BasicDBObject object = mongoTemplate.findOne(Query.query(Criteria.where("_id")
                                                                      .is(new ObjectId(id))), BasicDBObject.class, collectionName);

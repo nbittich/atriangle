@@ -3,12 +3,12 @@ package tech.artcoded.atriangle.testing;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.web.client.RestTemplate;
 import tech.artcoded.atriangle.api.dto.ProjectEvent;
 import tech.artcoded.atriangle.core.rest.util.RestUtil;
 
@@ -17,7 +17,7 @@ import static java.util.Objects.requireNonNull;
 public interface TestingUtils {
   ObjectMapper MAPPER = new ObjectMapper();
 
-  RestTemplate restTemplate();
+  TestRestTemplate restTemplate();
 
   default HttpEntity<String> requestWithEmptyBody() {
     HttpHeaders headers = new HttpHeaders();

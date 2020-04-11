@@ -1,4 +1,7 @@
 backend:
-  url: https://atriangle.artcoded.tech/api
-  #url: http://atriangle:8088/api
+  credentials:
+    username: admin
+    password: admin
+  #url: https://atriangle.artcoded.tech/api
+  url: http://atriangle:8088/api
 

@@ -19,6 +19,7 @@ import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.api.dto.RdfType;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
+import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.core.sparql.ModelConverter;
@@ -54,6 +55,7 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> createNamespace(String namespace) {
     simpleSparqlService.createNamespace(namespace);
     return ResponseEntity.ok(String.format("namespace %s created", namespace));
@@ -61,6 +63,7 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
 
   @Override
   @SneakyThrows
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> loadRdfFile(String rdfFileEvent, String namespace) {
     FileEvent rdfFile = fileRestFeignClient.findById(rdfFileEvent)
                                            .getBody();
@@ -75,6 +78,7 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> insertRdfAsJsonLd(String jsonLdModel, String namespace) {
     simpleSparqlService.load(namespace, IOUtils.toInputStream(jsonLdModel, StandardCharsets.UTF_8), RDFFormat.JSONLD);
     return ResponseEntity.ok("jsonLd loaded");
@@ -82,6 +86,7 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> convert(String jsonLdModel,
                                         RdfType rdfFormatInput,
                                         RdfType rdfFormaOutput) {
@@ -96,12 +101,14 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<Boolean> askQuery(String askQuery, String namespace) {
     return ResponseEntity.ok(simpleSparqlService.booleanQuery(namespace, askQuery));
   }
 
   @SneakyThrows
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<List<Map<String, String>>> selectQuery(String selectQuery, String namespace) {
     TupleQueryResult tupleQueryResult = simpleSparqlService.tupleQuery(namespace, selectQuery);
     List<Map<String, String>> response = new ArrayList<>();
@@ -119,6 +126,7 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
 
   @SneakyThrows
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> constructQuery(String constructQuery, String namespace) {
     GraphQueryResult result = simpleSparqlService.graphQuery(namespace, constructQuery);
     Model model = QueryResults.asModel(result);

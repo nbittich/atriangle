@@ -11,6 +11,7 @@ import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.api.dto.FileEventType;
 import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
+import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.core.rest.util.RestUtil;
@@ -40,6 +41,7 @@ public class FileUploadController implements BuildInfoControllerTrait, PingContr
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<FileEvent> findById(String id) {
     return uploadService.findOneById(id)
                         .map(FileUpload::transform)
@@ -48,6 +50,7 @@ public class FileUploadController implements BuildInfoControllerTrait, PingContr
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<ByteArrayResource> download(String id, String correlationId) throws Exception {
     Optional<FileUpload> upload = uploadService.findOneById(id);
     return upload.map(FileUpload::transform)
@@ -61,6 +64,7 @@ public class FileUploadController implements BuildInfoControllerTrait, PingContr
 
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<FileEvent> upload(MultipartFile file, FileEventType fileUploadType,
                                           String correlationId) throws Exception {
     return Optional.of(uploadService.upload(file, fileUploadType))
@@ -75,6 +79,7 @@ public class FileUploadController implements BuildInfoControllerTrait, PingContr
 
 
   @Override
+  @SwaggerHeaderAuthentication
   public Map.Entry<String, String> delete(String id) {
     FileUpload byId = uploadService.findOneById(id)
                                    .stream()

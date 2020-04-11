@@ -16,7 +16,7 @@ import java.lang.annotation.Target;
                                        paramType = "header"),
                      @ApiImplicitParam(name = "Authorization",
                                        value = "Access Token",
-                                       defaultValue = "Basic YWRtaW5AY29nbmkuem9uZTphYkMxMjM0NTY3IT8=",
+                                       defaultValue = "Basic YWRtaW46YWRtaW4=",
                                        paramType = "header")
                    })
 public @interface SwaggerHeaderAuthentication {

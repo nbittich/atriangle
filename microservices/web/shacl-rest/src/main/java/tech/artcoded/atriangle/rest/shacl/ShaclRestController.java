@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import tech.artcoded.atriangle.api.CheckedSupplier;
 import tech.artcoded.atriangle.api.dto.FileEvent;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
+import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.feign.clients.file.FileRestFeignClient;
@@ -43,6 +44,7 @@ public class ShaclRestController implements PingControllerTrait, BuildInfoContro
 
   @SneakyThrows
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> validate(String correlationId,
                                          String shaclFileEventId,
                                          String modelFileEventId) {
@@ -70,6 +72,7 @@ public class ShaclRestController implements PingControllerTrait, BuildInfoContro
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<String> test(String shaclRules, String sampleData) {
 
     Optional<String> report = ShaclValidationUtils.validate(sampleData, Lang.TURTLE, shaclRules, Lang.TURTLE);

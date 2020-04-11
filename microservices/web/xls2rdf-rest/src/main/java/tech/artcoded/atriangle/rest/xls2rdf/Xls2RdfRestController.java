@@ -13,6 +13,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
+import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.core.rest.util.RestUtil;
@@ -41,6 +42,7 @@ public class Xls2RdfRestController implements PingControllerTrait, BuildInfoCont
   }
 
   @Override
+  @SwaggerHeaderAuthentication
   public ResponseEntity<ByteArrayResource> convertRDF(String sourceString, MultipartFile file, String language,
                                                       String url,
                                                       String format, boolean useSkosXl, boolean useZip,

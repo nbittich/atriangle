@@ -12,14 +12,13 @@ import org.openrdf.model.Model;
 import org.openrdf.rio.RDFFormat;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
 import tech.artcoded.atriangle.api.CheckedThreadHelper;
 import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.sparql.ModelConverter;
@@ -43,7 +42,7 @@ import static tech.artcoded.atriangle.api.dto.LogEventType.ERROR;
 public class ProjectTest {
 
   @Inject
-  private RestTemplate restTemplate;
+  private TestRestTemplate restTemplate;
 
   @Inject
   private ObjectMapper mapper;
@@ -107,7 +106,7 @@ public class ProjectTest {
     log.info("model converted:\n{}", modelConverted);
     Model model = ModelConverter.toModel(modelConverted, RDFFormat.TURTLE);
     assertTrue(ModelConverter.equals(expectedModel, model));
-    sink(projectEventWithSkosFileConverted,skosOutput, null );
+    sink(projectEventWithSkosFileConverted, skosOutput, null);
     List<LogEvent> logEvents = getLogs(projectEvent);
 
     assertTrue(logEvents.stream()
@@ -184,33 +183,30 @@ public class ProjectTest {
     FileEvent shaclShapes = addFileToProject(projectEvent.getId(), shaclShapesExampleFile);
     FileEvent badData = addFileToProject(projectEvent.getId(), shaclBadDataExampleFile);
 
-    try {
-      restTemplate.exchange(String.format("%s/project/%s/shacl-validation?shapesFileId=%s&rdfModelFileId=%s", backendUrl,
-                                          projectEvent.getId(), shaclShapes.getId(), badData.getId()), HttpMethod.GET,
-                            testingUtils.requestWithEmptyBody(), String.class);
-      fail("should throw an exception");
-    }
-    catch (HttpStatusCodeException exception) {
-      assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
-      String expectedMessage = exception.getResponseBodyAsString();
-      assertTrue(StringUtils.isNotEmpty(expectedMessage));
-      log.info("result of shacl validation: \n{}", expectedMessage);
-      sink(projectEvent, badData, shaclShapes);
+    ResponseEntity<String> exception = restTemplate.exchange(String.format("%s/project/%s/shacl-validation?shapesFileId=%s&rdfModelFileId=%s", backendUrl,
+                                                                           projectEvent.getId(), shaclShapes.getId(), badData.getId()), HttpMethod.GET,
+                                                             testingUtils.requestWithEmptyBody(), String.class);
+    assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusCode());
+    String expectedMessage = exception.getBody();
+    assertTrue(StringUtils.isNotEmpty(expectedMessage));
+    log.info("result of shacl validation: \n{}", expectedMessage);
 
-      List<LogEvent> logEvents = getLogs(projectEvent);
-      Optional<LogEvent> shaclError = logEvents.stream()
-                                               .filter(logEvent -> ERROR.equals(logEvent.getType()))
-                                               .filter(logEvent -> logEvent.getMessage()
-                                                                           .contains("http://www.w3.org/ns/shacl#resultMessage"))
-                                               .peek(logEvent -> log.info("Shacl error: {}", logEvent.getMessage()))
-                                               .findFirst();
-      assertTrue(shaclError.isPresent());
-      String message = shaclError.get()
-                                 .getMessage();
-      Model expectedModel = ModelConverter.toModel(expectedMessage, RDFFormat.JSONLD);
-      Model actualModel = ModelConverter.toModel(message, RDFFormat.JSONLD);
-      assertTrue(ModelConverter.equals(expectedModel, actualModel));
-    }
+    sink(projectEvent, badData, shaclShapes);
+
+    List<LogEvent> logEvents = getLogs(projectEvent);
+    Optional<LogEvent> shaclError = logEvents.stream()
+                                             .filter(logEvent -> ERROR.equals(logEvent.getType()))
+                                             .filter(logEvent -> logEvent.getMessage()
+                                                                         .contains("http://www.w3.org/ns/shacl#resultMessage"))
+                                             .peek(logEvent -> log.info("Shacl error: {}", logEvent.getMessage()))
+                                             .findFirst();
+    assertTrue(shaclError.isPresent());
+    String message = shaclError.get()
+                               .getMessage();
+    Model expectedModel = ModelConverter.toModel(expectedMessage, RDFFormat.JSONLD);
+    Model actualModel = ModelConverter.toModel(message, RDFFormat.JSONLD);
+    assertTrue(ModelConverter.equals(expectedModel, actualModel));
+
 
   }
 
