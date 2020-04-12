@@ -13,6 +13,15 @@ export default  [
     }
   },
   {
+    url: environment.backendUrl + '/api/xls2rdf/swagger-ui.html',
+    name: 'Skos Play',
+    section: REST_ENDPOINT,
+    icon: {
+      pack: 'far',
+      name: 'file-excel'
+    }
+  },
+  {
     url: environment.backendUrl + '/api/shacl/swagger-ui.html',
     name: 'Shacl',
     section: REST_ENDPOINT,
