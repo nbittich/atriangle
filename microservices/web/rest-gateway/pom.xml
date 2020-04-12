@@ -59,6 +59,29 @@
     <finalName>atriangle-rest-gateway</finalName>
     <plugins>
       <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <phase>validate</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/classes/resources/</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>
+                    ../../../frontend/atriangle-frontend/dist/atriangle-frontend/
+                  </directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
       </plugin>

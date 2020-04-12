@@ -5,3 +5,4 @@
 * init frontend
 * node should not be pushed
 * update cloc
+* frontend setup done

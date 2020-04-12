@@ -29,7 +29,7 @@ export class AuthService {
     });
     return this.http
       .post<User>(
-        `${environment.backendUrl}/user/info`,
+        `${environment.backendUrl}/api/user/info`,
         {},
         {
           headers,

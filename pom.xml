@@ -339,10 +339,10 @@
   </build>
   <modules>
     <module>common</module>
-    <module>testing</module>
     <module>core</module>
-    <module>microservices</module>
     <module>frontend</module>
+    <module>microservices</module>
+    <module>testing</module>
   </modules>
 </project>
 

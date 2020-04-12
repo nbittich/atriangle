@@ -21,17 +21,15 @@
         </a>
       </div>
       <div fxLayout="column" fxLayoutAlign="center center" *ngIf="!isLoggedIn()" >
-        <button mat-flat-button color="warn" class="mt-1" (click)="showLoginForm = !showLoginForm">{{ showLoginForm ? 'Hide' : 'Login'}}</button>
+        <button mat-flat-button color="warn" class="mt-1 mb-1" (click)="showLoginForm = !showLoginForm">{{ showLoginForm ? 'Hide' : 'Login'}}</button>
         <app-login *ngIf="showLoginForm"></app-login>
       </div>
-      <div fxLayout="column" fxLayoutAlign="center center" *ngIf="isLoggedIn()">
+      <div class="mb-1" fxLayout="column" fxLayoutAlign="center center" *ngIf="isLoggedIn()">
         <p class="app-logged text-center borderless mx-0">Logged as {{getUserInfo().username}}</p>
         <button  mat-flat-button color="warn" (click)="logout()">Logout</button>
       </div>
       <hr class="mat-divider">
-   <!--   <mat-nav-list *ngIf="categories">
-        <a [routerLink]="['menu','category',cat.id]" mat-list-item href="#" *ngFor="let cat of categories"> {{ cat.name }} </a>
-      </mat-nav-list>-->
+      <app-menu></app-menu>
     </mat-sidenav>
     <router-outlet></router-outlet>
   </mat-sidenav-container>

@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  backendUrl: 'https://atriangle.artcoded.tech/api'
+  backendUrl: 'https://atriangle.artcoded.tech'
 };
 
 /*

@@ -1,0 +1,15 @@
+<mat-nav-list >
+  <ng-container *ngIf="menuApiList && menuApiList.length">
+    <h3 matSubheader >Rest API</h3>
+    <a target="_blank" [href]="menu.url"  mat-list-item  *ngFor="let menu of menuApiList">
+      <fa-icon  [icon]="[menu.icon.pack, menu.icon.name]" aria-hidden="false"></fa-icon>&nbsp;{{ menu.name }}
+    </a>
+  </ng-container>
+  <ng-container *ngIf="menuProxyList && menuProxyList.length">
+    <mat-divider *ngIf="menuApiList && menuApiList.length"></mat-divider>
+    <h3 matSubheader >Proxy Gateway</h3>
+    <a target="_blank" [href]="menu.url"  mat-list-item  *ngFor="let menu of menuProxyList">
+      <fa-icon  [icon]="[menu.icon.pack, menu.icon.name]" aria-hidden="false"></fa-icon>&nbsp;{{ menu.name }}
+    </a>
+  </ng-container>
+</mat-nav-list>-

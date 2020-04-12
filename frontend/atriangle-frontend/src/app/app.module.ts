@@ -32,11 +32,14 @@ import { LoginComponent } from './login/login.component';
 import {fas} from "@fortawesome/free-solid-svg-icons";
 import {far} from "@fortawesome/free-regular-svg-icons";
 import {DeviceDetectorModule} from "ngx-device-detector";
+import { MenuComponent } from './menu/menu.component';
+import {fab} from "@fortawesome/free-brands-svg-icons";
 
 @NgModule({
   declarations: [
     AppComponent,
-    LoginComponent
+    LoginComponent,
+    MenuComponent
   ],
   imports: [
     BrowserModule,
@@ -77,6 +80,6 @@ import {DeviceDetectorModule} from "ngx-device-detector";
 })
 export class AppModule {
   constructor(library: FaIconLibrary) {
-    library.addIconPacks(fas,far);
+    library.addIconPacks(fas,far,fab);
   }
 }
