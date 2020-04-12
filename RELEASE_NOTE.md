@@ -4,3 +4,4 @@
 * test ask query
 * construct & select query test
 * cache query template
+* cache key bugfix

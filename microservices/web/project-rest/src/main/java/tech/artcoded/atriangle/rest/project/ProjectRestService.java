@@ -286,7 +286,7 @@ public class ProjectRestService {
   }
 
   @SneakyThrows
-  @Cacheable(cacheNames = "queryTemplate", key = "#{project.id + freemarkerTemplateFileId}")
+  @Cacheable(cacheNames = "queryTemplate", key = "{#project.id, #freemarkerTemplateFileId}")
   public String getCachedQueryTemplate(ProjectEvent project, String freemarkerTemplateFileId) {
 
     ResponseEntity<ByteArrayResource> freemarkerTemplate = downloadFile(project.getId(), freemarkerTemplateFileId);
