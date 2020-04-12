@@ -8,7 +8,7 @@ import javax.inject.Inject;
 import java.security.Principal;
 
 @CrossOriginRestController
-@RequestMapping("/user")
+@RequestMapping("/api/user")
 public class UserRestController {
   private final UserRepository userRepository;
 

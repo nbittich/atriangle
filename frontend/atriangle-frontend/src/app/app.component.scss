@@ -1,0 +1,38 @@
+section {
+  margin-left: 3px;
+}
+
+.example-container {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+}
+
+.example-sidenav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+}
+
+.logo{
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 20px;
+  width: 50%;
+}
+.menu{
+  margin-left: 1em;
+  padding-top: 30px;
+}
+
+.app-logged{
+  font-size: 12px;
+  font-style: italic;
+  word-wrap: break-word;
+  color: gray;
+}
+

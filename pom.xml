@@ -260,6 +260,7 @@
         <configuration>
           <excludes>
             <exclude>target/**</exclude>
+            <exclude>atriangle-frontend/**</exclude>
           </excludes>
           <includes>
             <include>**</include>
@@ -341,6 +342,7 @@
     <module>testing</module>
     <module>core</module>
     <module>microservices</module>
+    <module>frontend</module>
   </modules>
 </project>
 

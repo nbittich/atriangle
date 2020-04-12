@@ -1,0 +1,18 @@
+<mat-card class="mat-card-flat container borderless mt-1 ">
+  <mat-card-content>
+    <form class="centered-form" (ngSubmit)="login()" [formGroup]="loginForm">
+      <mat-form-field>
+        <input matInput formControlName="email" [id]="'email'" placeholder="Email">
+      </mat-form-field>
+
+      <mat-form-field>
+        <input matInput formControlName="password" type="password" [id]="'password'" placeholder="Password">
+      </mat-form-field>
+      <input type="submit" class="mat-button mat-primary mat-flat-button" value="Login" [id]="'button-submit'">
+    </form>
+
+    <div *ngIf="isVisible" class="mt-2 mb-3" fxLayout="row" fxLayoutAlign="center center">
+      <p id="errorMessage" class="text-danger">{{getMessage()}}</p>
+    </div>
+  </mat-card-content>
+</mat-card>

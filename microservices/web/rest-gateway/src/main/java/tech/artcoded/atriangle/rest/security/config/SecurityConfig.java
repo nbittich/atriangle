@@ -34,9 +34,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers(HttpMethod.PUT, "/api/**")
         .hasAuthority(ADMIN.getAuthority())
 
-        .antMatchers(HttpMethod.GET, "/user/**")
+        .antMatchers(HttpMethod.GET, "/api/user/**")
         .authenticated()
-        .antMatchers(HttpMethod.POST, "/user/**")
+        .antMatchers(HttpMethod.POST, "/api/user/**")
         .authenticated()
 
         .antMatchers(HttpMethod.POST, "/proxy/**/sparql")

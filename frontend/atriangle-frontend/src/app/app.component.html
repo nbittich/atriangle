@@ -1,0 +1,38 @@
+<ng-container>
+  <mat-sidenav-container class="example-container">
+    <mat-toolbar>
+      <button mat-button color="primary" (click)="opened = !opened" style="min-width: 0">
+        <fa-icon [icon]="['fas', 'ellipsis-v']" ></fa-icon>
+      </button>
+      <div>
+
+      </div>
+      <span fxFlex></span>
+      <a [routerLink]="['cart']" mat-button *ngIf="isLoggedIn()">
+        <fa-icon  [icon]="['fas', 'project-diagram']" aria-hidden="false" aria-label="My Projects"></fa-icon>
+        Projects ({{projects}})
+      </a>
+    </mat-toolbar>
+    <mat-sidenav #sidenav mode="side" [(opened)]="opened" (opened)="events.push('open!')"
+                 (closed)="events.push('close!')" class="example-sidenav">
+      <div class="header">
+        <a routerLink="/">
+          <img class="logo" src="/assets/logo.png" />
+        </a>
+      </div>
+      <div fxLayout="column" fxLayoutAlign="center center" *ngIf="!isLoggedIn()" >
+        <button mat-flat-button color="warn" class="mt-1" (click)="showLoginForm = !showLoginForm">{{ showLoginForm ? 'Hide' : 'Login'}}</button>
+        <app-login *ngIf="showLoginForm"></app-login>
+      </div>
+      <div fxLayout="column" fxLayoutAlign="center center" *ngIf="isLoggedIn()">
+        <p class="app-logged text-center borderless mx-0">Logged as {{getUserInfo().username}}</p>
+        <button  mat-flat-button color="warn" (click)="logout()">Logout</button>
+      </div>
+      <hr class="mat-divider">
+   <!--   <mat-nav-list *ngIf="categories">
+        <a [routerLink]="['menu','category',cat.id]" mat-list-item href="#" *ngFor="let cat of categories"> {{ cat.name }} </a>
+      </mat-nav-list>-->
+    </mat-sidenav>
+    <router-outlet></router-outlet>
+  </mat-sidenav-container>
+</ng-container>
