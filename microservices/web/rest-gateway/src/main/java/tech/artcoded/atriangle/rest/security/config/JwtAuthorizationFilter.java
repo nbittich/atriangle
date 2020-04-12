@@ -46,7 +46,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
   }
 
   private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
-    String token = request.getHeader(env.getRequiredProperty("jwt.header"));
+    String token = request.getHeader("X-Auth-Token");
     if (StringUtils.isNotEmpty(token) && token.startsWith(env.getRequiredProperty("jwt.prefix"))) {
       byte[] signingKey = env.getRequiredProperty("jwt.secret")
                              .getBytes();

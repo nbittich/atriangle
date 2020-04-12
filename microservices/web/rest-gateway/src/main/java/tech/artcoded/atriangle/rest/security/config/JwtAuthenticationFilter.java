@@ -52,6 +52,6 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
                        .claim("rol", roles)
                        .compact();
 
-    response.addHeader(env.getRequiredProperty("jwt.header"), env.getRequiredProperty("jwt.prefix") + " " + token);
+    response.addHeader("X-Auth-Token", env.getRequiredProperty("jwt.prefix") + " " + token);
   }
 }

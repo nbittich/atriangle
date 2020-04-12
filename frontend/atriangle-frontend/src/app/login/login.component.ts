@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {AbstractControl, FormControl, FormGroup, Validators} from "@angular/forms";
 import {ActivatedRoute, Router} from "@angular/router";
 import {AuthService} from "../core/service/auth.service";
@@ -15,14 +15,16 @@ export class LoginComponent implements OnInit {
   private status?: number;
 
   isVisible: boolean = false;
+
   constructor(private actRoute: ActivatedRoute, private router: Router, private authenticationService: AuthService) {
     this.loginForm = this.createFormGroup();
   }
 
   ngOnInit() {
   }
-  get email(): AbstractControl {
-    return this.loginForm.get('email');
+
+  get username(): AbstractControl {
+    return this.loginForm.get('username');
   }
 
   get password(): AbstractControl {
@@ -30,10 +32,10 @@ export class LoginComponent implements OnInit {
   }
 
   login(): void {
-    const emailValue = this.email.value;
+    const usernameValue = this.username.value;
     const passwordValue = this.password.value;
     this.authenticationService
-      .login(emailValue, passwordValue)
+      .login(usernameValue, passwordValue)
       .subscribe(
         () => {
           this.reset();
@@ -53,7 +55,7 @@ export class LoginComponent implements OnInit {
 
   private createFormGroup(): FormGroup {
     return new FormGroup({
-      email: new FormControl('', [Validators.required, Validators.email]),
+      username: new FormControl('', [Validators.required, Validators.minLength(4)]),
       password: new FormControl('', [Validators.required, Validators.minLength(4)])
     });
   }
