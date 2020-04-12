@@ -71,6 +71,14 @@ public class ProjectTest {
   @Value("classpath:sparql-ask.ftl")
   private Resource askQueryFile;
 
+  @Value("classpath:sparql-select.ftl")
+  private Resource selectQueryFile;
+
+  @Value("classpath:sparql-construct.ftl")
+  private Resource constructQueryFile;
+  @Value("classpath:expected-construct.ttl")
+  private Resource expectedConstructFile;
+
   @Value("${backend.url}")
   private String backendUrl;
 
@@ -190,6 +198,91 @@ public class ProjectTest {
                                                     "name","Jena"
                                                   )), Boolean.class);
     assertFalse(jenaPresent);
+
+  }
+
+  @Test
+  public void selectSparqlQueryTest() throws Exception {
+    String projectName = RandomStringUtils.randomAlphabetic(7);
+    ProjectEvent projectEvent = createProjectEvent(projectName);
+    // add rdf file
+    FileEvent fileEvent = addFileToProject(projectEvent.getId(), rdfExampleFile);
+    sink(projectEvent, fileEvent, null);
+
+    List<LogEvent> logEvents = getLogs(projectEvent);
+
+    assertTrue(logEvents.stream()
+                        .anyMatch(logEvent -> "rdf saved to triplestore"
+                          .equals(logEvent.getMessage())));
+    assertTrue(logEvents.stream()
+                        .anyMatch(logEvent -> "rdf saved to mongodb"
+                          .equals(logEvent.getMessage())));
+    assertFalse(logEvents.stream()
+                         .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
+
+    // add select query
+    FileEvent queryFile = addSparqlQueryFileToProject(projectEvent.getId(), selectQueryFile);
+    Map<String, String> variables = Map.of(
+      "s","?s",
+      "p","?p",
+      "o","?o"
+    );
+    List<Map<String, String>> result = restTemplate.postForObject(String.format("%s/project/execute-select-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
+                                               testingUtils.requestWithBody(variables), List.class);
+
+    log.info("result of select query:\n {}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
+
+    assertTrue(result.stream().anyMatch(map-> "http://artcoded.tech/person".equals(map.get("s")) &&
+                                          "http://artcoded.tech#artist".equals(map.get("p")) &&
+                                          "Nordine Bittich".equals(map.get("o"))
+    ));
+    assertTrue(result.stream().anyMatch(map-> "http://artcoded.tech/person".equals(map.get("s")) &&
+                                          "http://artcoded.tech#company".equals(map.get("p")) &&
+                                          "Artcoded".equals(map.get("o"))
+    ));
+    assertTrue(result.stream().anyMatch(map-> "http://artcoded.tech/person".equals(map.get("s")) &&
+                                          "http://artcoded.tech#country".equals(map.get("p")) &&
+                                          "BELGIUM".equals(map.get("o"))
+    ));
+    assertTrue(result.stream().anyMatch(map-> "http://artcoded.tech/person".equals(map.get("s")) &&
+                                          "http://artcoded.tech#year".equals(map.get("p")) &&
+                                          "1988".equals(map.get("o"))
+    ));
+
+  }
+
+  @Test
+  public void constructSparqlQueryTest() throws Exception {
+    String projectName = RandomStringUtils.randomAlphabetic(7);
+    ProjectEvent projectEvent = createProjectEvent(projectName);
+    // add rdf file
+    FileEvent fileEvent = addFileToProject(projectEvent.getId(), rdfExampleFile);
+    sink(projectEvent, fileEvent, null);
+
+    List<LogEvent> logEvents = getLogs(projectEvent);
+
+    assertTrue(logEvents.stream()
+                        .anyMatch(logEvent -> "rdf saved to triplestore"
+                          .equals(logEvent.getMessage())));
+    assertTrue(logEvents.stream()
+                        .anyMatch(logEvent -> "rdf saved to mongodb"
+                          .equals(logEvent.getMessage())));
+    assertFalse(logEvents.stream()
+                         .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
+
+    // add construct query
+    FileEvent queryFile = addSparqlQueryFileToProject(projectEvent.getId(), constructQueryFile);
+    Map<String, String> variables = Map.of(
+      "toConstruct","?s ?p ?o",
+      "condition", "?s ?p ?o"
+    );
+    String modelString = restTemplate.postForObject(String.format("%s/project/execute-construct-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
+                                               testingUtils.requestWithBody(variables), String.class);
+    log.info("result of construct query:\n {}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(modelString));
+
+    Model model = ModelConverter.toModel(modelString, RDFFormat.JSONLD);
+    Model expectedModel = ModelConverter.inputStreamToModel(expectedConstructFile.getFilename(), expectedConstructFile::getInputStream);
+    assertTrue(ModelConverter.equals(expectedModel, model));
 
   }
 

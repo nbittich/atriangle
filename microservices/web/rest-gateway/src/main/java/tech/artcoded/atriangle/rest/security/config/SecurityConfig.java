@@ -39,7 +39,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers(HttpMethod.POST, "/user/**")
         .authenticated()
 
-        .antMatchers(HttpMethod.GET, "/proxy/**").permitAll() // read only
+        .antMatchers(HttpMethod.POST, "/proxy/**/sparql")
+        .permitAll()
+        .antMatchers(HttpMethod.GET, "/proxy/**")
+        .permitAll() // read only
         .antMatchers(HttpMethod.POST, "/proxy/**")
         .hasAuthority(ADMIN.getAuthority())
         .antMatchers(HttpMethod.PUT, "/proxy/**")

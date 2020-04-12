@@ -1,0 +1,6 @@
+<http://artcoded.tech/person> <http://artcoded.tech#artist> "Nordine Bittich"^^<http://www.w3.org/2001/XMLSchema#string> ;
+<http://artcoded.tech#company> "Artcoded"^^<http://www.w3.org/2001/XMLSchema#string> ;
+<http://artcoded.tech#country> "BELGIUM"^^<http://www.w3.org/2001/XMLSchema#string> ;
+<http://artcoded.tech#year> "1988"^^<http://www.w3.org/2001/XMLSchema#string> .
+
+

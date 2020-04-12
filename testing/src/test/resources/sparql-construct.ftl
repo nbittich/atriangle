@@ -1,0 +1,5 @@
+construct {
+  ${toConstruct}
+} where {
+  ${condition}
+}

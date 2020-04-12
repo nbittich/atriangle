@@ -4,8 +4,10 @@ import lombok.SneakyThrows;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.openrdf.model.Model;
+import org.openrdf.model.Statement;
 import org.openrdf.model.impl.TreeModel;
 import org.openrdf.model.util.ModelUtil;
+import org.openrdf.repository.util.RepositoryUtil;
 import org.openrdf.rio.*;
 import org.openrdf.rio.helpers.JSONLDMode;
 import org.openrdf.rio.helpers.JSONLDSettings;
@@ -15,6 +17,7 @@ import tech.artcoded.atriangle.api.CheckedSupplier;
 import java.io.InputStream;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 
 public interface ModelConverter {
 
@@ -37,6 +40,9 @@ public interface ModelConverter {
 
   static boolean equals(Model firstModel, Model secondModel) {
     return ModelUtil.equals(firstModel, secondModel);
+  }
+  static Collection<? extends Statement> difference(Model firstModel, Model secondModel) {
+    return RepositoryUtil.difference(firstModel, secondModel);
   }
 
   @SneakyThrows
