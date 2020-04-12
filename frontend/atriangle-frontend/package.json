@@ -28,6 +28,7 @@
     "@fortawesome/free-brands-svg-icons": "^5.13.0",
     "@fortawesome/free-regular-svg-icons": "^5.13.0",
     "@fortawesome/free-solid-svg-icons": "^5.13.0",
+    "github-fork-ribbon-css": "^0.2.3",
     "ngx-device-detector": "^1.4.1",
     "rxjs": "~6.5.4",
     "tslib": "^1.10.0",
