@@ -12,7 +12,7 @@ spring:
     template:
       default-topic: event-sink-rdf
   cache:
-    cache-names: selectSparqlQuery, constructSparqlQuery, askSparqlQuery
+    cache-names: selectSparqlQuery, constructSparqlQuery, askSparqlQuery, queryTemplate
     type: caffeine
     caffeine:
       spec: maximumSize=500,expireAfterAccess=1800s

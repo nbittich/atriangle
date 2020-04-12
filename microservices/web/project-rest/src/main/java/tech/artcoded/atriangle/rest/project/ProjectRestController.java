@@ -60,7 +60,8 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   public ResponseEntity<ProjectEvent> addFreemarkerSparqlTemplate(MultipartFile multipartFile,
                                                                   String projectId) {
 
-    String extension = FileHelper.getExtension(multipartFile.getOriginalFilename()).orElse("N/A");
+    String extension = FileHelper.getExtension(multipartFile.getOriginalFilename())
+                                 .orElse("N/A");
     if (!extension.equals("ftl")) {
       log.info("file extension not valid: {}, file name {}, original file name {}", extension, multipartFile.getName(), multipartFile.getOriginalFilename());
       return ResponseEntity.badRequest()
@@ -79,8 +80,9 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
                                                                             Map<String, String> variables) {
     ProjectEvent projectEvent = projectRestService.findById(projectId)
                                                   .orElseThrow();
-    String query = projectRestService.compileQuery(projectEvent, freemarkerTemplateFileId, variables);
-    String cacheKey = DigestUtils.sha1Hex(query);
+    String queryTempl = projectRestService.getCachedQueryTemplate(projectEvent, freemarkerTemplateFileId);
+    String query = projectRestService.compileQuery(queryTempl, variables);
+    String cacheKey = DigestUtils.sha1Hex(projectId + query);
     return ResponseEntity.ok(projectRestService.executeSelectSparqlQuery(projectEvent, query, cacheKey));
   }
 
@@ -91,8 +93,9 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
 
     ProjectEvent projectEvent = projectRestService.findById(projectId)
                                                   .orElseThrow();
-    String query = projectRestService.compileQuery(projectEvent, freemarkerTemplateFileId, variables);
-    String cacheKey = DigestUtils.sha1Hex(query);
+    String queryTempl = projectRestService.getCachedQueryTemplate(projectEvent, freemarkerTemplateFileId);
+    String query = projectRestService.compileQuery(queryTempl, variables);
+    String cacheKey = DigestUtils.sha1Hex(projectId + query);
     return ResponseEntity.ok(projectRestService.executeConstructSparqlQuery(projectEvent, query, cacheKey));
   }
 
@@ -102,8 +105,9 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
                                                        Map<String, String> variables) {
     ProjectEvent projectEvent = projectRestService.findById(projectId)
                                                   .orElseThrow();
-    String query = projectRestService.compileQuery(projectEvent, freemarkerTemplateFileId, variables);
-    String cacheKey = DigestUtils.sha1Hex(query);
+    String queryTempl = projectRestService.getCachedQueryTemplate(projectEvent, freemarkerTemplateFileId);
+    String query = projectRestService.compileQuery(queryTempl, variables);
+    String cacheKey = DigestUtils.sha1Hex(projectId + query);
     return ResponseEntity.ok(projectRestService.executeAskSparqlQuery(projectEvent, query, cacheKey));
   }
 

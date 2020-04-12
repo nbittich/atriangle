@@ -42,7 +42,6 @@ import static java.util.stream.Collectors.toList;
 
 @Service
 @Slf4j
-// TODO this class should probably be splitted in different parts / microservices
 public class ProjectRestService {
 
   private static final String DERIVED_FILE_REGEX = "-derived-output-";
@@ -276,17 +275,24 @@ public class ProjectRestService {
   }
 
   @SneakyThrows
-  public String compileQuery(ProjectEvent project, String freemarkerTemplateFileId,
+  public String compileQuery(String templateQuery,
                              Map<String, String> variables) {
 
-    ResponseEntity<ByteArrayResource> freemarkerTemplate = downloadFile(project.getId(), freemarkerTemplateFileId);
-    String templateQuery = IOUtils.toString(Objects.requireNonNull(freemarkerTemplate.getBody())
-                                                              .getInputStream(), StandardCharsets.UTF_8);
     Configuration cfg = new Configuration(Configuration.VERSION_2_3_30);
-    Template selectSparqlQuery = new Template("selectSparqlQuery", new StringReader(templateQuery),
+    Template selectSparqlQuery = new Template("t", new StringReader(templateQuery),
                                               cfg);
 
     return FreeMarkerTemplateUtils.processTemplateIntoString(selectSparqlQuery, variables);
+  }
+
+  @SneakyThrows
+  @Cacheable(cacheNames = "queryTemplate", key = "#{project.id + freemarkerTemplateFileId}")
+  public String getCachedQueryTemplate(ProjectEvent project, String freemarkerTemplateFileId) {
+
+    ResponseEntity<ByteArrayResource> freemarkerTemplate = downloadFile(project.getId(), freemarkerTemplateFileId);
+    return IOUtils.toString(Objects.requireNonNull(freemarkerTemplate.getBody())
+                                                   .getInputStream(), StandardCharsets.UTF_8);
+
   }
 
 }
