@@ -35,10 +35,7 @@ import tech.artcoded.atriangle.feign.clients.xls2rdf.Xls2RdfRestFeignClient;
 import javax.inject.Inject;
 import java.io.StringReader;
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -283,7 +280,7 @@ public class ProjectRestService {
                              Map<String, String> variables) {
 
     ResponseEntity<ByteArrayResource> freemarkerTemplate = downloadFile(project.getId(), freemarkerTemplateFileId);
-    String templateQuery = IOUtils.toString(freemarkerTemplate.getBody()
+    String templateQuery = IOUtils.toString(Objects.requireNonNull(freemarkerTemplate.getBody())
                                                               .getInputStream(), StandardCharsets.UTF_8);
     Configuration cfg = new Configuration(Configuration.VERSION_2_3_30);
     Template selectSparqlQuery = new Template("selectSparqlQuery", new StringReader(templateQuery),

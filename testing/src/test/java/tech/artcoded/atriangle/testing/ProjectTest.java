@@ -24,10 +24,7 @@ import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.sparql.ModelConverter;
 
 import javax.inject.Inject;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
@@ -67,6 +64,12 @@ public class ProjectTest {
 
   @Value("classpath:shacl-bad-data-example.ttl")
   private Resource shaclBadDataExampleFile;
+
+  @Value("classpath:sparql-ask-data.ttl")
+  private Resource askDataFile;
+
+  @Value("classpath:sparql-ask.ftl")
+  private Resource askQueryFile;
 
   @Value("${backend.url}")
   private String backendUrl;
@@ -145,6 +148,49 @@ public class ProjectTest {
                           .equals(logEvent.getMessage())));
     assertFalse(logEvents.stream()
                          .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
+  }
+
+  @Test
+  public void askSparqlQueryTest() throws Exception {
+    String projectName = RandomStringUtils.randomAlphabetic(7);
+    ProjectEvent projectEvent = createProjectEvent(projectName);
+    // add rdf file
+    FileEvent fileEvent = addFileToProject(projectEvent.getId(), askDataFile);
+    sink(projectEvent, fileEvent, null);
+
+    List<LogEvent> logEvents = getLogs(projectEvent);
+
+    assertTrue(logEvents.stream()
+                        .anyMatch(logEvent -> "rdf saved to triplestore"
+                          .equals(logEvent.getMessage())));
+    assertTrue(logEvents.stream()
+                        .anyMatch(logEvent -> "rdf saved to mongodb"
+                          .equals(logEvent.getMessage())));
+    assertFalse(logEvents.stream()
+                         .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
+
+    // add ask query
+    FileEvent queryFile = addSparqlQueryFileToProject(projectEvent.getId(), askQueryFile);
+    Map<String, String> variables = Map.of(
+      "name","Alice"
+    );
+    Boolean alicePresent = restTemplate.postForObject(String.format("%s/project/execute-ask-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
+                                                  testingUtils.requestWithBody(Map.of(
+                                                    "name","Alice"
+                                                  )), Boolean.class);
+    Boolean bobPresent = restTemplate.postForObject(String.format("%s/project/execute-ask-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
+                                                  testingUtils.requestWithBody(Map.of(
+                                                    "name","Bob"
+                                                  )), Boolean.class);
+    assertTrue(alicePresent);
+    assertTrue(bobPresent);
+
+    Boolean jenaPresent = restTemplate.postForObject(String.format("%s/project/execute-ask-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
+                                                  testingUtils.requestWithBody(Map.of(
+                                                    "name","Jena"
+                                                  )), Boolean.class);
+    assertFalse(jenaPresent);
+
   }
 
   @Test
@@ -246,9 +292,17 @@ public class ProjectTest {
   }
 
   private FileEvent addFileToProject(String projectId, Resource resource) throws Exception {
+    return addFile(backendUrl + "/project/add-file", projectId, resource);
+  }
+
+  private FileEvent addSparqlQueryFileToProject(String projectId, Resource resource) throws Exception {
+    return addFile(backendUrl + "/project/add-sparql-query-template", projectId, resource);
+  }
+
+  private FileEvent addFile(String url, String projectId, Resource resource) throws Exception {
     // add rdf file
     log.info("add file {} to project {}", resource.getFilename(), projectId);
-    ResponseEntity<ProjectEvent> response = testingUtils.postFileToProject(projectId, backendUrl + "/project/add-file", resource.getFilename(),
+    ResponseEntity<ProjectEvent> response = testingUtils.postFileToProject(projectId, url, resource.getFilename(),
                                                                            resource);
     log.info("response status {}", response.getStatusCodeValue());
     assertEquals(HttpStatus.OK, response.getStatusCode());
