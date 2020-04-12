@@ -73,6 +73,8 @@ public class ProjectTest {
 
   @Value("classpath:sparql-select.ftl")
   private Resource selectQueryFile;
+  @Value("classpath:sparql-full-text-search.ftl")
+  private Resource fullTextSearchFile;
 
   @Value("classpath:sparql-construct.ftl")
   private Resource constructQueryFile;
@@ -118,16 +120,7 @@ public class ProjectTest {
     Model model = ModelConverter.toModel(modelConverted, RDFFormat.TURTLE);
     assertTrue(ModelConverter.equals(expectedModel, model));
     sink(projectEventWithSkosFileConverted, skosOutput, null);
-    List<LogEvent> logEvents = getLogs(projectEvent);
-
-    assertTrue(logEvents.stream()
-                        .anyMatch(logEvent -> "rdf saved to triplestore"
-                          .equals(logEvent.getMessage())));
-    assertTrue(logEvents.stream()
-                        .anyMatch(logEvent -> "rdf saved to mongodb"
-                          .equals(logEvent.getMessage())));
-    assertFalse(logEvents.stream()
-                         .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
+   checkLogs(projectEvent);
   }
 
   @Test
@@ -146,16 +139,8 @@ public class ProjectTest {
     FileEvent fileEvent = addFileToProject(projectEvent.getId(), rdfExampleFile);
     sink(projectEvent, fileEvent, null);
 
-    List<LogEvent> logEvents = getLogs(projectEvent);
+    checkLogs(projectEvent);
 
-    assertTrue(logEvents.stream()
-                        .anyMatch(logEvent -> "rdf saved to triplestore"
-                          .equals(logEvent.getMessage())));
-    assertTrue(logEvents.stream()
-                        .anyMatch(logEvent -> "rdf saved to mongodb"
-                          .equals(logEvent.getMessage())));
-    assertFalse(logEvents.stream()
-                         .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
   }
 
   @Test
@@ -166,16 +151,7 @@ public class ProjectTest {
     FileEvent fileEvent = addFileToProject(projectEvent.getId(), askDataFile);
     sink(projectEvent, fileEvent, null);
 
-    List<LogEvent> logEvents = getLogs(projectEvent);
-
-    assertTrue(logEvents.stream()
-                        .anyMatch(logEvent -> "rdf saved to triplestore"
-                          .equals(logEvent.getMessage())));
-    assertTrue(logEvents.stream()
-                        .anyMatch(logEvent -> "rdf saved to mongodb"
-                          .equals(logEvent.getMessage())));
-    assertFalse(logEvents.stream()
-                         .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
+    checkLogs(projectEvent);
 
     // add ask query
     FileEvent queryFile = addSparqlQueryFileToProject(projectEvent.getId(), askQueryFile);
@@ -209,16 +185,7 @@ public class ProjectTest {
     FileEvent fileEvent = addFileToProject(projectEvent.getId(), rdfExampleFile);
     sink(projectEvent, fileEvent, null);
 
-    List<LogEvent> logEvents = getLogs(projectEvent);
-
-    assertTrue(logEvents.stream()
-                        .anyMatch(logEvent -> "rdf saved to triplestore"
-                          .equals(logEvent.getMessage())));
-    assertTrue(logEvents.stream()
-                        .anyMatch(logEvent -> "rdf saved to mongodb"
-                          .equals(logEvent.getMessage())));
-    assertFalse(logEvents.stream()
-                         .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
+    checkLogs(projectEvent);
 
     // add select query
     FileEvent queryFile = addSparqlQueryFileToProject(projectEvent.getId(), selectQueryFile);
@@ -252,6 +219,37 @@ public class ProjectTest {
   }
 
   @Test
+  public void fullTextSearchSparqlQueryTest() throws Exception {
+    String projectName = RandomStringUtils.randomAlphabetic(7);
+    ProjectEvent projectEvent = createProjectEvent(projectName);
+    // add rdf file
+    FileEvent fileEvent = addFileToProject(projectEvent.getId(), rdfExampleFile);
+    sink(projectEvent, fileEvent, null);
+
+
+
+    // add fullt text search query
+    FileEvent queryFile = addSparqlQueryFileToProject(projectEvent.getId(), fullTextSearchFile);
+    Map<String, String> variables = Map.of(
+      "searchTerm","Nordine",
+      "minRelevance","0.25",
+      "matchAllTerm","true",
+      "maxRank","1000"
+    );
+    List<Map<String, String>> result = restTemplate.postForObject(String.format("%s/project/execute-select-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
+                                               testingUtils.requestWithBody(variables), List.class);
+
+    log.info("result of select query:\n {}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
+
+    assertTrue(result.stream().anyMatch(map-> "http://artcoded.tech/person".equals(map.get("s")) &&
+                                          "http://artcoded.tech#artist".equals(map.get("p")) &&
+                                          "1".equals(map.get("rank")) &&
+                                          "0.625".equals(map.get("score")) &&
+                                          "Nordine Bittich".equals(map.get("o"))
+    ));
+  }
+
+  @Test
   public void constructSparqlQueryTest() throws Exception {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
@@ -259,16 +257,7 @@ public class ProjectTest {
     FileEvent fileEvent = addFileToProject(projectEvent.getId(), rdfExampleFile);
     sink(projectEvent, fileEvent, null);
 
-    List<LogEvent> logEvents = getLogs(projectEvent);
-
-    assertTrue(logEvents.stream()
-                        .anyMatch(logEvent -> "rdf saved to triplestore"
-                          .equals(logEvent.getMessage())));
-    assertTrue(logEvents.stream()
-                        .anyMatch(logEvent -> "rdf saved to mongodb"
-                          .equals(logEvent.getMessage())));
-    assertFalse(logEvents.stream()
-                         .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
+    checkLogs(projectEvent);
 
     // add construct query
     FileEvent queryFile = addSparqlQueryFileToProject(projectEvent.getId(), constructQueryFile);
@@ -417,6 +406,18 @@ public class ProjectTest {
     return fileEvent;
   }
 
+  private void checkLogs(ProjectEvent projectEvent) throws Exception {
+    List<LogEvent> logEvents = getLogs(projectEvent);
+
+    assertTrue(logEvents.stream()
+                        .anyMatch(logEvent -> "rdf saved to triplestore"
+                          .equals(logEvent.getMessage())));
+    assertTrue(logEvents.stream()
+                        .anyMatch(logEvent -> "rdf saved to mongodb"
+                          .equals(logEvent.getMessage())));
+    assertFalse(logEvents.stream()
+                         .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
+  }
   private ResponseEntity<ByteArrayResource> downloadFile(String projectId, FileEvent fileEvent) {
     String url = String.format("%s/project/%s/download-file/%s", backendUrl, projectId, fileEvent.getId());
     log.info("url {}", url);
