@@ -1,8 +1,3 @@
 # Release note
 
-## 0.3.6
-* full text search test
-* init frontend
-* node should not be pushed
-* update cloc
-* frontend setup done
+## 0.4.1
