@@ -5,7 +5,7 @@
   <parent>
     <groupId>tech.artcoded</groupId>
     <artifactId>atriangle-microservices</artifactId>
-    <version>0.3.5-SNAPSHOT</version>
+    <version>0.3.5</version>
   </parent>
 
   <artifactId>atriangle-kafka</artifactId>
