@@ -1,8 +1,8 @@
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { Observable, Subject } from 'rxjs';
-import { map } from 'rxjs/operators';
+import {HttpClient, HttpHeaders, HttpResponse} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Router} from '@angular/router';
+import {Observable, Subject} from 'rxjs';
+import {map} from 'rxjs/operators';
 
 import {User} from '../models/user';
 import {environment} from "../../../environments/environment";
@@ -25,7 +25,8 @@ export class AuthService {
 
   login(username: string, password: string): Observable<void> {
     const headers = new HttpHeaders({
-      Authorization: `Basic ${window.btoa(`${username}:${unescape(encodeURIComponent(password))}`)}`
+      Authorization: `Basic ${window.btoa(`${username}:${unescape(encodeURIComponent(password))}`)}`,
+      'X-Requested-With': 'XMLHttpRequest'
     });
     return this.http
       .post<User>(
