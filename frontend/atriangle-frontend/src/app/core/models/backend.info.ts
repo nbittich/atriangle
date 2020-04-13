@@ -1,7 +1,18 @@
 export class BackendInfo {
-  artifactId: string;
+  artifact: string;
   group: string;
   name: string;
-  time: Date;
   version: string;
+  time: Date;
+  java: BackendInfoSource;
+  encoding: BackendInfoEncoding;
+}
+
+export class BackendInfoSource {
+  source: string;
+}
+
+export class BackendInfoEncoding {
+  source: string;
+  reporting: string;
 }

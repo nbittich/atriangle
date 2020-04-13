@@ -35,13 +35,15 @@ import {DeviceDetectorModule} from "ngx-device-detector";
 import {MenuComponent} from './menu/menu.component';
 import {fab} from "@fortawesome/free-brands-svg-icons";
 import {HomeComponent} from './home/home.component';
+import {BuildInfoComponent} from './build-info/build-info.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
     MenuComponent,
-    HomeComponent
+    HomeComponent,
+    BuildInfoComponent
   ],
   imports: [
     BrowserModule,

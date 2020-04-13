@@ -1,0 +1,7 @@
+<ng-container *ngIf="(buildInfo$ | async) as buildInfo">
+  <mat-chip-list aria-orientation="horizontal">
+    <mat-chip>{{buildInfo.name}}</mat-chip>
+    <mat-chip color="accent" selected>Version {{buildInfo.version}}</mat-chip>
+    <mat-chip color="primary" selected>Build Date: {{buildInfo.time | date:'medium' }}</mat-chip>
+  </mat-chip-list>
+</ng-container>

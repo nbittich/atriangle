@@ -20,8 +20,8 @@ export class InfoService {
 
   public getBuildInfo(): Observable<BackendInfo> {
     return this.http.get<BackendInfo>(`${environment.backendUrl}/actuator/info`).pipe(
-      map((data: BackendInfo) => {
-        return data;
+      map((data: any) => {
+        return data.build;
       })
     );
   }

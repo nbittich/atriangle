@@ -1,7 +1,15 @@
-<ng-container *ngIf="(buildInfo$ | async) as buildInfo">
-  <p>ArtifactId: {{buildInfo.artifactId}}</p>
-  <p>Group: {{buildInfo.group}}</p>
-  <p>Name: {{buildInfo.name}}</p>
-  <p>Version: {{buildInfo.version}}</p>
-  <p>Version: {{buildInfo.time | date:'medium' }}</p>
-</ng-container>
+<mat-card class="container mt-5 transparent">
+  <mat-card-title>A TRIANGLE</mat-card-title>
+  <mat-card-content>
+    <mat-card-subtitle>
+      RDF ingestion made it *simple*
+    </mat-card-subtitle>
+    <ng-container>
+      <div>
+        <span fxLayout="row wrap" fxFlex="68">
+           Lorem ipsum dolor sit amet, consectetur adipisicing elit. Aperiam consequatur dicta eligendi explicabo molestias nulla qui sapiente similique veritatis vero! Dignissimos eaque eos fuga iste neque nihil, recusandae soluta voluptatem?
+        </span>
+      </div>
+    </ng-container>
+  </mat-card-content>
+</mat-card>
