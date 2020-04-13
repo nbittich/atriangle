@@ -6,7 +6,7 @@
       </button>
       <app-build-info></app-build-info>
       <span fxFlex></span>
-      <a mat-button *ngIf="isLoggedIn() && isAdmin()">
+      <a mat-button class="app-warn" *ngIf="isLoggedIn() && isAdmin()">
         <fa-icon [icon]="['fas', 'project-diagram']" aria-hidden="false" aria-label="My Projects"></fa-icon>
         Projects ({{projects}})
       </a>
