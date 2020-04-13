@@ -30,8 +30,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .hasAnyAuthority(ADMIN.getAuthority())
 
 
+        .antMatchers(HttpMethod.GET, "/api/public/**")
+        .permitAll()
+
         .antMatchers(HttpMethod.POST, "/api/user/**")
         .hasAnyAuthority(USER.getAuthority(), ADMIN.getAuthority())
+
         .antMatchers(HttpMethod.POST, "/api/**")
         .hasAuthority(ADMIN.getAuthority())
         .antMatchers(HttpMethod.PUT, "/api/**")
