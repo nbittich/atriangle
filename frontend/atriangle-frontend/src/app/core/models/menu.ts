@@ -13,5 +13,5 @@ export class MenuIcon {
 
 
 export enum MenuSection {
-  REST_ENDPOINT, PROXY_ENDPOINT
+  REST_ENDPOINT, PROXY_ENDPOINT, FRONTEND_ENDPOINT
 }

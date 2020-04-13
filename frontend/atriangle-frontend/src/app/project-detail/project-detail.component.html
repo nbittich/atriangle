@@ -1,0 +1,8 @@
+<mat-card class="mt-5 container transparent" *ngIf="project">
+  <mat-card-title class="text-center">Project {{project.name}}</mat-card-title>
+  <mat-card-content>
+    <div *ngIf="project">
+      {{project.id}}
+    </div>
+  </mat-card-content>
+</mat-card>

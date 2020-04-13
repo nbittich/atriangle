@@ -10,7 +10,6 @@
     </mat-form-field>
     <div *ngIf="datasource">
       <table mat-table [dataSource]="datasource">
-
         <!-- ID Column -->
         <ng-container matColumnDef="id">
           <th mat-header-cell *matHeaderCellDef> ID</th>
@@ -30,12 +29,12 @@
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef> Action</th>
           <td colspan="2" [id]="row.name" mat-cell *matCellDef="let row">
-            <button mat-button color="accent">
-              <fa-icon [icon]="['fas', 'edit']"></fa-icon>
-            </button>
-            <button mat-button color="warn">
+            <a [routerLink]="row.id" class="app-accent">
+              <fa-icon [icon]="['fas', 'eye']"></fa-icon>
+            </a>&nbsp;
+            <a href="#" class="app-warn">
               <fa-icon [icon]="['fas', 'trash']"></fa-icon>
-            </button>
+            </a>
           </td>
         </ng-container>
 

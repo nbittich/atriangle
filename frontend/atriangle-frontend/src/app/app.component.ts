@@ -22,17 +22,18 @@ export class AppComponent implements OnInit{
               private router: Router) {
   }
 
-  isLoggedIn(): boolean{
-    return this.authService.isLoggedIn();
-  }
 
-  getUserInfo() : User | undefined {
+  getUserInfo(): User | undefined {
     return this.isLoggedIn() ? this.authService.getUser() : undefined;
   }
 
   logout() {
     this.authService.logout();
     this.showLoginForm = false;
+  }
+
+  isLoggedIn(): boolean {
+    return this.authService.isLoggedIn();
   }
 
   isAdmin() {

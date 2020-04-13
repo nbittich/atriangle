@@ -1,7 +1,7 @@
 import {Menu, MenuSection} from "../core/models";
 import {environment} from "../../environments/environment";
 
-const {REST_ENDPOINT,PROXY_ENDPOINT} = MenuSection;
+const {REST_ENDPOINT, PROXY_ENDPOINT, FRONTEND_ENDPOINT} = MenuSection;
 export default  [
   {
     url: environment.backendUrl + '/api/project/swagger-ui.html',
@@ -100,6 +100,15 @@ export default  [
     icon: {
       pack: 'fas',
       name: 'search'
+    }
+  },
+  {
+    url: 'projects',
+    name: 'Projects',
+    section: FRONTEND_ENDPOINT,
+    icon: {
+      pack: 'fas',
+      name: 'project-diagram'
     }
   }
 ] as Menu[];

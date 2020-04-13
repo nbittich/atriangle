@@ -4,10 +4,6 @@
       <button mat-button color="primary" (click)="opened = !opened" style="min-width: 0">
         <fa-icon [icon]="['fas', 'ellipsis-v']"></fa-icon>
       </button>
-      <button routerLink="projects" mat-button class="app-warn" *ngIf="isLoggedIn() && isAdmin()">
-        <fa-icon [icon]="['fas', 'project-diagram']" aria-hidden="false" aria-label="My Projects"></fa-icon>
-        Projects
-      </button>
       <span *ngIf="bigScreen()" fxFlex=""></span>
       <app-build-info *ngIf="bigScreen()"></app-build-info>
     </mat-toolbar>

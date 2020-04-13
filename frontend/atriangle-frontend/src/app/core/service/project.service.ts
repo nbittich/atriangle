@@ -21,4 +21,12 @@ export class ProjectService {
       })
     );
   }
+
+  getProject(id: string): Observable<Project> {
+    return this.http.get<Project>(`${environment.backendUrl}/api/project/by-id/${id}`).pipe(
+      map((data: Project) => {
+        return data;
+      })
+    );
+  }
 }
