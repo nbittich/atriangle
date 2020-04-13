@@ -29,12 +29,12 @@
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef> Action</th>
           <td colspan="2" [id]="row.name" mat-cell *matCellDef="let row">
-            <a [routerLink]="['/projects',row.id]" class="app-accent">
+            <button mat-icon-button [routerLink]="['/projects',row.id]" class="app-accent">
               <fa-icon [icon]="['fas', 'eye']"></fa-icon>
-            </a>&nbsp;
-            <a href="#" class="app-warn">
+            </button>&nbsp;
+            <button mat-icon-button class="app-warn">
               <fa-icon [icon]="['fas', 'trash']"></fa-icon>
-            </a>
+            </button>
           </td>
         </ng-container>
 

@@ -29,13 +29,13 @@
         </ng-container>
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef> Action</th>
-          <td colspan="2" [id]="row.name" mat-cell *matCellDef="let row">
-            <a [routerLink]="['/projects',row.id]" class="app-accent">
+          <td class="app-accent" *matCellDef="let row">
+            <button mat-icon-button (click)="download(row)">
               <fa-icon [icon]="['fas', 'download']"></fa-icon>
-            </a>&nbsp;
-            <a href="#" class="app-warn">
+            </button>&nbsp;
+            <button mat-icon-button class="app-warn">
               <fa-icon [icon]="['fas', 'trash']"></fa-icon>
-            </a>
+            </button>
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>

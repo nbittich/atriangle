@@ -3,6 +3,7 @@ import {ActivatedRoute} from "@angular/router";
 import {FileUpload, Project} from "../core/models";
 import {ProjectService} from "../core/service/project.service";
 import {MatTableDataSource} from "@angular/material/table";
+import {FileService} from "../core/service/file.service";
 
 @Component({
   selector: 'app-project-detail',
@@ -23,7 +24,9 @@ export class ProjectDetailComponent implements OnInit {
 
   }
 
-  constructor(private route: ActivatedRoute, private projectService: ProjectService) {
+  constructor(private route: ActivatedRoute,
+              private fileService: FileService,
+              private projectService: ProjectService) {
   }
 
   ngOnInit(): void {
@@ -36,4 +39,7 @@ export class ProjectDetailComponent implements OnInit {
     });
   }
 
+  download(fileUpload: FileUpload) {
+    this.fileService.downloadFile(this.id, fileUpload);
+  }
 }
