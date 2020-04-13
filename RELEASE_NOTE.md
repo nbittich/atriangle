@@ -5,3 +5,5 @@
 * Add Fork me on github
 * bugfix
 * fix cors & add frontend projects
+* file download
+* prepare release
