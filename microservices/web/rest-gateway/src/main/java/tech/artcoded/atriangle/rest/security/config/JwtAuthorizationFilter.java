@@ -53,7 +53,7 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
       try {
 
         Jws<Claims> parsedToken = Jwts.parserBuilder()
-                                      .requireAudience("string")
+                                      .requireAudience(env.getRequiredProperty("jwt.audience"))
                                       .setSigningKey(signingKey)
                                       .build()
                                       .parseClaimsJws(token.replace("Bearer ", ""));

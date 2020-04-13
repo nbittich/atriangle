@@ -40,7 +40,10 @@ export class AppComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.opened = !this.deviceService.isMobile() && !this.deviceService.isTablet();
+    this.opened = this.bigScreen();
+  }
 
+  bigScreen(): boolean {
+    return !this.deviceService.isMobile() && !this.deviceService.isTablet()
   }
 }

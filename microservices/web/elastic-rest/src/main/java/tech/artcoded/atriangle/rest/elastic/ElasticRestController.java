@@ -13,11 +13,11 @@ import org.elasticsearch.client.indices.GetMappingsResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.dto.LogEvent;
 import tech.artcoded.atriangle.core.elastic.ElasticSearchRdfService;
-import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
@@ -29,7 +29,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@CrossOriginRestController
+@RestController
 @Slf4j
 public class ElasticRestController implements PingControllerTrait, BuildInfoControllerTrait, ElasticRestFeignClient {
   @Getter

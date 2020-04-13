@@ -10,9 +10,9 @@ import org.apache.jena.riot.RDFLanguages;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 import tech.artcoded.atriangle.api.CheckedSupplier;
 import tech.artcoded.atriangle.api.dto.FileEvent;
-import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
@@ -26,7 +26,7 @@ import java.util.Optional;
 import static java.util.Objects.requireNonNull;
 
 
-@CrossOriginRestController
+@RestController
 @ApiOperation("Shacl Validation Rest")
 @Slf4j
 public class ShaclRestController implements PingControllerTrait, BuildInfoControllerTrait, ShaclRestFeignClient {

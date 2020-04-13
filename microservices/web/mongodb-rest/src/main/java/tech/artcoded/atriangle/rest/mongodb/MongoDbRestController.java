@@ -12,8 +12,8 @@ import org.springframework.data.mongodb.core.query.BasicQuery;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 import tech.artcoded.atriangle.api.RawJsonWrappedResponse;
-import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
@@ -25,7 +25,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-@CrossOriginRestController
+@RestController
 @Slf4j
 public class MongoDbRestController implements PingControllerTrait,
   BuildInfoControllerTrait, MongoDbRestFeignClient {

@@ -7,10 +7,10 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.FileHelper;
 import tech.artcoded.atriangle.api.dto.*;
-import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 
-@CrossOriginRestController
+@RestController
 @ApiOperation("Project Rest")
 @Slf4j
 public class ProjectRestController implements PingControllerTrait, BuildInfoControllerTrait, ProjectRestFeignClient {

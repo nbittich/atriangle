@@ -36,6 +36,7 @@ import {MenuComponent} from './menu/menu.component';
 import {fab} from "@fortawesome/free-brands-svg-icons";
 import {HomeComponent} from './home/home.component';
 import {BuildInfoComponent} from './build-info/build-info.component';
+import {ProjectHomepageComponent} from './project-homepage/project-homepage.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import {BuildInfoComponent} from './build-info/build-info.component';
     LoginComponent,
     MenuComponent,
     HomeComponent,
-    BuildInfoComponent
+    BuildInfoComponent,
+    ProjectHomepageComponent
   ],
   imports: [
     BrowserModule,

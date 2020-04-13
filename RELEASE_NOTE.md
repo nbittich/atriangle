@@ -4,3 +4,4 @@
 * Add Missing Skos Play Link
 * Add Fork me on github
 * bugfix
+* fix cors & add frontend projects

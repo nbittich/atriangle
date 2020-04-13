@@ -1,4 +1,5 @@
 zuul:
+  ignored-headers: Access-Control-Allow-Credentials, Access-Control-Allow-Origin
   routes:
     xls2rdf:
       path: /api/xls2rdf/**

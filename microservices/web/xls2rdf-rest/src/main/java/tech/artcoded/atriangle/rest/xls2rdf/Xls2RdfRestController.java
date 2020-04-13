@@ -11,8 +11,8 @@ import org.eclipse.rdf4j.rio.RDFWriterRegistry;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-import tech.artcoded.atriangle.core.rest.annotation.CrossOriginRestController;
 import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
@@ -25,7 +25,7 @@ import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-@CrossOriginRestController
+@RestController
 @Slf4j
 public class Xls2RdfRestController implements PingControllerTrait, BuildInfoControllerTrait, Xls2RdfRestFeignClient {
   @Getter

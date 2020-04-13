@@ -2,7 +2,7 @@
   <ng-container *ngIf="menuApiList && menuApiList.length">
     <h3 matSubheader>Rest API</h3>
     <a target="_blank" [href]="menu.url" mat-list-item  *ngFor="let menu of menuApiList">
-      <fa-icon class="app-primary"  [icon]="[menu.icon.pack, menu.icon.name]"
+      <fa-icon class="app-accent"  [icon]="[menu.icon.pack, menu.icon.name]"
                aria-hidden="false"></fa-icon>&nbsp;{{ menu.name }}
     </a>
   </ng-container>
@@ -10,7 +10,7 @@
     <mat-divider *ngIf="menuApiList && menuApiList.length"></mat-divider>
     <h3 matSubheader>Proxy Gateway</h3>
     <a target="_blank" [href]="menu.url" mat-list-item  *ngFor="let menu of menuProxyList">
-      <fa-icon class="app-primary"  [icon]="[menu.icon.pack, menu.icon.name]"
+      <fa-icon class="app-accent"  [icon]="[menu.icon.pack, menu.icon.name]"
                aria-hidden="false"></fa-icon>&nbsp;{{ menu.name }}
     </a>
   </ng-container>
