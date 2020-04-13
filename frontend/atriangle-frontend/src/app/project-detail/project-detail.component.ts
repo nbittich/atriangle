@@ -1,7 +1,8 @@
 import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {Project} from "../core/models";
+import {FileUpload, Project} from "../core/models";
 import {ProjectService} from "../core/service/project.service";
+import {MatTableDataSource} from "@angular/material/table";
 
 @Component({
   selector: 'app-project-detail',
@@ -11,6 +12,16 @@ import {ProjectService} from "../core/service/project.service";
 export class ProjectDetailComponent implements OnInit {
   id: string;
   project: Project;
+  datasource: MatTableDataSource<FileUpload>;
+
+  displayedColumns: string[] = ['id',
+    'contentType', 'eventType', 'originalFilename', 'creationDate', 'action'
+  ];
+
+  applyFilter(value: string) {
+    this.datasource.filter = value.trim().toLowerCase();
+
+  }
 
   constructor(private route: ActivatedRoute, private projectService: ProjectService) {
   }
@@ -18,7 +29,10 @@ export class ProjectDetailComponent implements OnInit {
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.id = params["id"];
-      this.projectService.getProject(this.id).subscribe(data => this.project = data);
+      this.projectService.getProject(this.id).subscribe(data => {
+        this.project = data;
+        this.datasource = new MatTableDataSource<FileUpload>(this.project.fileEvents);
+      });
     });
   }
 

@@ -1,4 +1,4 @@
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {ProjectService} from "../core/service/project.service";
 import {Project} from "../core/models";
 import {MatTableDataSource} from "@angular/material/table";
@@ -16,19 +16,16 @@ export class ProjectHomepageComponent implements OnInit {
     'name', 'files', 'action'
   ];
 
-  constructor(private projectService: ProjectService) {
+  constructor(private projectService: ProjectService, private cdr: ChangeDetectorRef) {
   }
 
-  private paginator: MatPaginator;
-
-  @ViewChild(MatPaginator) set matPaginator(mp: MatPaginator) {
-    this.paginator = mp;
-    this.datasource.paginator = this.paginator;
-  }
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   ngOnInit(): void {
     this.projectService.getProjects().subscribe(data => {
       this.datasource = new MatTableDataSource<Project>(data);
+      this.cdr.detectChanges();
+      this.datasource.paginator = this.paginator;
     });
   }
 

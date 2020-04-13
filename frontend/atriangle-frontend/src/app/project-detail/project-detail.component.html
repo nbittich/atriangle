@@ -1,8 +1,47 @@
 <mat-card class="mt-5 container transparent" *ngIf="project">
   <mat-card-title class="text-center">Project {{project.name}}</mat-card-title>
   <mat-card-content>
-    <div *ngIf="project">
-      {{project.id}}
+    <mat-form-field>
+      <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
+    </mat-form-field>
+    <div *ngIf="datasource">
+      <table mat-table [dataSource]="datasource">
+        <!-- ID Column -->
+        <ng-container matColumnDef="id">
+          <th mat-header-cell *matHeaderCellDef> ID</th>
+          <td mat-cell *matCellDef="let row"> {{row.id}} </td>
+        </ng-container>
+        <ng-container matColumnDef="contentType">
+          <th mat-header-cell *matHeaderCellDef>ContentType</th>
+          <td mat-cell *matCellDef="let row"> {{row.contentType}} </td>
+        </ng-container>
+        <ng-container matColumnDef="eventType">
+          <th mat-header-cell *matHeaderCellDef>EventType</th>
+          <td mat-cell *matCellDef="let row"> {{row.eventType}} </td>
+        </ng-container>
+        <ng-container matColumnDef="originalFilename">
+          <th mat-header-cell *matHeaderCellDef>FileName</th>
+          <td mat-cell *matCellDef="let row"> {{row.originalFilename}} </td>
+        </ng-container>
+        <ng-container matColumnDef="creationDate">
+          <th mat-header-cell *matHeaderCellDef>Creation</th>
+          <td mat-cell *matCellDef="let row"> {{row.creationDate }} </td>
+        </ng-container>
+        <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef> Action</th>
+          <td colspan="2" [id]="row.name" mat-cell *matCellDef="let row">
+            <a [routerLink]="['/projects',row.id]" class="app-accent">
+              <fa-icon [icon]="['fas', 'download']"></fa-icon>
+            </a>&nbsp;
+            <a href="#" class="app-warn">
+              <fa-icon [icon]="['fas', 'trash']"></fa-icon>
+            </a>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;">
+        </tr>
+      </table>
     </div>
   </mat-card-content>
 </mat-card>
