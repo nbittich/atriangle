@@ -9,9 +9,9 @@ management:
   endpoints:
     web:
       cors:
-        allowed-origins: *
+        allowed-origins: '*'
         allowed-methods: GET
-        allowed-headers: *
+        allowed-headers: '*'
 ---
 spring:
   profiles: rest-override
