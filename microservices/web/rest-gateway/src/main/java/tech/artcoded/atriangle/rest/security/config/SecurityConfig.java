@@ -29,15 +29,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers(HttpMethod.DELETE, "/**")
         .hasAnyAuthority(ADMIN.getAuthority())
 
+
+        .antMatchers(HttpMethod.POST, "/api/user/**")
+        .hasAnyAuthority(USER.getAuthority(), ADMIN.getAuthority())
         .antMatchers(HttpMethod.POST, "/api/**")
         .hasAuthority(ADMIN.getAuthority())
         .antMatchers(HttpMethod.PUT, "/api/**")
         .hasAuthority(ADMIN.getAuthority())
 
-        .antMatchers(HttpMethod.GET, "/api/user/**")
-        .authenticated()
-        .antMatchers(HttpMethod.POST, "/api/user/**")
-        .authenticated()
 
         .antMatchers(HttpMethod.POST, "/proxy/**/sparql")
         .permitAll()
@@ -63,7 +62,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         .antMatchers(HttpMethod.GET, "/api/**")
         .hasAnyAuthority(ADMIN.getAuthority(), USER.getAuthority())
-
 
         .antMatchers(HttpMethod.OPTIONS, "/**")
         .permitAll()

@@ -8,7 +8,7 @@
 
       </div>
       <span fxFlex></span>
-      <a [routerLink]="['cart']" mat-button *ngIf="isLoggedIn()">
+      <a  mat-button *ngIf="isLoggedIn() && isAdmin()">
         <fa-icon  [icon]="['fas', 'project-diagram']" aria-hidden="false" aria-label="My Projects"></fa-icon>
         Projects ({{projects}})
       </a>

@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { Observable, Subject } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-import { User } from '../models/user';
+import {User} from '../models/user';
 import {environment} from "../../../environments/environment";
 
 @Injectable({
@@ -62,19 +62,12 @@ export class AuthService {
   }
 
   hasRole(expectedRole: string[]): boolean {
-    const user = this.getUser() || { authorities: [{ authority: 'ANONYMOUS' }] };
-    const authorities = user.authorities || [{ authority: 'ANONYMOUS' }];
-    return expectedRole.some(r => authorities.map(a => a.authority.toLowerCase()).includes(r.toLowerCase()));
+    const user = this.getUser() || { authorities: ['ANONYMOUS'] };
+    const authorities = user.authorities;
+    return expectedRole.some(r => authorities.map(a => a.toLowerCase()).includes(r.toLowerCase()));
   }
 
-  getTokenHeader(): { 'x-auth-token': string } {
-    const xAuthToken = this.getToken();
-    if (xAuthToken && xAuthToken.length) {
-      return { 'x-auth-token': `${xAuthToken}` };
-    }
-  }
-
-  getToken(): string {
+  getToken(): string | undefined {
     return localStorage.getItem('xAuthToken');
   }
 

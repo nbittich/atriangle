@@ -15,11 +15,13 @@ export class AppComponent implements OnInit{
   showLoginForm: boolean;
   projects: number= 0;
   events: string[] = [];
+
   constructor(private authService: AuthService,
               public dialog: MatDialog,
               private deviceService: DeviceDetectorService,
               private router: Router) {
   }
+
   isLoggedIn(): boolean{
     return this.authService.isLoggedIn();
   }
@@ -27,13 +29,14 @@ export class AppComponent implements OnInit{
   getUserInfo() : User | undefined {
     return this.isLoggedIn() ? this.authService.getUser() : undefined;
   }
+
   logout() {
     this.authService.logout();
     this.showLoginForm = false;
   }
 
   isAdmin() {
-    return this.authService.hasRole(["ADMIN", "EMPLOYEE"]);
+    return this.authService.hasRole(["ADMIN"]);
   }
 
   ngOnInit(): void {

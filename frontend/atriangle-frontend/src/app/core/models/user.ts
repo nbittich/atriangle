@@ -1,10 +1,7 @@
 export class User {
   id: number;
   username: string;
-  authorities?: Role[];
-}
-export class Role {
-  authority: string;
+  authorities: string[];
 }
 export class UserFull extends User {
   password: string;
