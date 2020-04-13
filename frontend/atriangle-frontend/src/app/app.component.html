@@ -23,9 +23,9 @@
                 (click)="showLoginForm = !showLoginForm">{{ showLoginForm ? 'Hide' : 'Login'}}</button>
         <app-login *ngIf="showLoginForm"></app-login>
       </div>
-      <div class="mb-1" fxLayout="column" fxLayoutAlign="center center" *ngIf="isLoggedIn()">
+      <div class="mb-2" fxLayout="column" fxLayoutAlign="center center" *ngIf="isLoggedIn()">
         <p class="app-logged text-center borderless mx-0">Logged as {{getUserInfo().username}}</p>
-        <button  mat-flat-button color="warn" (click)="logout()">Logout</button>
+        <button mat-flat-button color="warn" (click)="logout()">Logout</button>
       </div>
       <hr class="mat-divider">
       <app-menu></app-menu>
