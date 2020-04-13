@@ -1,1 +1,7 @@
-<p>home works!</p>
+<ng-container *ngIf="(buildInfo$ | async) as buildInfo">
+  <p>ArtifactId: {{buildInfo.artifactId}}</p>
+  <p>Group: {{buildInfo.group}}</p>
+  <p>Name: {{buildInfo.name}}</p>
+  <p>Version: {{buildInfo.version}}</p>
+  <p>Version: {{buildInfo.time | date:'medium' }}</p>
+</ng-container>

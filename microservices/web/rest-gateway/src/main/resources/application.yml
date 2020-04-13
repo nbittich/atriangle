@@ -5,7 +5,13 @@ spring:
     name: RestPublicEndpoint
   profiles:
     include: sparql, elasticsearch, zuul, zookeeper, rest, rest-override, mongoexpress, logging, database, security
-
+management:
+  endpoints:
+    web:
+      cors:
+        allowed-origins: *
+        allowed-methods: GET
+        allowed-headers: *
 ---
 spring:
   profiles: rest-override

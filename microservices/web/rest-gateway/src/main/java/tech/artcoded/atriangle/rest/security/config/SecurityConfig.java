@@ -29,10 +29,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .antMatchers(HttpMethod.DELETE, "/**")
         .hasAnyAuthority(ADMIN.getAuthority())
 
-
-        .antMatchers(HttpMethod.GET, "/api/public/**")
-        .permitAll()
-
         .antMatchers(HttpMethod.POST, "/api/user/**")
         .hasAnyAuthority(USER.getAuthority(), ADMIN.getAuthority())
 
