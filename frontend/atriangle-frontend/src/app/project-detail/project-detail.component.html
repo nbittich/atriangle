@@ -11,6 +11,10 @@
           <th mat-header-cell *matHeaderCellDef> ID</th>
           <td mat-cell *matCellDef="let row"> {{row.id}} </td>
         </ng-container>
+        <ng-container matColumnDef="originalFilename">
+          <th mat-header-cell *matHeaderCellDef>FileName</th>
+          <td mat-cell *matCellDef="let row"> {{row.originalFilename}} </td>
+        </ng-container>
         <ng-container matColumnDef="contentType">
           <th mat-header-cell *matHeaderCellDef>ContentType</th>
           <td mat-cell *matCellDef="let row"> {{row.contentType}} </td>
@@ -18,10 +22,6 @@
         <ng-container matColumnDef="eventType">
           <th mat-header-cell *matHeaderCellDef>EventType</th>
           <td mat-cell *matCellDef="let row"> {{row.eventType}} </td>
-        </ng-container>
-        <ng-container matColumnDef="originalFilename">
-          <th mat-header-cell *matHeaderCellDef>FileName</th>
-          <td mat-cell *matCellDef="let row"> {{row.originalFilename}} </td>
         </ng-container>
         <ng-container matColumnDef="creationDate">
           <th mat-header-cell *matHeaderCellDef>Creation</th>

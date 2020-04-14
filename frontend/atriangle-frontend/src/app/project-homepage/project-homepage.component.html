@@ -28,7 +28,7 @@
         </ng-container>
         <ng-container matColumnDef="action">
           <th mat-header-cell *matHeaderCellDef> Action</th>
-          <td colspan="2" [id]="row.name" mat-cell *matCellDef="let row">
+          <td [id]="row.name" mat-cell *matCellDef="let row">
             <button mat-icon-button [routerLink]="['/projects',row.id]" class="app-accent">
               <fa-icon [icon]="['fas', 'eye']"></fa-icon>
             </button>&nbsp;

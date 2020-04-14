@@ -1720,3 +1720,17 @@ $app-theme: mat-dark-theme($app-primary, $app-accent, $app-warn);
 .app-warn {
   color: mat-color($app-warn) !important;
 }
+
+td, th {
+
+  /* css-3 */
+  white-space: -o-pre-wrap;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  white-space: -moz-pre-wrap;
+}
+
+table {
+  table-layout: fixed;
+  width: 100%
+}

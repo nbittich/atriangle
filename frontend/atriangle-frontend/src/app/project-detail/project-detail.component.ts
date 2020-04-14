@@ -15,7 +15,7 @@ export class ProjectDetailComponent implements OnInit {
   project: Project;
   datasource: MatTableDataSource<FileUpload>;
 
-  displayedColumns: string[] = ['id',
+  displayedColumns: string[] = [
     'contentType', 'eventType', 'originalFilename', 'creationDate', 'action'
   ];
 

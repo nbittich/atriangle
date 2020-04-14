@@ -12,7 +12,7 @@ import {MatPaginator} from "@angular/material/paginator";
 export class ProjectHomepageComponent implements OnInit {
   datasource: MatTableDataSource<Project>;
 
-  displayedColumns: string[] = ['id',
+  displayedColumns: string[] = [
     'name', 'files', 'action'
   ];
 
