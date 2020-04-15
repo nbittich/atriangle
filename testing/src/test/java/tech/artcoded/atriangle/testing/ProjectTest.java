@@ -30,6 +30,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
 import static java.util.Optional.ofNullable;
 import static org.junit.jupiter.api.Assertions.*;
+import static tech.artcoded.atriangle.api.dto.FileEventType.*;
 import static tech.artcoded.atriangle.api.dto.LogEventType.ERROR;
 
 @ExtendWith(SpringExtension.class)
@@ -94,14 +95,14 @@ public class ProjectTest {
   public void addFileToProjectTest() throws Exception {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
-    addFileToProject(projectEvent.getId(), rdfExampleFile);
+    addFileToProject(projectEvent.getId(), RDF_FILE, rdfExampleFile);
   }
 
   @Test
   public void xls2rdfTransformationTest() throws Exception {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
-    FileEvent xlsFileEvent = addFileToProject(projectEvent.getId(), xlsSkosExampleFile);
+    FileEvent xlsFileEvent = addFileToProject(projectEvent.getId(), PROJECT_FILE, xlsSkosExampleFile);
     ProjectEvent projectEventWithSkosFileConverted = restTemplate.postForObject(backendUrl + String.format("/project/conversion/skos?projectId=%s&xlsFileEventId=%s", projectEvent.getId(), xlsFileEvent.getId()),
                                                                                 testingUtils.requestWithEmptyBody(), ProjectEvent.class);
     log.info("project {}", projectEventWithSkosFileConverted);
@@ -127,7 +128,7 @@ public class ProjectTest {
   public void downloadFileTest() throws Exception {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
-    FileEvent fileEvent = addFileToProject(projectEvent.getId(), rdfExampleFile);
+    FileEvent fileEvent = addFileToProject(projectEvent.getId(), RDF_FILE,  rdfExampleFile);
     downloadFile(projectEvent.getId(), fileEvent);
   }
 
@@ -136,7 +137,7 @@ public class ProjectTest {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
     // add rdf file
-    FileEvent fileEvent = addFileToProject(projectEvent.getId(), rdfExampleFile);
+    FileEvent fileEvent = addFileToProject(projectEvent.getId(), RDF_FILE, rdfExampleFile);
     sink(projectEvent, fileEvent, null);
 
     checkLogs(projectEvent);
@@ -148,13 +149,13 @@ public class ProjectTest {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
     // add rdf file
-    FileEvent fileEvent = addFileToProject(projectEvent.getId(), askDataFile);
+    FileEvent fileEvent = addFileToProject(projectEvent.getId(), RDF_FILE, askDataFile);
     sink(projectEvent, fileEvent, null);
 
     checkLogs(projectEvent);
 
     // add ask query
-    FileEvent queryFile = addSparqlQueryFileToProject(projectEvent.getId(), askQueryFile);
+    FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE, askQueryFile);
     Map<String, String> variables = Map.of(
       "name","Alice"
     );
@@ -182,13 +183,13 @@ public class ProjectTest {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
     // add rdf file
-    FileEvent fileEvent = addFileToProject(projectEvent.getId(), rdfExampleFile);
+    FileEvent fileEvent = addFileToProject(projectEvent.getId(), RDF_FILE, rdfExampleFile);
     sink(projectEvent, fileEvent, null);
 
     checkLogs(projectEvent);
 
     // add select query
-    FileEvent queryFile = addSparqlQueryFileToProject(projectEvent.getId(), selectQueryFile);
+    FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE, selectQueryFile);
     Map<String, String> variables = Map.of(
       "s","?s",
       "p","?p",
@@ -223,13 +224,13 @@ public class ProjectTest {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
     // add rdf file
-    FileEvent fileEvent = addFileToProject(projectEvent.getId(), rdfExampleFile);
+    FileEvent fileEvent = addFileToProject(projectEvent.getId(), RDF_FILE, rdfExampleFile);
     sink(projectEvent, fileEvent, null);
 
 
 
     // add fullt text search query
-    FileEvent queryFile = addSparqlQueryFileToProject(projectEvent.getId(), fullTextSearchFile);
+    FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE, fullTextSearchFile);
     Map<String, String> variables = Map.of(
       "searchTerm","Nordine",
       "minRelevance","0.25",
@@ -254,13 +255,13 @@ public class ProjectTest {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
     // add rdf file
-    FileEvent fileEvent = addFileToProject(projectEvent.getId(), rdfExampleFile);
+    FileEvent fileEvent = addFileToProject(projectEvent.getId(), RDF_FILE, rdfExampleFile);
     sink(projectEvent, fileEvent, null);
 
     checkLogs(projectEvent);
 
     // add construct query
-    FileEvent queryFile = addSparqlQueryFileToProject(projectEvent.getId(), constructQueryFile);
+    FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE,constructQueryFile);
     Map<String, String> variables = Map.of(
       "toConstruct","?s ?p ?o",
       "condition", "?s ?p ?o"
@@ -281,8 +282,8 @@ public class ProjectTest {
     ProjectEvent projectEvent = createProjectEvent(projectName);
 
     // add shacl shapes file
-    FileEvent shaclShapes = addFileToProject(projectEvent.getId(), shaclShapesExampleFile);
-    FileEvent validData = addFileToProject(projectEvent.getId(), shaclValidDataExampleFile);
+    FileEvent shaclShapes = addFileToProject(projectEvent.getId(), SHACL_FILE, shaclShapesExampleFile);
+    FileEvent validData = addFileToProject(projectEvent.getId(), RDF_FILE, shaclValidDataExampleFile);
     // check shacl before sink
     ResponseEntity<String> response = restTemplate.exchange(String.format("%s/project/%s/shacl-validation?shapesFileId=%s&rdfModelFileId=%s", backendUrl,
                                                                           projectEvent.getId(), shaclShapes.getId(), validData.getId()), HttpMethod.GET,
@@ -311,8 +312,8 @@ public class ProjectTest {
     ProjectEvent projectEvent = createProjectEvent(projectName);
 
     // add shacl shapes file
-    FileEvent shaclShapes = addFileToProject(projectEvent.getId(), shaclShapesExampleFile);
-    FileEvent badData = addFileToProject(projectEvent.getId(), shaclBadDataExampleFile);
+    FileEvent shaclShapes = addFileToProject(projectEvent.getId(), SHACL_FILE, shaclShapesExampleFile);
+    FileEvent badData = addFileToProject(projectEvent.getId(), RDF_FILE, shaclBadDataExampleFile);
 
     ResponseEntity<String> exception = restTemplate.exchange(String.format("%s/project/%s/shacl-validation?shapesFileId=%s&rdfModelFileId=%s", backendUrl,
                                                                            projectEvent.getId(), shaclShapes.getId(), badData.getId()), HttpMethod.GET,
@@ -373,12 +374,16 @@ public class ProjectTest {
     return projectEvent;
   }
 
-  private FileEvent addFileToProject(String projectId, Resource resource) throws Exception {
-    return addFile(backendUrl + "/project/add-file", projectId, resource);
-  }
+  private FileEvent addFileToProject(String projectId, FileEventType fileEventType, Resource resource) throws Exception {
+    switch (fileEventType){
+      case RDF_FILE: return addFile(backendUrl + "/project/add-rdf-file", projectId, resource);
+      case SHACL_FILE: return addFile(backendUrl + "/project/add-shacl-file", projectId, resource);
+      case PROJECT_FILE:
+      case RAW_FILE: return addFile(backendUrl + "/project/add-raw-file", projectId, resource);
+      case FREEMARKER_TEMPLATE_FILE: return addFile(backendUrl + "/project/add-sparql-query-template", projectId, resource);
+      default: throw new RuntimeException("file event type not supported yet");
+    }
 
-  private FileEvent addSparqlQueryFileToProject(String projectId, Resource resource) throws Exception {
-    return addFile(backendUrl + "/project/add-sparql-query-template", projectId, resource);
   }
 
   private FileEvent addFile(String url, String projectId, Resource resource) throws Exception {

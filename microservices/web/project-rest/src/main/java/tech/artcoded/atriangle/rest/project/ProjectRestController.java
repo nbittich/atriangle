@@ -6,8 +6,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.FileHelper;
 import tech.artcoded.atriangle.api.dto.*;
@@ -17,6 +20,7 @@ import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.feign.clients.project.ProjectRestFeignClient;
 
 import javax.inject.Inject;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -48,9 +52,27 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
 
   @Override
   @SwaggerHeaderAuthentication
-  public ResponseEntity<ProjectEvent> addFile(MultipartFile multipartFile,
-                                              String projectId) {
-    return projectRestService.addFile(projectId, multipartFile)
+  public ResponseEntity<ProjectEvent> addRawFile(MultipartFile multipartFile,
+                                                 String projectId) {
+    return projectRestService.addFile(projectId, multipartFile, FileEventType.PROJECT_FILE)
+                             .map(ResponseEntity::ok)
+                             .orElseGet(ResponseEntity.badRequest()::build);
+  }
+
+  @Override
+  @SwaggerHeaderAuthentication
+  public ResponseEntity<ProjectEvent> addRdfFile(MultipartFile multipartFile,
+                                                 String projectId) {
+    return projectRestService.addFile(projectId, multipartFile, FileEventType.RDF_FILE)
+                             .map(ResponseEntity::ok)
+                             .orElseGet(ResponseEntity.badRequest()::build);
+  }
+
+  @Override
+  @SwaggerHeaderAuthentication
+  public ResponseEntity<ProjectEvent> addShaclFile(MultipartFile multipartFile,
+                                                   String projectId) {
+    return projectRestService.addFile(projectId, multipartFile, FileEventType.SHACL_FILE)
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
@@ -180,8 +202,9 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
                                                .orElseThrow(() -> new RuntimeException("file  not found"));
     if (!CommonConstants.XLSX_MEDIA_TYPE.equals(xlsFileEvent.getContentType())) {
       log.error("only xlsx type supported, provided {}", xlsFileEvent.getContentType());
-      return ResponseEntity.badRequest()
-                           .build();
+
+      throw HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "only xlsx type supported", HttpHeaders.EMPTY, "only xlsx type supported".getBytes(),
+                                            Charset.defaultCharset());
     }
     return projectRestService.skosConversion(projectId, labelSkosXl, ignorePostTreatmentsSkos, xlsFileEvent)
                              .map(ResponseEntity::ok)

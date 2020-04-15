@@ -18,7 +18,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 import tech.artcoded.atriangle.api.IdGenerators;
 import tech.artcoded.atriangle.api.dto.FileEvent;
+import tech.artcoded.atriangle.api.dto.FileEventType;
 import tech.artcoded.atriangle.api.dto.RdfType;
+import tech.artcoded.atriangle.core.kafka.LoggerAction;
 import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
@@ -32,6 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -44,6 +47,7 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
   private final SimpleSparqlService simpleSparqlService;
 
   private final FileRestFeignClient fileRestFeignClient;
+
 
   @Inject
   public SparqlRestController(BuildProperties buildProperties,
@@ -67,6 +71,7 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
   public ResponseEntity<String> loadRdfFile(String rdfFileEvent, String namespace) {
     FileEvent rdfFile = fileRestFeignClient.findById(rdfFileEvent)
                                            .getBody();
+
     ResponseEntity<ByteArrayResource> rdf = fileRestFeignClient.download(rdfFile.getId(), IdGenerators.get());
 
     simpleSparqlService.load(namespace, rdf.getBody()
@@ -134,5 +139,9 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
     return ResponseEntity.ok(ModelConverter.modelToLang(model, RDFFormat.JSONLD));
   }
 
-
+  @Override
+  @SwaggerHeaderAuthentication
+  public ResponseEntity<Boolean> checkFileFormat(String fileName) {
+    return ResponseEntity.ok(ModelConverter.checkFileFormat(fileName));
+  }
 }

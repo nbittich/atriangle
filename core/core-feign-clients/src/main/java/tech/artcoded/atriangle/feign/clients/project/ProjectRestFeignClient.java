@@ -27,9 +27,19 @@ public interface ProjectRestFeignClient {
   ResponseEntity<ProjectEvent> findById(@PathVariable("projectId") String projectId);
 
 
-  @PostMapping(path = "/add-file",
+  @PostMapping(path = "/add-raw-file",
                consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  ResponseEntity<ProjectEvent> addFile(@RequestPart("file") MultipartFile file,
+  ResponseEntity<ProjectEvent> addRawFile(@RequestPart("file") MultipartFile file,
+                                       @RequestParam("projectId") String projectId);
+
+  @PostMapping(path = "/add-rdf-file",
+               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  ResponseEntity<ProjectEvent> addRdfFile(@RequestPart("file") MultipartFile file,
+                                       @RequestParam("projectId") String projectId);
+
+  @PostMapping(path = "/add-shacl-file",
+               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  ResponseEntity<ProjectEvent> addShaclFile(@RequestPart("file") MultipartFile file,
                                        @RequestParam("projectId") String projectId);
 
   @PostMapping(path = "/add-sparql-query-template",

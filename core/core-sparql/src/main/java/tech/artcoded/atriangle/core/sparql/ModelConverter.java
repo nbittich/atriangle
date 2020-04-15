@@ -12,6 +12,8 @@ import org.openrdf.rio.*;
 import org.openrdf.rio.helpers.JSONLDMode;
 import org.openrdf.rio.helpers.JSONLDSettings;
 import org.openrdf.rio.helpers.StatementCollector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import tech.artcoded.atriangle.api.CheckedSupplier;
 
 import java.io.InputStream;
@@ -20,6 +22,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Collection;
 
 public interface ModelConverter {
+
+  Logger LOG = LoggerFactory.getLogger(ModelConverter.class);
 
   @SneakyThrows
   static String modelToLang(Model model, RDFFormat lang) {
@@ -75,5 +79,14 @@ public interface ModelConverter {
   static Model inputStreamToModel(String filename, CheckedSupplier<InputStream> file) {
     RDFFormat rdfFormat = RDFFormat.forFileName(filename, RDFFormat.TURTLE);
     return toModel(file, rdfFormat);
+  }
+
+  static boolean checkFileFormat(String filename) {
+    try{
+      return RDFFormat.forFileName(filename) != null;
+    }catch (Exception e){
+      LOG.error("an error occurred", e);
+    }
+    return false;
   }
 }

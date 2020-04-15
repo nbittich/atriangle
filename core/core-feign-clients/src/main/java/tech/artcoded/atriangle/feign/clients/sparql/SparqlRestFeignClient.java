@@ -2,10 +2,7 @@ package tech.artcoded.atriangle.feign.clients.sparql;
 
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import tech.artcoded.atriangle.api.dto.RdfType;
 
 import java.util.List;
@@ -39,5 +36,6 @@ public interface SparqlRestFeignClient {
   ResponseEntity<String> constructQuery(@RequestBody String constructQuery,
                                         @RequestParam("namespace") String namespace);
 
-
+  @GetMapping(path = "/check-file-format")
+  ResponseEntity<Boolean> checkFileFormat(@RequestParam("fileName") String fileName);
 }

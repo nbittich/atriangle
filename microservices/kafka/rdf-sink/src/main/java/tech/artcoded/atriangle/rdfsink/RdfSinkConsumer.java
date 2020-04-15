@@ -24,6 +24,10 @@ import tech.artcoded.atriangle.feign.clients.util.FeignMultipartFile;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import static java.util.Objects.requireNonNull;
 
 @Component
 @Slf4j
@@ -61,7 +65,19 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
     this.loggerAction = loggerAction;
   }
 
-
+private void checkFile(KafkaEvent kafkaEvent, FileEvent fileEvent){
+  FileEventType eventType = Optional.ofNullable(fileEvent).map(FileEvent::getEventType).orElse(FileEventType.RAW_FILE);
+  String originalFilename = requireNonNull(fileEvent)
+    .getOriginalFilename();
+  if(!FileEventType.SHACL_FILE.equals(eventType)
+    && !FileEventType.RDF_FILE.equals(eventType)
+    && !FileEventType.SKOS_PLAY_CONVERTER_OUTPUT.equals(eventType)
+    && !Optional.ofNullable(sparqlRestFeignClient.checkFileFormat(originalFilename)).map(ResponseEntity::getBody).orElse(false)
+  ){
+    loggerAction.error(kafkaEvent::getCorrelationId, "not an rdf/shacl file, event type %s, file name %s", eventType.name(), originalFilename);
+    throw new RuntimeException("not an rdf file " + originalFilename);
+  }
+}
   @Override
   public List<KafkaMessage<String, String>> consume(ConsumerRecord<String, String> record) throws Exception {
     String restEvent = record.value();
@@ -69,7 +85,7 @@ public class RdfSinkConsumer implements KafkaSink<String, String> {
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(restEvent);
     RestEvent event = kafkaEventHelper.parseEvent(kafkaEvent, RestEvent.class);
     FileEvent inputToSinkFileEvent = event.getInputToSink();
-
+    checkFile(kafkaEvent,inputToSinkFileEvent);
     boolean shaclValidationResult = shaclValidation(kafkaEvent, event, inputToSinkFileEvent);
 
     if (!shaclValidationResult) {
