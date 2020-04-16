@@ -6,11 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.FileHelper;
 import tech.artcoded.atriangle.api.dto.*;
@@ -20,7 +17,6 @@ import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
 import tech.artcoded.atriangle.feign.clients.project.ProjectRestFeignClient;
 
 import javax.inject.Inject;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -203,8 +199,7 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
     if (!CommonConstants.XLSX_MEDIA_TYPE.equals(xlsFileEvent.getContentType())) {
       log.error("only xlsx type supported, provided {}", xlsFileEvent.getContentType());
 
-      throw HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "only xlsx type supported", HttpHeaders.EMPTY, "only xlsx type supported".getBytes(),
-                                            Charset.defaultCharset());
+      throw new RuntimeException("only xlsx type supported");
     }
     return projectRestService.skosConversion(projectId, labelSkosXl, ignorePostTreatmentsSkos, xlsFileEvent)
                              .map(ResponseEntity::ok)

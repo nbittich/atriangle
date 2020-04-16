@@ -9,7 +9,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.*;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import tech.artcoded.atriangle.api.dto.ProjectEvent;
 import tech.artcoded.atriangle.core.rest.util.RestUtil;
 
 import static java.util.Objects.requireNonNull;
@@ -44,8 +43,8 @@ public interface TestingUtils {
     return new HttpEntity<>(MAPPER.writeValueAsString(requestBody), headers);
   }
 
-  default ResponseEntity<ProjectEvent> postFileToProject(String projectId, String url, String filename,
-                                                         Resource resource) {
+  default <T> ResponseEntity<T> postFileToProject(String projectId, String url, String filename,
+                                                  Resource resource, Class<T> tClass) {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
@@ -68,6 +67,6 @@ public interface TestingUtils {
     return restTemplate().exchange(url,
                                    HttpMethod.POST,
                                    requestEntity,
-                                   ProjectEvent.class);
+                                   tClass);
   }
 }

@@ -99,6 +99,17 @@ public class ProjectTest {
   }
 
   @Test
+  public void addBadFileToProjectTest() throws Exception {
+    String projectName = RandomStringUtils.randomAlphabetic(7);
+    ProjectEvent projectEvent = createProjectEvent(projectName);
+
+    ResponseEntity<String> response = testingUtils.postFileToProject(projectEvent.getId(), backendUrl + "/project/add-rdf-file", xlsSkosExampleFile.getFilename(),
+                                                                     xlsSkosExampleFile, String.class);
+    assertSame(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+    assertEquals("the file is not an rdf file", response.getBody());
+  }
+
+  @Test
   public void xls2rdfTransformationTest() throws Exception {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
@@ -115,20 +126,34 @@ public class ProjectTest {
     FileEvent skosOutput = optionalSkosConvertedFile.get();
     ResponseEntity<ByteArrayResource> file = downloadFile(projectEventWithSkosFileConverted.getId(), skosOutput);
     assertNotNull(file.getBody());
-    String modelConverted = IOUtils.toString(file.getBody().getInputStream(), UTF_8);
+    String modelConverted = IOUtils.toString(file.getBody()
+                                                 .getInputStream(), UTF_8);
     assertFalse(StringUtils.isEmpty(modelConverted));
     log.info("model converted:\n{}", modelConverted);
     Model model = ModelConverter.toModel(modelConverted, RDFFormat.TURTLE);
     assertTrue(ModelConverter.equals(expectedModel, model));
     sink(projectEventWithSkosFileConverted, skosOutput, null);
-   checkLogs(projectEvent);
+    checkLogs(projectEvent);
+  }
+
+  @Test
+  public void badSkosConversionTest() throws Exception {
+    String projectName = RandomStringUtils.randomAlphabetic(7);
+    ProjectEvent projectEvent = createProjectEvent(projectName);
+    FileEvent badSkosFile = addFileToProject(projectEvent.getId(), RDF_FILE, rdfExampleFile);
+    ;
+    ResponseEntity<String> response = restTemplate.exchange(backendUrl + String.format("/project/conversion/skos?projectId=%s&xlsFileEventId=%s", projectEvent.getId(), badSkosFile.getId()),
+                                                            HttpMethod.POST,
+                                                            testingUtils.requestWithEmptyBody(), String.class);
+    assertSame(response.getStatusCode(), HttpStatus.BAD_REQUEST);
+    assertEquals("only xlsx type supported", response.getBody());
   }
 
   @Test
   public void downloadFileTest() throws Exception {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
-    FileEvent fileEvent = addFileToProject(projectEvent.getId(), RDF_FILE,  rdfExampleFile);
+    FileEvent fileEvent = addFileToProject(projectEvent.getId(), RDF_FILE, rdfExampleFile);
     downloadFile(projectEvent.getId(), fileEvent);
   }
 
@@ -228,8 +253,7 @@ public class ProjectTest {
     sink(projectEvent, fileEvent, null);
 
 
-
-    // add fullt text search query
+    // add full text search query
     FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE, fullTextSearchFile);
     Map<String, String> variables = Map.of(
       "searchTerm","Nordine",
@@ -390,7 +414,7 @@ public class ProjectTest {
     // add rdf file
     log.info("add file {} to project {}", resource.getFilename(), projectId);
     ResponseEntity<ProjectEvent> response = testingUtils.postFileToProject(projectId, url, resource.getFilename(),
-                                                                           resource);
+                                                                           resource, ProjectEvent.class);
     log.info("response status {}", response.getStatusCodeValue());
     assertEquals(HttpStatus.OK, response.getStatusCode());
     ProjectEvent updatedProjectEvent = response.getBody();

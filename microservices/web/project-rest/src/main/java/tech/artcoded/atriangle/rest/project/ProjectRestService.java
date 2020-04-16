@@ -11,13 +11,11 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.CheckedFunction;
 import tech.artcoded.atriangle.api.CheckedSupplier;
@@ -36,7 +34,6 @@ import tech.artcoded.atriangle.feign.clients.xls2rdf.Xls2RdfRestFeignClient;
 
 import javax.inject.Inject;
 import java.io.StringReader;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Stream;
@@ -183,8 +180,7 @@ public class ProjectRestService {
       if (!Optional.ofNullable(isRDFResponse)
                    .map(ResponseEntity::getBody)
                    .orElse(false)) {
-        throw HttpClientErrorException.create(HttpStatus.BAD_REQUEST, "the file is not an rdf file", HttpHeaders.EMPTY, "Not an rdf file".getBytes(),
-                                              Charset.defaultCharset());
+        throw new RuntimeException("the file is not an rdf file");
       }
     }
     return findById(projectId)
