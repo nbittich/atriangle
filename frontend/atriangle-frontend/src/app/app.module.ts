@@ -38,6 +38,7 @@ import {HomeComponent} from './home/home.component';
 import {BuildInfoComponent} from './build-info/build-info.component';
 import {ProjectHomepageComponent} from './project-homepage/project-homepage.component';
 import {ProjectDetailComponent} from './project-detail/project-detail.component';
+import {MatExpansionModule} from "@angular/material/expansion";
 
 @NgModule({
   declarations: [
@@ -77,12 +78,13 @@ import {ProjectDetailComponent} from './project-detail/project-detail.component'
     FlexLayoutModule,
     MatAutocompleteModule,
     MatStepperModule,
-    DeviceDetectorModule.forRoot()
+    DeviceDetectorModule.forRoot(),
+    MatExpansionModule
   ],
   providers: [
-    {provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
-    { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true }
+    {provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
   ],
   bootstrap: [AppComponent]
 })

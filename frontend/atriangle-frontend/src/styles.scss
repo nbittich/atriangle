@@ -67,6 +67,14 @@ body {
   text-align: center !important
 }
 
+.text-uppercase {
+  text-transform: uppercase;
+}
+
+.text-capitalize {
+  text-transform: capitalize;
+}
+
 .m-0 {
   margin: 0 !important
 }
@@ -905,6 +913,7 @@ table {
 }
 
 .transparent {
+  color: transparent;
   background-color: transparent;
 }
 
