@@ -30,7 +30,7 @@ export class ProjectService {
     );
   }
 
-  upload(formData: FormData, projectId: string, uploadType: FileUploadType) {
+  upload(formData: FormData, uploadType: FileUploadType) {
     const url = this.getUrlFromUploadType(uploadType);
     return this.http.post<any>(url, formData, {
       reportProgress: true,
@@ -40,12 +40,17 @@ export class ProjectService {
 
   private getUrlFromUploadType(uploadType:FileUploadType) : string{
     switch (uploadType) {
-      case FileUploadType.RDF_FILE: return environment.backendUrl + "/project/add-rdf-file";
-      case FileUploadType.SHACL_FILE: return environment.backendUrl + "/project/add-shacl-file";
+      case FileUploadType.RDF_FILE:
+        return environment.backendUrl + "/api/project/add-rdf-file";
+      case FileUploadType.SHACL_FILE:
+        return environment.backendUrl + "/api/project/add-shacl-file";
       case FileUploadType.PROJECT_FILE:
-      case FileUploadType.RAW_FILE: return environment.backendUrl + "/project/add-raw-file";
-      case FileUploadType.FREEMARKER_TEMPLATE_FILE: return environment.backendUrl + "/project/add-sparql-query-template";
-      default: throw new Error("not a supported file");
+      case FileUploadType.RAW_FILE:
+        return environment.backendUrl + "/api/project/add-raw-file";
+      case FileUploadType.FREEMARKER_TEMPLATE_FILE:
+        return environment.backendUrl + "/api/project/add-sparql-query-template";
+      default:
+        throw new Error("not a supported file");
     }
   }
 }

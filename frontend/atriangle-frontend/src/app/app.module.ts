@@ -39,6 +39,8 @@ import {BuildInfoComponent} from './build-info/build-info.component';
 import {ProjectHomepageComponent} from './project-homepage/project-homepage.component';
 import {ProjectDetailComponent} from './project-detail/project-detail.component';
 import {MatExpansionModule} from "@angular/material/expansion";
+import {UploadComponent} from './upload/upload.component';
+import {MatProgressBarModule} from "@angular/material/progress-bar";
 
 @NgModule({
   declarations: [
@@ -48,7 +50,8 @@ import {MatExpansionModule} from "@angular/material/expansion";
     HomeComponent,
     BuildInfoComponent,
     ProjectHomepageComponent,
-    ProjectDetailComponent
+    ProjectDetailComponent,
+    UploadComponent
   ],
   imports: [
     BrowserModule,
@@ -79,7 +82,8 @@ import {MatExpansionModule} from "@angular/material/expansion";
     MatAutocompleteModule,
     MatStepperModule,
     DeviceDetectorModule.forRoot(),
-    MatExpansionModule
+    MatExpansionModule,
+    MatProgressBarModule
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true},

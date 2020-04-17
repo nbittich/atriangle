@@ -5,11 +5,11 @@
       <button mat-stroked-button color="primary" class="mr-2" [matMenuTriggerFor]="menuUpload">
         <span class="text-uppercase"><fa-icon [icon]="['fas', 'upload']"></fa-icon></span></button>
       <mat-menu #menuUpload="matMenu">
-        <button mat-menu-item>Upload RDF File</button>
-        <button mat-menu-item>Upload Shacl File</button>
-        <button mat-menu-item>Upload Skos File</button>
-        <button mat-menu-item>Upload Raw File</button>
-        <button mat-menu-item>Upload Sparql Query</button>
+        <app-upload title="Upload RDF File" [projectId]="project.id" uploadType="RDF_FILE"></app-upload>
+        <app-upload title="Upload SHACL File" [projectId]="project.id" uploadType="SHACL_FILE"></app-upload>
+        <app-upload title="Upload RAW File" [projectId]="project.id" uploadType="RAW_FILE"></app-upload>
+        <app-upload title="Upload SPARQL Freemarker File" [projectId]="project.id"
+                    uploadType="FREEMARKER_TEMPLATE_FILE"></app-upload>
       </mat-menu>
       <button mat-stroked-button color="warn" class="mr-2" [matMenuTriggerFor]="menuAction">
         <span class="text-uppercase"><fa-icon [icon]="['fas', 'sync-alt']"></fa-icon></span>
@@ -27,7 +27,6 @@
         <button mat-menu-item>Query Sparql</button>
       </mat-menu>
     </div>
-
 
     <mat-form-field>
       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
