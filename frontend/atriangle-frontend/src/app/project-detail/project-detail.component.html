@@ -12,12 +12,19 @@
         <button mat-menu-item>Upload Sparql Query</button>
       </mat-menu>
       <button mat-stroked-button color="warn" class="mr-2" [matMenuTriggerFor]="menuAction">
-        <span class="text-uppercase"><fa-icon [icon]="['fas', 'concierge-bell']"></fa-icon></span>
+        <span class="text-uppercase"><fa-icon [icon]="['fas', 'sync-alt']"></fa-icon></span>
       </button>
       <mat-menu #menuAction="matMenu">
         <button mat-menu-item>Skos Conversion</button>
         <button mat-menu-item>Sink RDF</button>
         <button mat-menu-item>Logs</button>
+      </mat-menu>
+      <button mat-stroked-button color="accent" class="mr-2" [matMenuTriggerFor]="menuQuery">
+        <span class="text-uppercase"><fa-icon [icon]="['fas', 'search']"></fa-icon></span>
+      </button>
+      <mat-menu #menuQuery="matMenu">
+        <button mat-menu-item>Query MongoDB</button>
+        <button mat-menu-item>Query Sparql</button>
       </mat-menu>
     </div>
 
@@ -44,14 +51,14 @@
           <td mat-cell *matCellDef="let row"> {{row.creationDate }} </td>
         </ng-container>
         <ng-container matColumnDef="action">
-          <th mat-header-cell *matHeaderCellDef> Action</th>
-          <td class="app-accent" *matCellDef="let row">
-            <button mat-icon-button (click)="download(row)">
+          <th mat-header-cell *matHeaderCellDef>Action</th>
+          <td mat-cell class="app-accent" *matCellDef="let row">
+            <a mat-icon-button (click)="download(row)">
               <fa-icon [icon]="['fas', 'download']"></fa-icon>
-            </button>&nbsp;
-            <button disabled mat-icon-button>
+            </a>&nbsp;
+            <a disabled mat-icon-button>
               <fa-icon [icon]="['fas', 'trash']"></fa-icon>
-            </button>
+            </a>
           </td>
         </ng-container>
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
