@@ -2,7 +2,8 @@ import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} f
 import {FileUploadType} from "../core/models";
 import {ProjectService} from "../core/service/project.service";
 import {HttpEventType} from "@angular/common/http";
-import {map} from "rxjs/operators";
+import {catchError, map} from "rxjs/operators";
+import {of} from "rxjs";
 
 @Component({
   selector: 'app-upload',
@@ -51,11 +52,14 @@ export class UploadComponent implements OnInit {
             return event;
         }
       }),
-      /*catchError((error: HttpErrorResponse) => {
+      catchError((error: any) => {
         file.inProgress = false;
         return of(`${file.data.name} upload failed.`);
-      })*/
+      })
     ).subscribe((event: any) => {
+      if (typeof (event) === 'object') {
+        this.onFinish.emit(event.body);
+      }
       this.files = [];
       this.fileUpload.nativeElement.value = '';
       this.onFinish.emit('done');
