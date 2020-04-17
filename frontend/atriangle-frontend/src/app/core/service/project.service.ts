@@ -30,15 +30,15 @@ export class ProjectService {
     );
   }
 
-  upload(formData: FormData, uploadType: FileUploadType) {
-    const url = this.getUrlFromUploadType(uploadType);
+  upload(formData: FormData, uploadType: FileUploadType): Observable<any> {
+    const url = ProjectService.getUrlFromUploadType(uploadType);
     return this.http.post<any>(url, formData, {
       reportProgress: true,
       observe: 'events'
     });
   }
 
-  private getUrlFromUploadType(uploadType:FileUploadType) : string{
+  private static getUrlFromUploadType(uploadType: FileUploadType): string {
     switch (uploadType) {
       case FileUploadType.RDF_FILE:
         return environment.backendUrl + "/api/project/add-rdf-file";

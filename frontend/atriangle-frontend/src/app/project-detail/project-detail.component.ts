@@ -1,9 +1,10 @@
-import {Component, OnInit} from '@angular/core';
+import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
 import {FileUpload, Project} from "../core/models";
 import {ProjectService} from "../core/service/project.service";
 import {MatTableDataSource} from "@angular/material/table";
 import {FileService} from "../core/service/file.service";
+import {MatPaginator} from "@angular/material/paginator";
 
 @Component({
   selector: 'app-project-detail',
@@ -18,6 +19,7 @@ export class ProjectDetailComponent implements OnInit {
   displayedColumns: string[] = [
     'contentType', 'eventType', 'originalFilename', 'creationDate', 'action'
   ];
+  @ViewChild(MatPaginator) paginator: MatPaginator;
 
   applyFilter(value: string) {
     this.datasource.filter = value.trim().toLowerCase();
@@ -26,20 +28,31 @@ export class ProjectDetailComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private fileService: FileService,
-              private projectService: ProjectService) {
+              private projectService: ProjectService,
+              private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
       this.id = params["id"];
-      this.projectService.getProject(this.id).subscribe(data => {
-        this.project = data;
-        this.datasource = new MatTableDataSource<FileUpload>(this.project.fileEvents);
-      });
+      this.getProject();
+    });
+  }
+
+  getProject(): void {
+    this.projectService.getProject(this.id).subscribe(data => {
+      this.project = data;
+      this.datasource = new MatTableDataSource<FileUpload>(this.project.fileEvents);
+      this.cdr.detectChanges();
+      this.datasource.paginator = this.paginator;
     });
   }
 
   download(fileUpload: FileUpload) {
     this.fileService.downloadFile(this.id, fileUpload);
+  }
+
+  onFinishUpload($event: string) {
+    this.getProject();
   }
 }

@@ -1,9 +1,8 @@
-import {Component, ElementRef, Input, OnInit, ViewChild} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
 import {FileUploadType} from "../core/models";
 import {ProjectService} from "../core/service/project.service";
-import {of} from "rxjs";
-import {HttpErrorResponse, HttpEventType} from "@angular/common/http";
-import {catchError, map} from "rxjs/operators";
+import {HttpEventType} from "@angular/common/http";
+import {map} from "rxjs/operators";
 
 @Component({
   selector: 'app-upload',
@@ -11,6 +10,12 @@ import {catchError, map} from "rxjs/operators";
   styleUrls: ['./upload.component.scss']
 })
 export class UploadComponent implements OnInit {
+
+  @Output()
+  progression: EventEmitter<number> = new EventEmitter<number>();
+
+  @Output()
+  onFinish: EventEmitter<string> = new EventEmitter<string>();
 
   @Input()
   uploadType: string;
@@ -38,19 +43,22 @@ export class UploadComponent implements OnInit {
       map(event => {
         switch (event.type) {
           case HttpEventType.UploadProgress:
-            file.progress = Math.round(event.loaded * 100 / event.total);
+            let progress = Math.round(event.loaded * 100 / event.total);
+            this.progression.emit(progress);
+            file.progress = progress;
             break;
           case HttpEventType.Response:
             return event;
         }
       }),
-      catchError((error: HttpErrorResponse) => {
+      /*catchError((error: HttpErrorResponse) => {
         file.inProgress = false;
         return of(`${file.data.name} upload failed.`);
-      })).subscribe((event: any) => {
-      if (typeof (event) === 'object') {
-        console.log(event.body);
-      }
+      })*/
+    ).subscribe((event: any) => {
+      this.files = [];
+      this.fileUpload.nativeElement.value = '';
+      this.onFinish.emit('done');
     });
   }
 

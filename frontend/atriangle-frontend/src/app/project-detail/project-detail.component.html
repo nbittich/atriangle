@@ -5,10 +5,13 @@
       <button mat-stroked-button color="primary" class="mr-2" [matMenuTriggerFor]="menuUpload">
         <span class="text-uppercase"><fa-icon [icon]="['fas', 'upload']"></fa-icon></span></button>
       <mat-menu #menuUpload="matMenu">
-        <app-upload title="Upload RDF File" [projectId]="project.id" uploadType="RDF_FILE"></app-upload>
-        <app-upload title="Upload SHACL File" [projectId]="project.id" uploadType="SHACL_FILE"></app-upload>
-        <app-upload title="Upload RAW File" [projectId]="project.id" uploadType="RAW_FILE"></app-upload>
-        <app-upload title="Upload SPARQL Freemarker File" [projectId]="project.id"
+        <app-upload (onFinish)="onFinishUpload($event)" title="Upload RDF File" [projectId]="project.id"
+                    uploadType="RDF_FILE"></app-upload>
+        <app-upload (onFinish)="onFinishUpload($event)" title="Upload SHACL File" [projectId]="project.id"
+                    uploadType="SHACL_FILE"></app-upload>
+        <app-upload (onFinish)="onFinishUpload($event)" title="Upload RAW File" [projectId]="project.id"
+                    uploadType="RAW_FILE"></app-upload>
+        <app-upload (onFinish)="onFinishUpload($event)" title="Upload SPARQL Freemarker File" [projectId]="project.id"
                     uploadType="FREEMARKER_TEMPLATE_FILE"></app-upload>
       </mat-menu>
       <button mat-stroked-button color="warn" class="mr-2" [matMenuTriggerFor]="menuAction">
@@ -64,6 +67,7 @@
         <tr mat-row *matRowDef="let row; columns: displayedColumns;">
         </tr>
       </table>
+      <mat-paginator [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
     </div>
   </mat-card-content>
 </mat-card>
