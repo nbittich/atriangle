@@ -1,0 +1,24 @@
+<form class="new-project-form" *ngIf="project">
+  <mat-form-field class="full-width">
+    <mat-label>Name</mat-label>
+    <input matInput minlength="7" placeholder="project" [value]="project.name" [formControl]="nameFormControl">
+    <mat-error *ngIf="nameFormControl.hasError('required')">
+      Name is <strong>required</strong>
+    </mat-error>
+    <mat-error *ngIf="nameFormControl.hasError('minlength')">
+      Length must be at least 7 alphabetic characters.
+    </mat-error>
+  </mat-form-field>
+
+  <mat-form-field class="full-width">
+    <mat-label>Description</mat-label>
+    <textarea [value]="project.description" cdkTextareaAutosize matInput placeholder="RDF data for website...."
+              [formControl]="descriptionFormControl" maxlength="255"></textarea>
+    <mat-error *ngIf="nameFormControl.hasError('minlength')">
+      Length must be at most 255 characters.
+    </mat-error>
+  </mat-form-field>
+  <button (click)="submit()" mat-stroked-button color="primary"
+          [disabled]="!descriptionFormControl.valid || (!project.id && !nameFormControl.valid)">Submit
+  </button>
+</form>

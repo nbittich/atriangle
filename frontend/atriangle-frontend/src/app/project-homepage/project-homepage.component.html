@@ -1,10 +1,17 @@
 <mat-card class="mt-5 container transparent">
   <mat-card-title class="text-center">Projects</mat-card-title>
   <mat-card-content>
-    <button mat-button color="primary" class="mr-3">
-      <fa-icon [icon]="['fas', 'plus']"></fa-icon>
-      New Project
+    <button mat-icon-button color="primary" (click)="newProjectFormVisible=!newProjectFormVisible; projectToEdit=null">
+      <fa-icon *ngIf="!newProjectFormVisible" [icon]="['fas', 'plus']"></fa-icon>
+      <fa-icon *ngIf="newProjectFormVisible" [icon]="['fas', 'window-close']"></fa-icon>
+      {{newProjectFormVisible ? 'Close' : 'New Project'}}
     </button>
+    <mat-card class="mat-card-project" *ngIf="newProjectFormVisible && !projectToEdit">
+      <app-new-project></app-new-project>
+    </mat-card>
+    <mat-card class="mat-card-project" *ngIf="newProjectFormVisible && projectToEdit">
+      <app-new-project [project]="projectToEdit"></app-new-project>
+    </mat-card>
     <mat-form-field>
       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
     </mat-form-field>
@@ -31,6 +38,9 @@
           <td [id]="row.name" mat-cell *matCellDef="let row">
             <button mat-icon-button [routerLink]="['/projects',row.id]" class="app-accent">
               <fa-icon [icon]="['fas', 'eye']"></fa-icon>
+            </button>&nbsp;
+            <button (click)="openFormEdit(row)" mat-icon-button class="app-primary">
+              <fa-icon [icon]="['fas', 'edit']"></fa-icon>
             </button>&nbsp;
             <button disabled mat-icon-button>
               <fa-icon [icon]="['fas', 'trash']"></fa-icon>

@@ -41,6 +41,8 @@ import {ProjectDetailComponent} from './project-detail/project-detail.component'
 import {MatExpansionModule} from "@angular/material/expansion";
 import {UploadComponent} from './upload/upload.component';
 import {MatProgressBarModule} from "@angular/material/progress-bar";
+import {NewProjectComponent} from './new-project/new-project.component';
+import {ErrorStateMatcher, ShowOnDirtyErrorStateMatcher} from "@angular/material/core";
 
 @NgModule({
   declarations: [
@@ -51,7 +53,8 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
     BuildInfoComponent,
     ProjectHomepageComponent,
     ProjectDetailComponent,
-    UploadComponent
+    UploadComponent,
+    NewProjectComponent
   ],
   imports: [
     BrowserModule,
@@ -88,7 +91,8 @@ import {MatProgressBarModule} from "@angular/material/progress-bar";
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
-    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true}
+    {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
+    {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}
   ],
   bootstrap: [AppComponent]
 })

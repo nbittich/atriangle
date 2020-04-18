@@ -35,8 +35,11 @@ export class ProjectService {
     return this.http.post<Project>(url, formData, {});
   }
 
-  newProject(projectName: string): Observable<Project> {
-    const url = environment.backendUrl + '/api/project?name=' + projectName;
+  newProject(projectName: string, description: string): Observable<Project> {
+    let url = environment.backendUrl + '/api/project?name=' + projectName;
+    if (description && description.length) {
+      url = url + '&description=' + description;
+    }
     return this.http.post<Project>(url, {}, {});
   }
 
@@ -56,5 +59,10 @@ export class ProjectService {
       default:
         throw new Error("not a supported file");
     }
+  }
+
+  updateProject(projectId: string, description: string): Observable<Project> {
+    let url = environment.backendUrl + '/api/project/' + projectId + "/update-description?description=" + description;
+    return this.http.post<Project>(url, {}, {});
   }
 }

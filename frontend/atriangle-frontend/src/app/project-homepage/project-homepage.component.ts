@@ -20,6 +20,8 @@ export class ProjectHomepageComponent implements OnInit {
   }
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  newProjectFormVisible: boolean;
+  projectToEdit: Project;
 
   ngOnInit(): void {
     this.projectService.getProjects().subscribe(data => {
@@ -35,4 +37,9 @@ export class ProjectHomepageComponent implements OnInit {
 
   }
 
+  openFormEdit(row: Project) {
+    this.projectToEdit = row;
+    this.newProjectFormVisible = !this.newProjectFormVisible;
+    this.cdr.detectChanges();
+  }
 }

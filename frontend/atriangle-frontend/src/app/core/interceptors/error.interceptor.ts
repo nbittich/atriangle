@@ -23,7 +23,6 @@ export class ErrorInterceptor implements HttpInterceptor {
         } else if (err.status !== 404) {
           const codeString: string = err.status ? err.status.toString() : '';
           const errorMessage = err.error || err.message || err.statusText || 'An error occurred';
-
           this.alertService.openSnackBar(codeString + ' - ' + errorMessage);
         }
         return throwError(err);
