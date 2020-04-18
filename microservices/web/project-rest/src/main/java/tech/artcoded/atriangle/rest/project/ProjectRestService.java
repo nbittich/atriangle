@@ -133,6 +133,7 @@ public class ProjectRestService {
         loggerAction.info(p::getId, " file %s removed from project %s", f.getId(), p.getName());
         fileRestFeignClient.delete(f.getId());
         ProjectEvent newProject = p.toBuilder()
+                                   .lastModifiedDate(new Date())
                                    .fileEvents(p.getFileEvents()
                                                 .stream()
                                                 .filter(file -> !file.getId()
@@ -200,6 +201,7 @@ public class ProjectRestService {
                                                                                            .getName(), projectEvent.getName());
 
         return projectEvent.toBuilder()
+                           .lastModifiedDate(new Date())
                            .fileEvents(Stream.concat(projectEvent.getFileEvents()
                                                                  .stream(), Stream.of(fileEvent.getBody()))
                                              .collect(toList()))
@@ -310,6 +312,7 @@ public class ProjectRestService {
         loggerAction.info(projectEvent::getId, "description of project %s updated", projectEvent.getName());
 
         return projectEvent.toBuilder()
+                           .lastModifiedDate(new Date())
                            .description(description)
                            .build();
       })

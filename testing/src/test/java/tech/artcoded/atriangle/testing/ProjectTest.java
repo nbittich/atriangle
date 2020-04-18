@@ -100,6 +100,7 @@ public class ProjectTest {
     assertNotNull(projectEvent);
     assertEquals(projectName.toLowerCase(), projectEvent.getName());
     assertEquals(description, projectEvent.getDescription());
+    assertNotNull(projectEvent.getCreationDate());
     log.info("project with id {} and name {} created", projectEvent.getId(), projectEvent.getName());
   }
 
@@ -114,6 +115,9 @@ public class ProjectTest {
                                                                                        ProjectEvent.class);
     assertEquals(HttpStatus.OK, projectWithUpdatedDescription.getStatusCode());
     assertNotNull(projectWithUpdatedDescription.getBody());
+    assertNotNull(projectWithUpdatedDescription.getBody()
+                                               .getLastModifiedDate());
+
     assertEquals(description, projectWithUpdatedDescription.getBody()
                                                            .getDescription());
   }
@@ -462,6 +466,7 @@ public class ProjectTest {
     assertNotNull(projectEvent);
     assertEquals(projectName.toLowerCase(), projectEvent.getName());
     assertEquals("N/A", projectEvent.getDescription());
+    assertNotNull(projectEvent.getCreationDate());
     log.info("project with id {} and name {} created", projectEvent.getId(), projectEvent.getName());
     return projectEvent;
   }
@@ -507,6 +512,7 @@ public class ProjectTest {
     assertNotNull(fileEvent.getId());
     assertEquals(resource.getFilename(), fileEvent.getOriginalFilename());
     assertEquals(resource.getFilename(), fileEvent.getName());
+    assertNotNull(updatedProjectEvent.getLastModifiedDate());
     log.info("file event: {}", fileEvent);
     return fileEvent;
   }
