@@ -1,9 +1,10 @@
-import {ChangeDetectorRef, Component, Inject, Input, OnInit, ViewChild} from '@angular/core';
+import {ChangeDetectorRef, Component, Inject, OnInit, ViewChild} from '@angular/core';
 import {MatTableDataSource} from "@angular/material/table";
 import {LogEvent} from "../core/models/log.event";
 import {ProjectService} from "../core/service/project.service";
 import {MatPaginator} from "@angular/material/paginator";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+
 export interface DialogData {
   id: string;
 }
@@ -16,8 +17,8 @@ export class LogsComponent implements OnInit {
   datasource: MatTableDataSource<LogEvent>;
 
   displayedColumns: string[] = [
-    'message',
     'creationDate',
+    'message',
     'type'
   ];
 
