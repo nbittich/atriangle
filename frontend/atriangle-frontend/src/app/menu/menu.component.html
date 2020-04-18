@@ -1,7 +1,7 @@
 <mat-nav-list>
 
   <ng-container *ngIf="menuProxyFrontend && menuProxyFrontend.length && isAdmin() && isLoggedIn()">
-    <h3 matSubheader>Frontend API</h3>
+    <h4 class="text-uppercase" matSubheader>Frontend API</h4>
     <a [routerLink]="menu.url" mat-list-item  *ngFor="let menu of menuProxyFrontend">
       <fa-icon class="app-warn"  [icon]="[menu.icon.pack, menu.icon.name]"
                aria-hidden="false"></fa-icon>&nbsp;{{ menu.name }}
@@ -9,7 +9,7 @@
     <mat-divider></mat-divider>
   </ng-container>
   <ng-container *ngIf="menuApiList && menuApiList.length">
-    <h3 matSubheader>Rest API</h3>
+    <h4 class="text-uppercase" matSubheader>Rest API</h4>
     <a target="_blank" [href]="menu.url" mat-list-item  *ngFor="let menu of menuApiList">
       <fa-icon class="app-primary"  [icon]="[menu.icon.pack, menu.icon.name]"
                aria-hidden="false"></fa-icon>&nbsp;{{ menu.name }}
@@ -18,7 +18,7 @@
 
   </ng-container>
   <ng-container *ngIf="menuProxyList && menuProxyList.length">
-    <h3 matSubheader>Proxy Gateway</h3>
+    <h4 class="text-uppercase" matSubheader>Proxy Gateway</h4>
     <a target="_blank" [href]="menu.url" mat-list-item  *ngFor="let menu of menuProxyList">
       <fa-icon class="app-accent"  [icon]="[menu.icon.pack, menu.icon.name]"
                aria-hidden="false"></fa-icon>&nbsp;{{ menu.name }}
