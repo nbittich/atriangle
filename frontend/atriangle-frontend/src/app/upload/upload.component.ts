@@ -1,9 +1,7 @@
 import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} from '@angular/core';
-import {FileUploadType} from "../core/models";
+import {FileUploadType, Project} from "../core/models";
 import {ProjectService} from "../core/service/project.service";
-import {HttpEventType} from "@angular/common/http";
-import {catchError, map} from "rxjs/operators";
-import {of} from "rxjs";
+import {catchError} from "rxjs/operators";
 
 @Component({
   selector: 'app-upload',
@@ -16,7 +14,7 @@ export class UploadComponent implements OnInit {
   progression: EventEmitter<number> = new EventEmitter<number>();
 
   @Output()
-  onFinish: EventEmitter<string> = new EventEmitter<string>();
+  onFinish: EventEmitter<Project> = new EventEmitter<Project>();
 
   @Input()
   uploadType: string;
@@ -39,30 +37,16 @@ export class UploadComponent implements OnInit {
     const formData = new FormData();
     formData.append('file', file.data);
     formData.append('projectId', this.projectId);
-    file.inProgress = true;
     this.projectService.upload(formData, FileUploadType[this.uploadType]).pipe(
-      map(event => {
-        switch (event.type) {
-          case HttpEventType.UploadProgress:
-            let progress = Math.round(event.loaded * 100 / event.total);
-            this.progression.emit(progress);
-            file.progress = progress;
-            break;
-          case HttpEventType.Response:
-            return event;
-        }
-      }),
-      catchError((error: any) => {
-        file.inProgress = false;
-        return of(`${file.data.name} upload failed.`);
+      catchError((error: Error) => {
+        this.files = [];
+        this.fileUpload.nativeElement.value = '';
+        throw error;
       })
-    ).subscribe((event: any) => {
-      if (typeof (event) === 'object') {
-        this.onFinish.emit(event.body);
-      }
+    ).subscribe((data: Project) => {
       this.files = [];
       this.fileUpload.nativeElement.value = '';
-      this.onFinish.emit('done');
+      this.onFinish.emit(data);
     });
   }
 

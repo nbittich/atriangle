@@ -42,17 +42,22 @@ export class ProjectDetailComponent implements OnInit {
   getProject(): void {
     this.projectService.getProject(this.id).subscribe(data => {
       this.project = data;
-      this.datasource = new MatTableDataSource<FileUpload>(this.project.fileEvents);
-      this.cdr.detectChanges();
-      this.datasource.paginator = this.paginator;
+      this.reloadDataTable();
     });
+  }
+
+  private reloadDataTable() {
+    this.datasource = new MatTableDataSource<FileUpload>(this.project.fileEvents);
+    this.cdr.detectChanges();
+    this.datasource.paginator = this.paginator;
   }
 
   download(fileUpload: FileUpload) {
     this.fileService.downloadFile(this.id, fileUpload);
   }
 
-  onFinishUpload($event: string) {
-    this.getProject();
+  onFinishUpload($event: Project) {
+    this.project = $event;
+    this.reloadDataTable();
   }
 }

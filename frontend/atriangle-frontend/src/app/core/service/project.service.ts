@@ -30,12 +30,9 @@ export class ProjectService {
     );
   }
 
-  upload(formData: FormData, uploadType: FileUploadType): Observable<any> {
+  upload(formData: FormData, uploadType: FileUploadType): Observable<Project> {
     const url = ProjectService.getUrlFromUploadType(uploadType);
-    return this.http.post<any>(url, formData, {
-      reportProgress: true,
-      observe: 'events'
-    });
+    return this.http.post<Project>(url, formData, {});
   }
 
   private static getUrlFromUploadType(uploadType: FileUploadType): string {
