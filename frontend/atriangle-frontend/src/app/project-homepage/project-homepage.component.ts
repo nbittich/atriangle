@@ -39,7 +39,7 @@ export class ProjectHomepageComponent implements OnInit {
 
   openFormEdit(row: Project) {
     this.projectToEdit = row;
-    this.newProjectFormVisible = !this.newProjectFormVisible;
+    this.newProjectFormVisible = true;
     this.cdr.detectChanges();
   }
 }

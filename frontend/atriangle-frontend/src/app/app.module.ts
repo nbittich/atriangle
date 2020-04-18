@@ -43,6 +43,7 @@ import {UploadComponent} from './upload/upload.component';
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {NewProjectComponent} from './new-project/new-project.component';
 import {ErrorStateMatcher, ShowOnDirtyErrorStateMatcher} from "@angular/material/core";
+import { LogsComponent } from './logs/logs.component';
 
 @NgModule({
   declarations: [
@@ -54,7 +55,8 @@ import {ErrorStateMatcher, ShowOnDirtyErrorStateMatcher} from "@angular/material
     ProjectHomepageComponent,
     ProjectDetailComponent,
     UploadComponent,
-    NewProjectComponent
+    NewProjectComponent,
+    LogsComponent
   ],
   imports: [
     BrowserModule,
@@ -87,6 +89,10 @@ import {ErrorStateMatcher, ShowOnDirtyErrorStateMatcher} from "@angular/material
     DeviceDetectorModule.forRoot(),
     MatExpansionModule,
     MatProgressBarModule
+  ],
+
+  entryComponents: [
+    LogsComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true},

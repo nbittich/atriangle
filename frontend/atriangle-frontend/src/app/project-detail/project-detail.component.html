@@ -6,7 +6,10 @@
   </mat-card-subtitle>
   <mat-card-content>
     <div class="pull-right mt-2">
-      <button mat-stroked-button color="primary" class="mr-2" [matMenuTriggerFor]="menuUpload">
+      <button mat-stroked-button  title="Logs" class="mr-2" (click)="openLogs()">
+        <span class="text-uppercase"><fa-icon [icon]="['fas', 'book']"></fa-icon></span>
+      </button>
+      <button title="Upload" mat-stroked-button color="primary" class="mr-2" [matMenuTriggerFor]="menuUpload">
         <span class="text-uppercase"><fa-icon [icon]="['fas', 'upload']"></fa-icon></span></button>
       <mat-menu #menuUpload="matMenu">
         <app-upload (onFinish)="onFinishUpload($event)" title="Upload RDF File" [projectId]="project.id"
@@ -20,15 +23,14 @@
         <app-upload (onFinish)="onFinishUpload($event)" title="Upload SPARQL Freemarker File" [projectId]="project.id"
                     uploadType="FREEMARKER_TEMPLATE_FILE"></app-upload>
       </mat-menu>
-      <button mat-stroked-button color="warn" class="mr-2" [matMenuTriggerFor]="menuAction">
+      <button mat-stroked-button color="warn" title="Actions" class="mr-2" [matMenuTriggerFor]="menuAction">
         <span class="text-uppercase"><fa-icon [icon]="['fas', 'sync-alt']"></fa-icon></span>
       </button>
       <mat-menu #menuAction="matMenu">
         <button mat-menu-item>Skos Conversion</button>
         <button mat-menu-item>Sink RDF</button>
-        <button mat-menu-item>Logs</button>
       </mat-menu>
-      <button mat-stroked-button color="accent" class="mr-2" [matMenuTriggerFor]="menuQuery">
+      <button title="Query" mat-stroked-button color="accent" class="mr-2" [matMenuTriggerFor]="menuQuery">
         <span class="text-uppercase"><fa-icon [icon]="['fas', 'search']"></fa-icon></span>
       </button>
       <mat-menu #menuQuery="matMenu">

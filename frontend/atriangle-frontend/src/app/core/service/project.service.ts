@@ -4,6 +4,7 @@ import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {environment} from "../../../environments/environment";
 import {FileUploadType, Project} from "../models";
+import {LogEvent} from "../models/log.event";
 
 
 @Injectable({
@@ -64,5 +65,10 @@ export class ProjectService {
   updateProject(projectId: string, description: string): Observable<Project> {
     let url = environment.backendUrl + '/api/project/' + projectId + "/update-description?description=" + description;
     return this.http.post<Project>(url, {}, {});
+  }
+
+  getLogs(projectId: string) :Observable<LogEvent[]> {
+    let url = environment.backendUrl + '/api/project/' + projectId + "/logs";
+    return this.http.get<LogEvent[]>(url, {});
   }
 }
