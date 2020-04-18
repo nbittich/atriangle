@@ -5,6 +5,7 @@ import {ProjectService} from "../core/service/project.service";
 import {MatTableDataSource} from "@angular/material/table";
 import {FileService} from "../core/service/file.service";
 import {MatPaginator} from "@angular/material/paginator";
+import {AlertService} from "../core/service/alert.service";
 
 @Component({
   selector: 'app-project-detail',
@@ -28,6 +29,7 @@ export class ProjectDetailComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private fileService: FileService,
+              private alertService: AlertService,
               private projectService: ProjectService,
               private cdr: ChangeDetectorRef) {
   }
@@ -59,5 +61,6 @@ export class ProjectDetailComponent implements OnInit {
   onFinishUpload($event: Project) {
     this.project = $event;
     this.reloadDataTable();
+    this.alertService.openSnackBar('file added');
   }
 }

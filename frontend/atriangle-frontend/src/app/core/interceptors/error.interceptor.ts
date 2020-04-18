@@ -1,17 +1,18 @@
-import { HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
-import { Injectable } from '@angular/core';
-import { Router } from '@angular/router';
-import { Observable, throwError } from 'rxjs';
-import { catchError } from 'rxjs/operators';
+import {HttpErrorResponse, HttpEvent, HttpHandler, HttpInterceptor, HttpRequest} from '@angular/common/http';
+import {Injectable} from '@angular/core';
+import {Router} from '@angular/router';
+import {Observable, throwError} from 'rxjs';
+import {catchError} from 'rxjs/operators';
 import {AuthService} from "../service/auth.service";
-import {ErrorService} from "../service/error.service";
+import {AlertService} from "../service/alert.service";
 
 
 @Injectable({
   providedIn: 'root'
 })
 export class ErrorInterceptor implements HttpInterceptor {
-  constructor(private authenticationService: AuthService, private router: Router, private errorService: ErrorService) {}
+  constructor(private authenticationService: AuthService, private router: Router, private alertService: AlertService) {
+  }
 
   intercept<T>(request: HttpRequest<T>, next: HttpHandler): Observable<HttpEvent<T>> {
     return next.handle(request).pipe(
@@ -20,8 +21,10 @@ export class ErrorInterceptor implements HttpInterceptor {
           this.authenticationService.logout();
           this.router.navigate(['']);
         } else if (err.status !== 404) {
-          // in user-profile and user-creation, invalid data use 404 to be handled internally within components
-          this.errorService.openSnackBar(err);
+          const codeString: string = err.status ? err.status.toString() : '';
+          const errorMessage = err.error || err.message || err.statusText || 'An error occurred';
+
+          this.alertService.openSnackBar(codeString + ' - ' + errorMessage);
         }
         return throwError(err);
       })
