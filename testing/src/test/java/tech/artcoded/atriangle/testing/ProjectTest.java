@@ -113,7 +113,7 @@ public class ProjectTest {
   public void xls2rdfTransformationTest() throws Exception {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
-    FileEvent xlsFileEvent = addFileToProject(projectEvent.getId(), PROJECT_FILE, xlsSkosExampleFile);
+    FileEvent xlsFileEvent = addFileToProject(projectEvent.getId(), SKOS_FILE, xlsSkosExampleFile);
     ProjectEvent projectEventWithSkosFileConverted = restTemplate.postForObject(backendUrl + String.format("/project/conversion/skos?projectId=%s&xlsFileEventId=%s", projectEvent.getId(), xlsFileEvent.getId()),
                                                                                 testingUtils.requestWithEmptyBody(), ProjectEvent.class);
     log.info("project {}", projectEventWithSkosFileConverted);
@@ -399,13 +399,20 @@ public class ProjectTest {
   }
 
   private FileEvent addFileToProject(String projectId, FileEventType fileEventType, Resource resource) throws Exception {
-    switch (fileEventType){
-      case RDF_FILE: return addFile(backendUrl + "/project/add-rdf-file", projectId, resource);
-      case SHACL_FILE: return addFile(backendUrl + "/project/add-shacl-file", projectId, resource);
+    switch (fileEventType) {
+      case RDF_FILE:
+        return addFile(backendUrl + "/project/add-rdf-file", projectId, resource);
+      case SHACL_FILE:
+        return addFile(backendUrl + "/project/add-shacl-file", projectId, resource);
+      case SKOS_FILE:
+        return addFile(backendUrl + "/project/add-skos-file", projectId, resource);
       case PROJECT_FILE:
-      case RAW_FILE: return addFile(backendUrl + "/project/add-raw-file", projectId, resource);
-      case FREEMARKER_TEMPLATE_FILE: return addFile(backendUrl + "/project/add-sparql-query-template", projectId, resource);
-      default: throw new RuntimeException("file event type not supported yet");
+      case RAW_FILE:
+        return addFile(backendUrl + "/project/add-raw-file", projectId, resource);
+      case FREEMARKER_TEMPLATE_FILE:
+        return addFile(backendUrl + "/project/add-sparql-query-template", projectId, resource);
+      default:
+        throw new RuntimeException("file event type not supported yet");
     }
 
   }

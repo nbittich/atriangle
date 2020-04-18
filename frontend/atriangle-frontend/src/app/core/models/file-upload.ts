@@ -10,6 +10,7 @@ export class FileUpload {
 }
 
 export enum FileUploadType {
+  SKOS_FILE,
   RAW_FILE,
   PROJECT_FILE,
   FREEMARKER_TEMPLATE_FILE,

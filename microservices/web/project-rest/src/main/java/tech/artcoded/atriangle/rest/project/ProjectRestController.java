@@ -82,11 +82,22 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
                                  .orElse("N/A");
     if (!extension.equals("ftl")) {
       log.info("file extension not valid: {}, file name {}, original file name {}", extension, multipartFile.getName(), multipartFile.getOriginalFilename());
-      return ResponseEntity.badRequest()
-                           .build();
+      throw new RuntimeException("the file is not a freemarker template file");
     }
 
     return projectRestService.addFile(projectId, multipartFile, FileEventType.FREEMARKER_TEMPLATE_FILE)
+                             .map(ResponseEntity::ok)
+                             .orElseGet(ResponseEntity.badRequest()::build);
+  }
+
+  @Override
+  public ResponseEntity<ProjectEvent> addSkosFile(MultipartFile file, String projectId) {
+
+    if (!CommonConstants.XLSX_MEDIA_TYPE.equals(file.getContentType())) {
+      throw new RuntimeException("only xlsx type supported");
+    }
+
+    return projectRestService.addFile(projectId, file, FileEventType.SKOS_FILE)
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
@@ -196,7 +207,7 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
                                                      boolean ignorePostTreatmentsSkos, String xlsFileEventId) {
     FileEvent xlsFileEvent = projectRestService.getFileMetadata(projectId, xlsFileEventId)
                                                .orElseThrow(() -> new RuntimeException("file  not found"));
-    if (!CommonConstants.XLSX_MEDIA_TYPE.equals(xlsFileEvent.getContentType())) {
+    if (!FileEventType.SKOS_FILE.equals(xlsFileEvent.getEventType()) || !CommonConstants.XLSX_MEDIA_TYPE.equals(xlsFileEvent.getContentType())) {
       log.error("only xlsx type supported, provided {}", xlsFileEvent.getContentType());
 
       throw new RuntimeException("only xlsx type supported");

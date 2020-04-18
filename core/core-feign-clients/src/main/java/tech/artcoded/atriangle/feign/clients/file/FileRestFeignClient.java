@@ -21,7 +21,7 @@ public interface FileRestFeignClient {
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<FileEvent> upload(@RequestPart("file") MultipartFile file,
                                    @RequestParam(value = "fileUploadType",
-                                                 defaultValue = "SHARED_FILE") FileEventType fileUploadType,
+                                                 defaultValue = "RAW_FILE") FileEventType fileUploadType,
 
                                    @RequestParam(value = "correlationId") String correlationId) throws Exception;
 

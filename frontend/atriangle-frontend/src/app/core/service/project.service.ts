@@ -41,6 +41,8 @@ export class ProjectService {
         return environment.backendUrl + "/api/project/add-rdf-file";
       case FileUploadType.SHACL_FILE:
         return environment.backendUrl + "/api/project/add-shacl-file";
+      case FileUploadType.SKOS_FILE:
+        return environment.backendUrl + "/api/project/add-skos-file";
       case FileUploadType.PROJECT_FILE:
       case FileUploadType.RAW_FILE:
         return environment.backendUrl + "/api/project/add-raw-file";

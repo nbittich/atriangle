@@ -9,6 +9,8 @@
                     uploadType="RDF_FILE"></app-upload>
         <app-upload (onFinish)="onFinishUpload($event)" title="Upload SHACL File" [projectId]="project.id"
                     uploadType="SHACL_FILE"></app-upload>
+        <app-upload (onFinish)="onFinishUpload($event)" title="Upload SKOS File" [projectId]="project.id"
+                    uploadType="SKOS_FILE"></app-upload>
         <app-upload (onFinish)="onFinishUpload($event)" title="Upload RAW File" [projectId]="project.id"
                     uploadType="RAW_FILE"></app-upload>
         <app-upload (onFinish)="onFinishUpload($event)" title="Upload SPARQL Freemarker File" [projectId]="project.id"

@@ -35,22 +35,28 @@ public interface ProjectRestFeignClient {
   @PostMapping(path = "/add-rdf-file",
                consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<ProjectEvent> addRdfFile(@RequestPart("file") MultipartFile file,
-                                       @RequestParam("projectId") String projectId);
+                                          @RequestParam("projectId") String projectId);
 
   @PostMapping(path = "/add-shacl-file",
                consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<ProjectEvent> addShaclFile(@RequestPart("file") MultipartFile file,
-                                       @RequestParam("projectId") String projectId);
+                                            @RequestParam("projectId") String projectId);
 
   @PostMapping(path = "/add-sparql-query-template",
                consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
   ResponseEntity<ProjectEvent> addFreemarkerSparqlTemplate(@RequestPart("file") MultipartFile file,
                                                            @RequestParam("projectId") String projectId);
 
+  @PostMapping(path = "/add-skos-file",
+               consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  ResponseEntity<ProjectEvent> addSkosFile(@RequestPart("file") MultipartFile file,
+                                           @RequestParam("projectId") String projectId);
+
   @PostMapping(path = "/execute-select-sparql-query",
                consumes = MediaType.APPLICATION_JSON_VALUE)
   ResponseEntity<List<Map<String, String>>> executeSelectSparqlQuery(@RequestParam("projectId") String projectId,
-                                                                     @RequestParam("freemarkerTemplateFileId") String freemarkerTemplateFileId,
+                                                                     @RequestParam(
+                                                                       "freemarkerTemplateFileId") String freemarkerTemplateFileId,
                                                                      @RequestBody Map<String, String> variables);
 
   @PostMapping(path = "/execute-construct-sparql-query",
