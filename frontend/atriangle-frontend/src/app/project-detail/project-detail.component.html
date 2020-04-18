@@ -1,5 +1,9 @@
 <mat-card class="mt-5 container transparent" *ngIf="project">
   <mat-card-title class="text-center">Project {{project.name}}</mat-card-title>
+  <mat-card-subtitle class="text-center">
+    <small>Created: {{project.creationDate}}, Last updated: {{project.lastModifiedDate || 'never'}}</small>
+    <p>{{project.description}}</p>
+  </mat-card-subtitle>
   <mat-card-content>
     <div class="pull-right mt-2">
       <button mat-stroked-button color="primary" class="mr-2" [matMenuTriggerFor]="menuUpload">
@@ -32,7 +36,6 @@
         <button mat-menu-item>Query Sparql</button>
       </mat-menu>
     </div>
-
     <mat-form-field>
       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
     </mat-form-field>
