@@ -1,4 +1,4 @@
-export class LogEvent {
+export interface LogEvent {
   correlationId: string;
   message: string;
   creationDate: Date;

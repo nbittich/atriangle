@@ -28,7 +28,7 @@ export class NewProjectComponent implements OnInit {
 
   ngOnInit(): void {
     if (!this.project) {
-      this.project = new Project();
+      this.project = {} as Project;
     }
     this.nameFormControl = new FormControl({value: this.project.name, disabled: this.project.id}, [
       Validators.required,
@@ -58,7 +58,7 @@ export class NewProjectComponent implements OnInit {
   }
 
   private reset() {
-    this.project = new Project();
+    this.project = {} as Project;
     this.nameFormControl.reset();
     this.descriptionFormControl.reset();
   }

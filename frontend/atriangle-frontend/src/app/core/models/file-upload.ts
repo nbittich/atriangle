@@ -1,4 +1,4 @@
-export class FileUpload {
+export interface FileUpload {
   id: string;
   contentType: string;
   eventType: FileUploadType;

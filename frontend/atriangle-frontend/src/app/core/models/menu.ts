@@ -1,12 +1,12 @@
-export class Menu {
+export interface Menu {
   url: string;
   name: string;
-  icon:MenuIcon;
+  icon: MenuIcon;
   section: MenuSection;
 
 }
 
-export class MenuIcon {
+export interface MenuIcon {
   pack: string;
   name: string;
 }

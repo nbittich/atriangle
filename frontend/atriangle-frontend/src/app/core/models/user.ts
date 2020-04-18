@@ -1,9 +1,10 @@
-export class User {
+export interface User {
   id: number;
   username: string;
   authorities: string[];
 }
-export class UserFull extends User {
+
+export interface UserFull extends User {
   password: string;
   confirmPassword: string;
   role: string;

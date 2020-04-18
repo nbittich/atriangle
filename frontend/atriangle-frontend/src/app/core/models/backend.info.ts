@@ -1,4 +1,4 @@
-export class BackendInfo {
+export interface BackendInfo {
   artifact: string;
   group: string;
   name: string;
@@ -8,11 +8,11 @@ export class BackendInfo {
   encoding: BackendInfoEncoding;
 }
 
-export class BackendInfoSource {
+export interface BackendInfoSource {
   source: string;
 }
 
-export class BackendInfoEncoding {
+export interface BackendInfoEncoding {
   source: string;
   reporting: string;
 }

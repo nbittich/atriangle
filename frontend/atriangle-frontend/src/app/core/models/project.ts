@@ -1,6 +1,6 @@
 import {FileUpload} from "./file-upload";
 
-export class Project {
+export interface Project {
   id: string;
   name: string;
   description: string;
