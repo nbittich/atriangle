@@ -16,6 +16,7 @@ public class ProjectEvent {
   @Builder.Default
   private String id = IdGenerators.UUID_SUPPLIER.get();
   private String name;
+  private String description;
   @Builder.Default
   private List<FileEvent> fileEvents = List.of();
 }

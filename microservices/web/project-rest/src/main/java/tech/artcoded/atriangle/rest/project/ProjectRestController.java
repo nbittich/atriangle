@@ -42,8 +42,8 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
 
   @Override
   @SwaggerHeaderAuthentication
-  public ResponseEntity<ProjectEvent> createProject(String name) {
-    return ResponseEntity.ok(projectRestService.newProject(name));
+  public ResponseEntity<ProjectEvent> createProject(String name, String description) {
+    return ResponseEntity.ok(projectRestService.newProject(name, description));
   }
 
   @Override
@@ -199,6 +199,13 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   @SwaggerHeaderAuthentication
   public List<ProjectEvent> findAll() {
     return projectRestService.findAll();
+  }
+
+  @Override
+  public ResponseEntity<ProjectEvent> updateProjectDescription(String projectId, String description) {
+    return projectRestService.updateDescription(projectId, description)
+                             .map(ResponseEntity::ok)
+                             .orElseGet(ResponseEntity.badRequest()::build);
   }
 
   @Override

@@ -92,6 +92,33 @@ public class ProjectTest {
   }
 
   @Test
+  public void createProjectWithDescriptionTest() {
+    String projectName = RandomStringUtils.randomAlphabetic(7);
+    String description = RandomStringUtils.randomAlphanumeric(255);
+    log.info("project creation");
+    ProjectEvent projectEvent = restTemplate.postForObject(backendUrl + "/project?name=" + projectName + "&description=" + description, testingUtils.requestWithEmptyBody(), ProjectEvent.class);
+    assertNotNull(projectEvent);
+    assertEquals(projectName.toLowerCase(), projectEvent.getName());
+    assertEquals(description, projectEvent.getDescription());
+    log.info("project with id {} and name {} created", projectEvent.getId(), projectEvent.getName());
+  }
+
+  @Test
+  public void updateProjectDescriptionTest() {
+    String projectName = RandomStringUtils.randomAlphabetic(7);
+    String description = RandomStringUtils.randomAlphanumeric(255);
+    ProjectEvent projectEvent = createProjectEvent(projectName);
+    ResponseEntity<ProjectEvent> projectWithUpdatedDescription = restTemplate.exchange(backendUrl + "/project/" + projectEvent.getId() + "/update-description?description=" + description,
+                                                                                       HttpMethod.POST,
+                                                                                       testingUtils.requestWithEmptyBody(),
+                                                                                       ProjectEvent.class);
+    assertEquals(HttpStatus.OK, projectWithUpdatedDescription.getStatusCode());
+    assertNotNull(projectWithUpdatedDescription.getBody());
+    assertEquals(description, projectWithUpdatedDescription.getBody()
+                                                           .getDescription());
+  }
+
+  @Test
   public void createProjectAlreadyExistTest() {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     createProjectEvent(projectName);
@@ -100,23 +127,26 @@ public class ProjectTest {
                                                                         testingUtils.requestWithEmptyBody(),
                                                                         String.class);
     assertEquals(HttpStatus.BAD_REQUEST, responseAlreadyExist.getStatusCode());
-    assertEquals(String.format("cannot create project %s. name not valid  (minimum 7 alphabetic characters)  or already exist", projectName), responseAlreadyExist.getBody());
+    assertEquals(String.format("cannot create project %s. name not valid (minimum 7 alphabetic characters) or already exist", projectName), responseAlreadyExist.getBody());
 
-    ResponseEntity<String> responseNameNotValid = restTemplate.exchange(backendUrl + "/project?name=" + "b7ip0jd",
+    String projectNameWithNumbers = RandomStringUtils.randomAlphanumeric(7);
+
+    ResponseEntity<String> responseNameNotValid = restTemplate.exchange(backendUrl + "/project?name=" + projectNameWithNumbers,
                                                                         HttpMethod.POST,
                                                                         testingUtils.requestWithEmptyBody(),
                                                                         String.class);
 
     assertEquals(HttpStatus.BAD_REQUEST, responseNameNotValid.getStatusCode());
-    assertEquals(String.format("cannot create project %s. name not valid  (minimum 7 alphabetic characters)  or already exist", "b7ip0jd"), responseNameNotValid.getBody());
+    assertEquals(String.format("cannot create project %s. name not valid (minimum 7 alphabetic characters) or already exist", projectNameWithNumbers), responseNameNotValid.getBody());
 
-    ResponseEntity<String> responseNameTooShort = restTemplate.exchange(backendUrl + "/project?name=" + "cdefgh",
+    String shortProjectName = RandomStringUtils.randomAlphabetic(6);
+    ResponseEntity<String> responseNameTooShort = restTemplate.exchange(backendUrl + "/project?name=" + shortProjectName,
                                                                         HttpMethod.POST,
                                                                         testingUtils.requestWithEmptyBody(),
                                                                         String.class);
 
     assertEquals(HttpStatus.BAD_REQUEST, responseNameTooShort.getStatusCode());
-    assertEquals(String.format("cannot create project %s. name not valid  (minimum 7 alphabetic characters)  or already exist", "cdefgh"), responseNameTooShort.getBody());
+    assertEquals(String.format("cannot create project %s. name not valid (minimum 7 alphabetic characters) or already exist", shortProjectName), responseNameTooShort.getBody());
 
   }
 
@@ -428,9 +458,10 @@ public class ProjectTest {
 
   private ProjectEvent createProjectEvent(String projectName) {
     log.info("project creation");
-    ProjectEvent projectEvent = restTemplate.postForObject(backendUrl + "/project?name=" + projectName.toLowerCase(), testingUtils.requestWithEmptyBody(), ProjectEvent.class);
+    ProjectEvent projectEvent = restTemplate.postForObject(backendUrl + "/project?name=" + projectName, testingUtils.requestWithEmptyBody(), ProjectEvent.class);
     assertNotNull(projectEvent);
     assertEquals(projectName.toLowerCase(), projectEvent.getName());
+    assertEquals("N/A", projectEvent.getDescription());
     log.info("project with id {} and name {} created", projectEvent.getId(), projectEvent.getName());
     return projectEvent;
   }

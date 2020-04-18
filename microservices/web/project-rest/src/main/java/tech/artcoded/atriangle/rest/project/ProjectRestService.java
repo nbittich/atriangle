@@ -76,7 +76,7 @@ public class ProjectRestService {
   }
 
   @Transactional
-  public ProjectEvent newProject(String name, FileEvent... fileEvents) {
+  public ProjectEvent newProject(String name, String description, FileEvent... fileEvents) {
     String sanitizedName = StringUtils.trimToEmpty(name)
                                       .replaceAll("[^A-Za-z]+", "")
                                       .toLowerCase();
@@ -86,6 +86,7 @@ public class ProjectRestService {
 
     ProjectEvent project = ProjectEvent.builder()
                                        .name(sanitizedName)
+                                       .description(description)
                                        .fileEvents(Arrays.asList(fileEvents))
                                        .build();
     ProjectEvent save = mongoTemplate.save(project);
@@ -302,4 +303,17 @@ public class ProjectRestService {
 
   }
 
+  public Optional<ProjectEvent> updateDescription(String projectId, String description) {
+    return findById(projectId)
+      .stream()
+      .map(projectEvent -> {
+        loggerAction.info(projectEvent::getId, "description of project %s updated", projectEvent.getName());
+
+        return projectEvent.toBuilder()
+                           .description(description)
+                           .build();
+      })
+      .map(mongoTemplate::save)
+      .findFirst();
+  }
 }
