@@ -6,6 +6,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -76,17 +77,19 @@ public class ProjectRestService {
 
   @Transactional
   public ProjectEvent newProject(String name, FileEvent... fileEvents) {
-
-    if (findByName(name).isPresent()) {
-      throw new RuntimeException(String.format("cannot create project %s. already exist", name));
+    String sanitizedName = StringUtils.trimToEmpty(name)
+                                      .replaceAll("[^A-Za-z]+", "")
+                                      .toLowerCase();
+    if (sanitizedName.isEmpty() || sanitizedName.length() < 7 || findByName(sanitizedName).isPresent()) {
+      throw new RuntimeException(String.format("cannot create project %s. name not valid (minimum 7 alphabetic characters) or already exist", name));
     }
 
     ProjectEvent project = ProjectEvent.builder()
-                                       .name(name)
+                                       .name(sanitizedName)
                                        .fileEvents(Arrays.asList(fileEvents))
                                        .build();
     ProjectEvent save = mongoTemplate.save(project);
-    loggerAction.info(save::getId, "new project with name %s created", name);
+    loggerAction.info(save::getId, "new project with name %s created", sanitizedName);
     return save;
   }
 

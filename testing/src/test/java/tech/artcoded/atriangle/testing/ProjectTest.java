@@ -92,6 +92,35 @@ public class ProjectTest {
   }
 
   @Test
+  public void createProjectAlreadyExistTest() {
+    String projectName = RandomStringUtils.randomAlphabetic(7);
+    createProjectEvent(projectName);
+    ResponseEntity<String> responseAlreadyExist = restTemplate.exchange(backendUrl + "/project?name=" + projectName,
+                                                                        HttpMethod.POST,
+                                                                        testingUtils.requestWithEmptyBody(),
+                                                                        String.class);
+    assertEquals(HttpStatus.BAD_REQUEST, responseAlreadyExist.getStatusCode());
+    assertEquals(String.format("cannot create project %s. name not valid  (minimum 7 alphabetic characters)  or already exist", projectName), responseAlreadyExist.getBody());
+
+    ResponseEntity<String> responseNameNotValid = restTemplate.exchange(backendUrl + "/project?name=" + "b7ip0jd",
+                                                                        HttpMethod.POST,
+                                                                        testingUtils.requestWithEmptyBody(),
+                                                                        String.class);
+
+    assertEquals(HttpStatus.BAD_REQUEST, responseNameNotValid.getStatusCode());
+    assertEquals(String.format("cannot create project %s. name not valid  (minimum 7 alphabetic characters)  or already exist", "b7ip0jd"), responseNameNotValid.getBody());
+
+    ResponseEntity<String> responseNameTooShort = restTemplate.exchange(backendUrl + "/project?name=" + "cdefgh",
+                                                                        HttpMethod.POST,
+                                                                        testingUtils.requestWithEmptyBody(),
+                                                                        String.class);
+
+    assertEquals(HttpStatus.BAD_REQUEST, responseNameTooShort.getStatusCode());
+    assertEquals(String.format("cannot create project %s. name not valid  (minimum 7 alphabetic characters)  or already exist", "cdefgh"), responseNameTooShort.getBody());
+
+  }
+
+  @Test
   public void addFileToProjectTest() throws Exception {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
@@ -182,23 +211,23 @@ public class ProjectTest {
     // add ask query
     FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE, askQueryFile);
     Map<String, String> variables = Map.of(
-      "name","Alice"
+      "name", "Alice"
     );
     Boolean alicePresent = restTemplate.postForObject(String.format("%s/project/execute-ask-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
-                                                  testingUtils.requestWithBody(Map.of(
-                                                    "name","Alice"
-                                                  )), Boolean.class);
+                                                      testingUtils.requestWithBody(Map.of(
+                                                        "name", "Alice"
+                                                      )), Boolean.class);
     Boolean bobPresent = restTemplate.postForObject(String.format("%s/project/execute-ask-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
-                                                  testingUtils.requestWithBody(Map.of(
-                                                    "name","Bob"
-                                                  )), Boolean.class);
+                                                    testingUtils.requestWithBody(Map.of(
+                                                      "name", "Bob"
+                                                    )), Boolean.class);
     assertTrue(alicePresent);
     assertTrue(bobPresent);
 
     Boolean jenaPresent = restTemplate.postForObject(String.format("%s/project/execute-ask-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
-                                                  testingUtils.requestWithBody(Map.of(
-                                                    "name","Jena"
-                                                  )), Boolean.class);
+                                                     testingUtils.requestWithBody(Map.of(
+                                                       "name", "Jena"
+                                                     )), Boolean.class);
     assertFalse(jenaPresent);
 
   }
@@ -216,31 +245,36 @@ public class ProjectTest {
     // add select query
     FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE, selectQueryFile);
     Map<String, String> variables = Map.of(
-      "s","?s",
-      "p","?p",
-      "o","?o"
+      "s", "?s",
+      "p", "?p",
+      "o", "?o"
     );
     List<Map<String, String>> result = restTemplate.postForObject(String.format("%s/project/execute-select-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
-                                               testingUtils.requestWithBody(variables), List.class);
+                                                                  testingUtils.requestWithBody(variables), List.class);
 
-    log.info("result of select query:\n {}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
+    log.info("result of select query:\n {}", mapper.writerWithDefaultPrettyPrinter()
+                                                   .writeValueAsString(result));
 
-    assertTrue(result.stream().anyMatch(map-> "http://artcoded.tech/person".equals(map.get("s")) &&
-                                          "http://artcoded.tech#artist".equals(map.get("p")) &&
-                                          "Nordine Bittich".equals(map.get("o"))
-    ));
-    assertTrue(result.stream().anyMatch(map-> "http://artcoded.tech/person".equals(map.get("s")) &&
-                                          "http://artcoded.tech#company".equals(map.get("p")) &&
-                                          "Artcoded".equals(map.get("o"))
-    ));
-    assertTrue(result.stream().anyMatch(map-> "http://artcoded.tech/person".equals(map.get("s")) &&
-                                          "http://artcoded.tech#country".equals(map.get("p")) &&
-                                          "BELGIUM".equals(map.get("o"))
-    ));
-    assertTrue(result.stream().anyMatch(map-> "http://artcoded.tech/person".equals(map.get("s")) &&
-                                          "http://artcoded.tech#year".equals(map.get("p")) &&
-                                          "1988".equals(map.get("o"))
-    ));
+    assertTrue(result.stream()
+                     .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
+                       "http://artcoded.tech#artist".equals(map.get("p")) &&
+                       "Nordine Bittich".equals(map.get("o"))
+                     ));
+    assertTrue(result.stream()
+                     .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
+                       "http://artcoded.tech#company".equals(map.get("p")) &&
+                       "Artcoded".equals(map.get("o"))
+                     ));
+    assertTrue(result.stream()
+                     .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
+                       "http://artcoded.tech#country".equals(map.get("p")) &&
+                       "BELGIUM".equals(map.get("o"))
+                     ));
+    assertTrue(result.stream()
+                     .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
+                       "http://artcoded.tech#year".equals(map.get("p")) &&
+                       "1988".equals(map.get("o"))
+                     ));
 
   }
 
@@ -256,22 +290,24 @@ public class ProjectTest {
     // add full text search query
     FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE, fullTextSearchFile);
     Map<String, String> variables = Map.of(
-      "searchTerm","Nordine",
-      "minRelevance","0.25",
-      "matchAllTerm","true",
-      "maxRank","1000"
+      "searchTerm", "Nordine",
+      "minRelevance", "0.25",
+      "matchAllTerm", "true",
+      "maxRank", "1000"
     );
     List<Map<String, String>> result = restTemplate.postForObject(String.format("%s/project/execute-select-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
-                                               testingUtils.requestWithBody(variables), List.class);
+                                                                  testingUtils.requestWithBody(variables), List.class);
 
-    log.info("result of select query:\n {}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(result));
+    log.info("result of select query:\n {}", mapper.writerWithDefaultPrettyPrinter()
+                                                   .writeValueAsString(result));
 
-    assertTrue(result.stream().anyMatch(map-> "http://artcoded.tech/person".equals(map.get("s")) &&
-                                          "http://artcoded.tech#artist".equals(map.get("p")) &&
-                                          "1".equals(map.get("rank")) &&
-                                          "0.625".equals(map.get("score")) &&
-                                          "Nordine Bittich".equals(map.get("o"))
-    ));
+    assertTrue(result.stream()
+                     .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
+                       "http://artcoded.tech#artist".equals(map.get("p")) &&
+                       "1".equals(map.get("rank")) &&
+                       "0.625".equals(map.get("score")) &&
+                       "Nordine Bittich".equals(map.get("o"))
+                     ));
   }
 
   @Test
@@ -285,14 +321,15 @@ public class ProjectTest {
     checkLogs(projectEvent);
 
     // add construct query
-    FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE,constructQueryFile);
+    FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE, constructQueryFile);
     Map<String, String> variables = Map.of(
-      "toConstruct","?s ?p ?o",
+      "toConstruct", "?s ?p ?o",
       "condition", "?s ?p ?o"
     );
     String modelString = restTemplate.postForObject(String.format("%s/project/execute-construct-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
-                                               testingUtils.requestWithBody(variables), String.class);
-    log.info("result of construct query:\n {}", mapper.writerWithDefaultPrettyPrinter().writeValueAsString(modelString));
+                                                    testingUtils.requestWithBody(variables), String.class);
+    log.info("result of construct query:\n {}", mapper.writerWithDefaultPrettyPrinter()
+                                                      .writeValueAsString(modelString));
 
     Model model = ModelConverter.toModel(modelString, RDFFormat.JSONLD);
     Model expectedModel = ModelConverter.inputStreamToModel(expectedConstructFile.getFilename(), expectedConstructFile::getInputStream);
@@ -398,7 +435,8 @@ public class ProjectTest {
     return projectEvent;
   }
 
-  private FileEvent addFileToProject(String projectId, FileEventType fileEventType, Resource resource) throws Exception {
+  private FileEvent addFileToProject(String projectId, FileEventType fileEventType,
+                                     Resource resource) throws Exception {
     switch (fileEventType) {
       case RDF_FILE:
         return addFile(backendUrl + "/project/add-rdf-file", projectId, resource);
@@ -454,6 +492,7 @@ public class ProjectTest {
     assertFalse(logEvents.stream()
                          .anyMatch(logEvent -> ERROR.equals(logEvent.getType())));
   }
+
   private ResponseEntity<ByteArrayResource> downloadFile(String projectId, FileEvent fileEvent) {
     String url = String.format("%s/project/%s/download-file/%s", backendUrl, projectId, fileEvent.getId());
     log.info("url {}", url);
