@@ -35,6 +35,11 @@ export class ProjectService {
     return this.http.post<Project>(url, formData, {});
   }
 
+  newProject(projectName: string): Observable<Project> {
+    const url = environment.backendUrl + '/api/project?name=' + projectName;
+    return this.http.post<Project>(url, {}, {});
+  }
+
   private static getUrlFromUploadType(uploadType: FileUploadType): string {
     switch (uploadType) {
       case FileUploadType.RDF_FILE:
