@@ -8,6 +8,7 @@ import {MatPaginator} from "@angular/material/paginator";
 import {AlertService} from "../core/service/alert.service";
 import {LogsComponent} from "../logs/logs.component";
 import {DialogService} from "../core/service/dialog.service";
+import {SkosConversionComponent} from "../skos-conversion/skos-conversion.component";
 
 @Component({
   selector: 'app-project-detail',
@@ -71,4 +72,7 @@ export class ProjectDetailComponent implements OnInit {
     this.alertService.openSnackBar('file added');
   }
 
+  openSkosModal() {
+    this.dialogService.openDialog(SkosConversionComponent, this.project);
+  }
 }

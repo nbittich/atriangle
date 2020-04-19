@@ -45,6 +45,7 @@ import {NewProjectComponent} from './new-project/new-project.component';
 import {ErrorStateMatcher, ShowOnDirtyErrorStateMatcher} from "@angular/material/core";
 import {LogsComponent} from './logs/logs.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
+import {SkosConversionComponent} from './skos-conversion/skos-conversion.component';
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
     ProjectDetailComponent,
     UploadComponent,
     NewProjectComponent,
-    LogsComponent
+    LogsComponent,
+    SkosConversionComponent
   ],
   imports: [
     BrowserModule,
@@ -94,7 +96,7 @@ import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
   ],
 
   entryComponents: [
-    LogsComponent
+    LogsComponent, SkosConversionComponent
   ],
   providers: [
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
