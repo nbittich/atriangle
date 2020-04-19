@@ -4,10 +4,9 @@ import {LogEvent} from "../core/models/log.event";
 import {ProjectService} from "../core/service/project.service";
 import {MatPaginator} from "@angular/material/paginator";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
+import {Project} from "../core/models";
 
-export interface DialogData {
-  id: string;
-}
+
 @Component({
   selector: 'app-logs',
   templateUrl: './logs.component.html',
@@ -23,17 +22,21 @@ export class LogsComponent implements OnInit {
   ];
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
+  loaded: boolean;
 
-  constructor(private projectService:ProjectService,
+  constructor(private projectService: ProjectService,
               public dialogRef: MatDialogRef<LogsComponent>,
-              @Inject(MAT_DIALOG_DATA) public data: DialogData,
-              private cdr: ChangeDetectorRef) { }
+              @Inject(MAT_DIALOG_DATA) public data: Project,
+              private cdr: ChangeDetectorRef) {
+  }
 
   ngOnInit(): void {
+    this.loaded = false;
     this.projectService.getLogs(this.data.id).subscribe(data => {
       this.datasource = new MatTableDataSource<LogEvent>(data);
       this.cdr.detectChanges();
       this.datasource.paginator = this.paginator;
+      this.loaded = true;
     });
   }
 

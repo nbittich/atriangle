@@ -26,7 +26,7 @@ import {MatAutocompleteModule} from "@angular/material/autocomplete";
 import {MatDialogModule} from "@angular/material/dialog";
 import {HTTP_INTERCEPTORS, HttpClientModule} from "@angular/common/http";
 import {FaIconLibrary, FontAwesomeModule} from "@fortawesome/angular-fontawesome";
-import {AuthInterceptor, ErrorInterceptor, LoadingInterceptor} from "./core/interceptors";
+import {AuthInterceptor, ErrorInterceptor} from "./core/interceptors";
 import {FlexLayoutModule} from "@angular/flex-layout";
 import {LoginComponent} from './login/login.component';
 import {fas} from "@fortawesome/free-solid-svg-icons";
@@ -43,7 +43,8 @@ import {UploadComponent} from './upload/upload.component';
 import {MatProgressBarModule} from "@angular/material/progress-bar";
 import {NewProjectComponent} from './new-project/new-project.component';
 import {ErrorStateMatcher, ShowOnDirtyErrorStateMatcher} from "@angular/material/core";
-import { LogsComponent } from './logs/logs.component';
+import {LogsComponent} from './logs/logs.component';
+import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 
 @NgModule({
   declarations: [
@@ -88,14 +89,14 @@ import { LogsComponent } from './logs/logs.component';
     MatStepperModule,
     DeviceDetectorModule.forRoot(),
     MatExpansionModule,
-    MatProgressBarModule
+    MatProgressBarModule,
+    MatProgressSpinnerModule
   ],
 
   entryComponents: [
     LogsComponent
   ],
   providers: [
-    {provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     {provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true},
     {provide: ErrorStateMatcher, useClass: ShowOnDirtyErrorStateMatcher}

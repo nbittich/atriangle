@@ -6,8 +6,8 @@ import {MatTableDataSource} from "@angular/material/table";
 import {FileService} from "../core/service/file.service";
 import {MatPaginator} from "@angular/material/paginator";
 import {AlertService} from "../core/service/alert.service";
-import {MatDialog} from "@angular/material/dialog";
 import {LogsComponent} from "../logs/logs.component";
+import {DialogService} from "../core/service/dialog.service";
 
 @Component({
   selector: 'app-project-detail',
@@ -31,23 +31,15 @@ export class ProjectDetailComponent implements OnInit {
 
   constructor(private route: ActivatedRoute,
               private fileService: FileService,
-              public dialog: MatDialog,
               private alertService: AlertService,
               private projectService: ProjectService,
+              private dialogService: DialogService,
               private cdr: ChangeDetectorRef) {
   }
+
   openLogs(): void {
-    const dialogRef = this.dialog.open(LogsComponent, {
-      //width: '100vw',
-      //maxWidth: '100vw',
-      data: {id:this.project.id}
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.debug('The dialog for logs was closed', result);
-    });
+    this.dialogService.openDialog(LogsComponent, this.project);
   }
-
 
   ngOnInit(): void {
     this.route.params.subscribe(params => {
