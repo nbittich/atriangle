@@ -9,9 +9,9 @@
     </mat-toolbar>
     <mat-sidenav #sidenav mode="side" [(opened)]="opened" (opened)="events.push('open!')"
                  (closed)="events.push('close!')" class="example-sidenav">
-      <div class="header">
+      <div>
         <a routerLink="/">
-          <img class="logo" src="/assets/logo.png" />
+          <img class="logo" src="/assets/logo.png"/>
         </a>
       </div>
       <div fxLayout="column" fxLayoutAlign="center center" *ngIf="!isLoggedIn()" >

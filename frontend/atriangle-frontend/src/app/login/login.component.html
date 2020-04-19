@@ -1,6 +1,6 @@
-<mat-card class="mt-1 ">
+<mat-card>
   <mat-card-content>
-    <form class="centered-form" (ngSubmit)="login()" [formGroup]="loginForm">
+    <form (ngSubmit)="login()" [formGroup]="loginForm">
       <mat-form-field color="primary">
         <input matInput formControlName="username" [id]="'username'" placeholder="Username">
       </mat-form-field>
