@@ -1,6 +1,6 @@
 <mat-spinner *ngIf="!loaded"></mat-spinner>
 <ng-container *ngIf="loaded">
-  <h1 mat-dialog-title>Logs</h1>
+  <h1 class="text-center" mat-dialog-title>Logs</h1>
   <div mat-dialog-content>
     <mat-form-field>
       <input matInput (keyup)="applyFilter($event.target.value)" placeholder="Filter">
