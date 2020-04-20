@@ -10,15 +10,9 @@ export class DialogService {
   }
 
   openDialog(component: ComponentType<any>, data: any): MatDialogRef<any> {
-    const dialogRef = this.dialog.open(component, {
+    return this.dialog.open(component, {
       data: data
     });
-
-    dialogRef.afterClosed().subscribe(result => {
-      console.debug('The dialog was closed', result);
-    });
-
-    return dialogRef;
 
   }
 }

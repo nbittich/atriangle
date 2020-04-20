@@ -63,12 +63,18 @@ export class ProjectService {
   }
 
   updateProject(projectId: string, description: string): Observable<Project> {
-    let url = environment.backendUrl + '/api/project/' + projectId + "/update-description?description=" + description;
+    const url = environment.backendUrl + '/api/project/' + projectId + "/update-description?description=" + description;
     return this.http.post<Project>(url, {}, {});
   }
 
-  getLogs(projectId: string) :Observable<LogEvent[]> {
-    let url = environment.backendUrl + '/api/project/' + projectId + "/logs";
+  getLogs(projectId: string): Observable<LogEvent[]> {
+    const url = environment.backendUrl + '/api/project/' + projectId + "/logs";
     return this.http.get<LogEvent[]>(url, {});
   }
+
+  skosConversion(projectId: string, xlsFileId: string): Observable<Project> {
+    const url = `${environment.backendUrl}/api/project/conversion/skos?projectId=${projectId}&xlsFileEventId=${xlsFileId}`;
+    return this.http.post<Project>(url, {});
+  }
+
 }

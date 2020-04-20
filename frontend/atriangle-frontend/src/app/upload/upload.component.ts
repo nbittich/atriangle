@@ -24,7 +24,9 @@ export class UploadComponent implements OnInit {
 
   @Input()
   projectId: string;
+
   @ViewChild("fileUpload", {static: false}) fileUpload: ElementRef;
+
   files = [];
 
   constructor(private projectService: ProjectService) {

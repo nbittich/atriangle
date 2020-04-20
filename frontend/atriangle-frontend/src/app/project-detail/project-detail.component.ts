@@ -73,6 +73,10 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   openSkosModal() {
-    this.dialogService.openDialog(SkosConversionComponent, this.project);
+    let dialogRef = this.dialogService.openDialog(SkosConversionComponent, this.project);
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.getProject();
+    });
   }
 }

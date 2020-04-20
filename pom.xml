@@ -28,7 +28,7 @@
     <jjwt.version>0.11.1</jjwt.version>
     <java.version>11</java.version>
     <lombok.version>1.18.12</lombok.version>
-    <kafka.version>2.5.0</kafka.version>
+    <kafka.version>2.4.1</kafka.version>
     <spring.boot.starter.version>2.2.6.RELEASE</spring.boot.starter.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jackson.version>2.10.3</jackson.version>
