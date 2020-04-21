@@ -5,6 +5,7 @@ import {ProjectService} from "../core/service/project.service";
 import {MatPaginator} from "@angular/material/paginator";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 import {Project} from "../core/models";
+import {LoadingService} from "../core/service/loading.service";
 
 
 @Component({
@@ -26,16 +27,18 @@ export class LogsComponent implements OnInit {
 
   constructor(private projectService: ProjectService,
               public dialogRef: MatDialogRef<LogsComponent>,
+              private loadingService: LoadingService,
               @Inject(MAT_DIALOG_DATA) public data: Project,
               private cdr: ChangeDetectorRef) {
   }
 
   ngOnInit(): void {
-    this.loaded = false;
+    this.loadingService.showSpinner();
     this.projectService.getLogs(this.data.id).subscribe(data => {
       this.datasource = new MatTableDataSource<LogEvent>(data);
       this.cdr.detectChanges();
       this.datasource.paginator = this.paginator;
+      this.loadingService.hideSpinner();
       this.loaded = true;
     });
   }

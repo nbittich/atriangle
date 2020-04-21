@@ -1,4 +1,4 @@
-<ng-container *ngIf="filteredXlsFiles && !loading">
+<ng-container *ngIf="filteredXlsFiles">
   <h1 class="text-center" mat-dialog-title>Skos Conversion</h1>
   <div mat-dialog-content>
     <mat-form-field>
@@ -14,5 +14,4 @@
     <button mat-button (click)="onNoClick()">Close</button>
   </div>
 </ng-container>
-<mat-spinner *ngIf="loading"></mat-spinner>
 

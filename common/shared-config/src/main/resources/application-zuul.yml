@@ -32,9 +32,9 @@ zuul:
       path: /proxy/sparql-endpoint/**
       url: ${sparql.endpoint.proxy.url}
   host:
-    connect-timeout-millis: 45000
-    socket-timeout-millis: 45000
+    connect-timeout-millis: 600000
+    socket-timeout-millis: 600000
 hystrix.command.default.execution.timeout.enabled: false
 ribbon:
-  ConnectTimeout: 45000
-  ReadTimeout: 45000
+  ConnectTimeout: 600000
+  ReadTimeout: 600000

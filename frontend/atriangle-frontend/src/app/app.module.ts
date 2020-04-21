@@ -46,6 +46,7 @@ import {ErrorStateMatcher, ShowOnDirtyErrorStateMatcher} from "@angular/material
 import {LogsComponent} from './logs/logs.component';
 import {MatProgressSpinnerModule} from "@angular/material/progress-spinner";
 import {SkosConversionComponent} from './skos-conversion/skos-conversion.component';
+import { LoadingComponent } from './loading/loading.component';
 
 @NgModule({
   declarations: [
@@ -59,7 +60,8 @@ import {SkosConversionComponent} from './skos-conversion/skos-conversion.compone
     UploadComponent,
     NewProjectComponent,
     LogsComponent,
-    SkosConversionComponent
+    SkosConversionComponent,
+    LoadingComponent
   ],
   imports: [
     BrowserModule,

@@ -2,6 +2,7 @@ import {Component, ElementRef, EventEmitter, Input, OnInit, Output, ViewChild} f
 import {FileUploadType, Project} from "../core/models";
 import {ProjectService} from "../core/service/project.service";
 import {catchError} from "rxjs/operators";
+import {LoadingService} from "../core/service/loading.service";
 
 @Component({
   selector: 'app-upload',
@@ -29,13 +30,14 @@ export class UploadComponent implements OnInit {
 
   files = [];
 
-  constructor(private projectService: ProjectService) {
+  constructor(private projectService: ProjectService, private loadingService:LoadingService) {
   }
 
   ngOnInit(): void {
   }
 
   uploadFile(file) {
+    this.loadingService.showSpinner();
     const formData = new FormData();
     formData.append('file', file.data);
     formData.append('projectId', this.projectId);
@@ -43,12 +45,14 @@ export class UploadComponent implements OnInit {
       catchError((error: Error) => {
         this.files = [];
         this.fileUpload.nativeElement.value = '';
+        this.loadingService.hideSpinner();
         throw error;
       })
     ).subscribe((data: Project) => {
       this.files = [];
       this.fileUpload.nativeElement.value = '';
       this.onFinish.emit(data);
+      this.loadingService.hideSpinner();
     });
   }
 
