@@ -3,7 +3,7 @@ import {Injectable} from '@angular/core';
 import {Observable} from 'rxjs';
 import {map} from 'rxjs/operators';
 import {environment} from "../../../environments/environment";
-import {FileUploadType, Project} from "../models";
+import {FileUploadType, Project, SinkRequest} from "../models";
 import {LogEvent} from "../models/log.event";
 
 
@@ -77,4 +77,13 @@ export class ProjectService {
     return this.http.post<Project>(url, {});
   }
 
+  sink(id: string, selectedId: string, selectedShaclId: string):Observable<any> {
+    const url = `${environment.backendUrl}/api/project/sink`;
+    return this.http.post<any>(url, {
+      projectId: id,
+      shaclFileEventId: selectedShaclId,
+      rdfFileEventId: selectedId
+    } as SinkRequest);
+
+  }
 }

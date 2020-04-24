@@ -28,7 +28,7 @@
       </button>
       <mat-menu #menuAction="matMenu">
         <button mat-menu-item (click)="openSkosModal()">Skos Conversion</button>
-        <button mat-menu-item>Sink RDF</button>
+        <button mat-menu-item (click)="openSinkModal()">Sink RDF</button>
       </mat-menu>
       <button title="Query" mat-stroked-button color="accent" class="mr-2" [matMenuTriggerFor]="menuQuery">
         <span class="text-uppercase"><fa-icon [icon]="['fas', 'search']"></fa-icon></span>

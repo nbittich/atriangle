@@ -2,3 +2,4 @@
 
 ## 0.4.4
 * loading service
+* sink (frontend)

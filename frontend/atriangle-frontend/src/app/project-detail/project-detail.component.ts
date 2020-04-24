@@ -9,6 +9,9 @@ import {AlertService} from "../core/service/alert.service";
 import {LogsComponent} from "../logs/logs.component";
 import {DialogService} from "../core/service/dialog.service";
 import {SkosConversionComponent} from "../skos-conversion/skos-conversion.component";
+import {SinkComponent} from "../sink/sink.component";
+import {timer} from "rxjs";
+import {delay} from "rxjs/operators";
 
 @Component({
   selector: 'app-project-detail',
@@ -73,9 +76,15 @@ export class ProjectDetailComponent implements OnInit {
   }
 
   openSkosModal() {
-    let dialogRef = this.dialogService.openDialog(SkosConversionComponent, this.project);
-
+    const dialogRef = this.dialogService.openDialog(SkosConversionComponent, this.project);
     dialogRef.afterClosed().subscribe(result => {
+      this.getProject();
+    });
+  }
+
+  openSinkModal() {
+    const dialogRef = this.dialogService.openDialog(SinkComponent, this.project);
+    dialogRef.afterClosed().pipe(delay(5000)).subscribe(result =>{
       this.getProject();
     });
   }

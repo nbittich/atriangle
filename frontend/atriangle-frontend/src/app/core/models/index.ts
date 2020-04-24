@@ -4,3 +4,4 @@ export * from './backend.info';
 export * from './project';
 export * from './file-upload';
 export * from './loading';
+export * from './sink.request';
