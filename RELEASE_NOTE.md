@@ -1,5 +1,3 @@
 # Release note
 
-## 0.4.4
-* loading service
-* sink (frontend)
+## 0.4.5
