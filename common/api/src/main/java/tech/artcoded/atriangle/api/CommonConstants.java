@@ -1,4 +1,4 @@
-package tech.artcoded.atriangle.api.dto;
+package tech.artcoded.atriangle.api;
 
 public interface CommonConstants {
   String KAFKA_PROPERTY_FILE = "kafka.properties";
@@ -6,6 +6,7 @@ public interface CommonConstants {
   String TOPIC_FROM = "topic.from";
   String TOPIC_TO = "topic.to";
   String DEFAULT_PROP_SEPARATOR = ",";
+  String DEFAULT_TOPIC = "username";
 
   String SYS_CONFIG_FILE_PATH = "externalFilePath";
   String PROPERTY_FILE_NAME = "propertyFileName";

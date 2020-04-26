@@ -1,7 +1,6 @@
 package tech.artcoded.atriangle.rest.project;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.info.BuildProperties;
@@ -13,29 +12,33 @@ import tech.artcoded.atriangle.api.dto.*;
 import tech.artcoded.atriangle.core.kafka.KafkaEventHelper;
 
 import javax.inject.Inject;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
+
+import static tech.artcoded.atriangle.api.CommonConstants.DEFAULT_TOPIC;
 
 @Component
 @Slf4j
 public class ProjectSinkProducer {
 
-  private final ProjectRestService projectRestService;
+  private final ProjectFileService projectFileService;
+  private final ProjectService projectService;
   private final ObjectMapperWrapper objectMapperWrapper;
   private final KafkaTemplate<String, String> kafkaTemplate;
   private final BuildProperties buildProperties;
   private final KafkaEventHelper kafkaEventHelper;
 
-  @Value("${spring.kafka.template.default-topic}")
+  @Value(DEFAULT_TOPIC)
   private String topicProducer;
 
   @Inject
-  public ProjectSinkProducer(ProjectRestService projectRestService,
+  public ProjectSinkProducer(ProjectFileService projectFileService,
+                             ProjectService projectService,
                              ObjectMapperWrapper objectMapperWrapper,
                              KafkaTemplate<String, String> kafkaTemplate,
                              BuildProperties buildProperties,
                              KafkaEventHelper kafkaEventHelper) {
-    this.projectRestService = projectRestService;
+    this.projectFileService = projectFileService;
+    this.projectService = projectService;
     this.objectMapperWrapper = objectMapperWrapper;
     this.kafkaTemplate = kafkaTemplate;
     this.buildProperties = buildProperties;
@@ -46,16 +49,16 @@ public class ProjectSinkProducer {
     CompletableFuture.runAsync(() -> {
       String projectId = sinkRequest.getProjectId();
       log.info("sink {}, request {}", projectId, sinkRequest.getRdfFileEventId());
-      ProjectEvent projectEvent = projectRestService.findById(projectId)
-                                                    .orElseThrow();
+      ProjectEvent projectEvent = projectService.findById(projectId)
+                                                .orElseThrow();
       String ns = projectEvent.getName();
 
 
       RestEvent restRdfEvent = RestEvent.builder()
                                         .namespace(ns)
-                                        .inputToSink(projectRestService.getFileMetadata(projectId, sinkRequest.getRdfFileEventId())
+                                        .inputToSink(projectFileService.getFileMetadata(projectId, sinkRequest.getRdfFileEventId())
                                                                        .orElseThrow())
-                                        .shaclModel(projectRestService.getFileMetadata(projectId, sinkRequest.getShaclFileEventId())
+                                        .shaclModel(projectFileService.getFileMetadata(projectId, sinkRequest.getShaclFileEventId())
                                                                       .orElse(null))
                                         .build();
 
