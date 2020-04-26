@@ -19,4 +19,5 @@ public class SparqlQueryRequest {
   private String projectId;
   private String freemarkerTemplateFileId;
   private Map<String, String> variables;
+  private SparqlQueryRequestType type;
 }

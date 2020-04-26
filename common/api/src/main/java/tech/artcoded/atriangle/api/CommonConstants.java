@@ -6,7 +6,7 @@ public interface CommonConstants {
   String TOPIC_FROM = "topic.from";
   String TOPIC_TO = "topic.to";
   String DEFAULT_PROP_SEPARATOR = ",";
-  String DEFAULT_TOPIC = "username";
+  String DEFAULT_TOPIC = "${spring.kafka.template.default-topic}";
 
   String SYS_CONFIG_FILE_PATH = "externalFilePath";
   String PROPERTY_FILE_NAME = "propertyFileName";
