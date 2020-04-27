@@ -11,6 +11,8 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import tech.artcoded.atriangle.core.rest.util.RestUtil;
 
+import java.util.Map;
+
 import static java.util.Objects.requireNonNull;
 
 public interface TestingUtils {
@@ -43,7 +45,7 @@ public interface TestingUtils {
     return new HttpEntity<>(MAPPER.writeValueAsString(requestBody), headers);
   }
 
-  default <T> ResponseEntity<T> postFileToProject(String projectId, String url, String filename,
+  default <T> ResponseEntity<T> postFileToProject(Map<String, String> requestParams, String url, String filename,
                                                   Resource resource, Class<T> tClass) {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
@@ -60,7 +62,7 @@ public interface TestingUtils {
 
     MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
     body.add("file", fileEntity);
-    body.add("projectId", projectId);
+    requestParams.forEach(body::add);
 
     HttpEntity<MultiValueMap<String, Object>> requestEntity =
       new HttpEntity<>(body, headers);

@@ -12,15 +12,24 @@
       <button title="Upload" mat-stroked-button color="primary" class="mr-2" [matMenuTriggerFor]="menuUpload">
         <span class="text-uppercase"><fa-icon [icon]="['fas', 'upload']"></fa-icon></span></button>
       <mat-menu #menuUpload="matMenu">
-        <app-upload (onFinish)="onFinishUpload($event)" title="Upload RDF File" [projectId]="project.id"
+        <app-upload (onFinish)="onFinishUpload($event)" title="Upload RDF File" [formData]="defaultFormData(project.id)"
                     uploadType="RDF_FILE"></app-upload>
-        <app-upload (onFinish)="onFinishUpload($event)" title="Upload SHACL File" [projectId]="project.id"
+        <app-upload (onFinish)="onFinishUpload($event)" title="Upload SHACL File"
+                    [formData]="defaultFormData(project.id)"
                     uploadType="SHACL_FILE"></app-upload>
-        <app-upload (onFinish)="onFinishUpload($event)" title="Upload SKOS File" [projectId]="project.id"
+        <app-upload (onFinish)="onFinishUpload($event)" title="Upload SKOS File"
+                    [formData]="defaultFormData(project.id)"
                     uploadType="SKOS_FILE"></app-upload>
-        <app-upload (onFinish)="onFinishUpload($event)" title="Upload RAW File" [projectId]="project.id"
+        <app-upload (onFinish)="onFinishUpload($event)" title="Upload RAW File" [formData]="defaultFormData(project.id)"
                     uploadType="RAW_FILE"></app-upload>
-        <app-upload (onFinish)="onFinishUpload($event)" title="Upload SPARQL Freemarker File" [projectId]="project.id"
+        <app-upload (onFinish)="onFinishUpload($event)" title="Upload ASK Freemarker File"
+                    [formData]="askFormData(project.id)"
+                    uploadType="FREEMARKER_TEMPLATE_FILE"></app-upload>
+        <app-upload (onFinish)="onFinishUpload($event)" title="Upload SELECT Freemarker File"
+                    [formData]="selectFormData(project.id)"
+                    uploadType="FREEMARKER_TEMPLATE_FILE"></app-upload>
+        <app-upload (onFinish)="onFinishUpload($event)" title="Upload CONSTRUCT Freemarker File"
+                    [formData]="constructFormData(project.id)"
                     uploadType="FREEMARKER_TEMPLATE_FILE"></app-upload>
       </mat-menu>
       <button mat-stroked-button color="warn" title="Actions" class="mr-2" [matMenuTriggerFor]="menuAction">

@@ -1,5 +1,6 @@
 package tech.artcoded.atriangle.rest.project;
 
+import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.HttpStatus;
@@ -18,7 +19,9 @@ import tech.artcoded.atriangle.feign.clients.sparql.SparqlRestFeignClient;
 
 import javax.inject.Inject;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
@@ -72,7 +75,8 @@ public class ProjectFileService {
   }
 
   @Transactional
-  public Optional<ProjectEvent> addFile(String projectId, MultipartFile file, FileEventType fileEventType) {
+  public Optional<Map.Entry<FileEvent, ProjectEvent>> addFile(String projectId, MultipartFile file,
+                                                              FileEventType fileEventType) {
     if (FileEventType.RDF_FILE.equals(fileEventType) || FileEventType.SHACL_FILE.equals(fileEventType)) {
       ResponseEntity<Boolean> isRDFResponse = sparqlRestFeignClient.checkFileFormat(file.getOriginalFilename());
       if (!Optional.ofNullable(isRDFResponse)
@@ -81,6 +85,7 @@ public class ProjectFileService {
         throw new RuntimeException("the file is not an rdf file");
       }
     }
+
     return projectService.findById(projectId)
                          .stream()
                          .map(projectEvent -> {
@@ -90,17 +95,19 @@ public class ProjectFileService {
                              throw new RuntimeException("upload failed with status " + fileEvent.getStatusCode());
                            }
 
-                           loggerAction.info(projectEvent::getId, "new file %s added to project %s", fileEvent.getBody()
-                                                                                                              .getName(), projectEvent.getName());
+                           FileEvent body = fileEvent.getBody();
+                           Preconditions.checkNotNull(body, "file event null");
 
-                           return projectEvent.toBuilder()
-                                              .lastModifiedDate(new Date())
-                                              .fileEvents(Stream.concat(projectEvent.getFileEvents()
-                                                                                    .stream(), Stream.of(fileEvent.getBody()))
-                                                                .collect(toList()))
-                                              .build();
+                           loggerAction.info(projectEvent::getId, "new file %s added to project %s", body.getName(), projectEvent.getName());
+
+                           return Map.entry(body, projectEvent.toBuilder()
+                                                              .lastModifiedDate(new Date())
+                                                              .fileEvents(Stream.concat(projectEvent.getFileEvents()
+                                                                                                    .stream(), Stream.of(body))
+                                                                                .collect(toList()))
+                                                              .build());
                          })
-                         .map(projectService::save)
+                         .map(entry -> Map.entry(entry.getKey(), projectService.save(entry.getValue())))
                          .findFirst();
   }
 
@@ -124,6 +131,11 @@ public class ProjectFileService {
                                                 .filter(file -> !file.getId()
                                                                      .equals(fileEventId))
                                                 .collect(toList()))
+                                   .sparqlQueries(p.getSparqlQueries()
+                                                   .stream()
+                                                   .filter(file -> !file.getFreemarkerTemplateFileId()
+                                                                        .equals(fileEventId))
+                                                   .collect(Collectors.toList()))
                                    .build();
         projectService.save(newProject);
       });

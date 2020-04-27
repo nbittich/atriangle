@@ -5,3 +5,4 @@ export * from './project';
 export * from './file-upload';
 export * from './loading';
 export * from './sink.request';
+export * from './sparql.query.request';

@@ -1,6 +1,6 @@
 import {ChangeDetectorRef, Component, OnInit, ViewChild} from '@angular/core';
 import {ActivatedRoute} from "@angular/router";
-import {FileUpload, Project} from "../core/models";
+import {FileUpload, Project, SparqlQueryRequestType} from "../core/models";
 import {ProjectService} from "../core/service/project.service";
 import {MatTableDataSource} from "@angular/material/table";
 import {FileService} from "../core/service/file.service";
@@ -10,7 +10,6 @@ import {LogsComponent} from "../logs/logs.component";
 import {DialogService} from "../core/service/dialog.service";
 import {SkosConversionComponent} from "../skos-conversion/skos-conversion.component";
 import {SinkComponent} from "../sink/sink.component";
-import {timer} from "rxjs";
 import {delay} from "rxjs/operators";
 
 @Component({
@@ -84,8 +83,32 @@ export class ProjectDetailComponent implements OnInit {
 
   openSinkModal() {
     const dialogRef = this.dialogService.openDialog(SinkComponent, this.project);
-    dialogRef.afterClosed().pipe(delay(5000)).subscribe(result =>{
+    dialogRef.afterClosed().pipe(delay(5000)).subscribe(result => {
       this.getProject();
     });
+  }
+
+  defaultFormData(projectId: string): FormData {
+    const formData = new FormData();
+    formData.append('projectId', projectId);
+    return formData;
+  }
+
+  askFormData(projectId: string): FormData {
+    const formData = this.defaultFormData(projectId);
+    formData.append("queryType", SparqlQueryRequestType[SparqlQueryRequestType.ASK_QUERY]);
+    return formData;
+  }
+
+  selectFormData(projectId: string): FormData {
+    const formData = this.defaultFormData(projectId);
+    formData.append("queryType", SparqlQueryRequestType[SparqlQueryRequestType.SELECT_QUERY]);
+    return formData;
+  }
+
+  constructFormData(projectId: string): FormData {
+    const formData = this.defaultFormData(projectId);
+    formData.append("queryType", SparqlQueryRequestType[SparqlQueryRequestType.CONSTRUCT_QUERY]);
+    return formData;
   }
 }

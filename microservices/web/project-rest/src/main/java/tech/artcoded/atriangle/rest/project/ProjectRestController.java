@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiOperation;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import tech.artcoded.atriangle.api.CommonConstants;
 import tech.artcoded.atriangle.api.FileHelper;
+import tech.artcoded.atriangle.api.ObjectMapperWrapper;
 import tech.artcoded.atriangle.api.dto.*;
+import tech.artcoded.atriangle.api.dto.SparqlQueryRequest.SparqlQueryRequestType;
 import tech.artcoded.atriangle.core.rest.annotation.SwaggerHeaderAuthentication;
 import tech.artcoded.atriangle.core.rest.controller.BuildInfoControllerTrait;
 import tech.artcoded.atriangle.core.rest.controller.PingControllerTrait;
@@ -21,6 +24,8 @@ import javax.inject.Inject;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @RestController
 @ApiOperation("Project Rest")
@@ -30,6 +35,7 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   private final ProjectService projectService;
   private final ProjectFileService projectFileService;
   private final ProjectSinkProducer projectSinkProducer;
+  private final ObjectMapperWrapper mapperWrapper;
 
   @Getter
   private final BuildProperties buildProperties;
@@ -39,11 +45,13 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
                                ProjectService projectService,
                                ProjectFileService projectFileService,
                                ProjectSinkProducer projectSinkProducer,
+                               ObjectMapperWrapper mapperWrapper,
                                BuildProperties buildProperties) {
     this.projectRdfService = projectRdfService;
     this.projectService = projectService;
     this.projectFileService = projectFileService;
     this.projectSinkProducer = projectSinkProducer;
+    this.mapperWrapper = mapperWrapper;
     this.buildProperties = buildProperties;
   }
 
@@ -58,6 +66,7 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   public ResponseEntity<ProjectEvent> addRawFile(MultipartFile multipartFile,
                                                  String projectId) {
     return projectFileService.addFile(projectId, multipartFile, FileEventType.PROJECT_FILE)
+                             .map(Map.Entry::getValue)
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
@@ -67,6 +76,7 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   public ResponseEntity<ProjectEvent> addRdfFile(MultipartFile multipartFile,
                                                  String projectId) {
     return projectFileService.addFile(projectId, multipartFile, FileEventType.RDF_FILE)
+                             .map(Map.Entry::getValue)
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
@@ -76,6 +86,7 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   public ResponseEntity<ProjectEvent> addShaclFile(MultipartFile multipartFile,
                                                    String projectId) {
     return projectFileService.addFile(projectId, multipartFile, FileEventType.SHACL_FILE)
+                             .map(Map.Entry::getValue)
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
@@ -83,7 +94,8 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
   @Override
   @SwaggerHeaderAuthentication
   public ResponseEntity<ProjectEvent> addFreemarkerSparqlTemplate(MultipartFile multipartFile,
-                                                                  String projectId) {
+                                                                  String projectId,
+                                                                  SparqlQueryRequestType requestType) {
 
     String extension = FileHelper.getExtension(multipartFile.getOriginalFilename())
                                  .orElse("N/A");
@@ -93,6 +105,22 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
     }
 
     return projectFileService.addFile(projectId, multipartFile, FileEventType.FREEMARKER_TEMPLATE_FILE)
+                             .map(entry -> {
+                               FileEvent freemarkerTemplateFile = entry.getKey();
+                               ProjectEvent project = entry.getValue();
+                               return project.toBuilder()
+                                             .sparqlQueries(Stream.concat(project.getSparqlQueries()
+                                                                                 .stream(), Stream.of(
+                                               SparqlQueryRequest.builder()
+                                                                 .projectId(projectId)
+                                                                 .freemarkerTemplateFileId(freemarkerTemplateFile.getId())
+                                                                 .type(requestType)
+                                                                 .build()
+                                             ))
+                                                                  .collect(Collectors.toList()))
+                                             .build();
+                             })
+                             .map(projectService::save)
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
@@ -105,46 +133,36 @@ public class ProjectRestController implements PingControllerTrait, BuildInfoCont
     }
 
     return projectFileService.addFile(projectId, file, FileEventType.SKOS_FILE)
+                             .map(Map.Entry::getValue)
                              .map(ResponseEntity::ok)
                              .orElseGet(ResponseEntity.badRequest()::build);
   }
 
   @Override
-  @SwaggerHeaderAuthentication
-  public ResponseEntity<List<Map<String, String>>> executeSelectSparqlQuery(String projectId,
-                                                                            String freemarkerTemplateFileId,
-                                                                            Map<String, String> variables) {
+  public ResponseEntity<SparqlQueryResponse> executeSparqlQuery(SparqlQueryRequest queryRequest) {
+    String projectId = queryRequest.getProjectId();
     ProjectEvent projectEvent = projectService.findById(projectId)
                                               .orElseThrow();
-    String queryTempl = projectRdfService.getCachedQueryTemplate(projectEvent, freemarkerTemplateFileId);
-    String query = projectRdfService.compileQuery(queryTempl, variables);
+    String queryTempl = projectRdfService.getCachedQueryTemplate(projectEvent, queryRequest.getFreemarkerTemplateFileId());
+    String query = projectRdfService.compileQuery(queryTempl, queryRequest.getVariables());
     String cacheKey = DigestUtils.sha1Hex(projectId + query);
-    return ResponseEntity.ok(projectRdfService.executeSelectSparqlQuery(projectEvent, query, cacheKey));
-  }
 
-  @Override
-  @SwaggerHeaderAuthentication
-  public ResponseEntity<String> executeConstructSparqlQuery(String projectId, String freemarkerTemplateFileId,
-                                                            Map<String, String> variables) {
-
-    ProjectEvent projectEvent = projectService.findById(projectId)
-                                              .orElseThrow();
-    String queryTempl = projectRdfService.getCachedQueryTemplate(projectEvent, freemarkerTemplateFileId);
-    String query = projectRdfService.compileQuery(queryTempl, variables);
-    String cacheKey = DigestUtils.sha1Hex(projectId + query);
-    return ResponseEntity.ok(projectRdfService.executeConstructSparqlQuery(projectEvent, query, cacheKey));
-  }
-
-  @Override
-  @SwaggerHeaderAuthentication
-  public ResponseEntity<Boolean> executeAskSparqlQuery(String projectId, String freemarkerTemplateFileId,
-                                                       Map<String, String> variables) {
-    ProjectEvent projectEvent = projectService.findById(projectId)
-                                              .orElseThrow();
-    String queryTempl = projectRdfService.getCachedQueryTemplate(projectEvent, freemarkerTemplateFileId);
-    String query = projectRdfService.compileQuery(queryTempl, variables);
-    String cacheKey = DigestUtils.sha1Hex(projectId + query);
-    return ResponseEntity.ok(projectRdfService.executeAskSparqlQuery(projectEvent, query, cacheKey));
+    switch (queryRequest.getType()) {
+      case ASK_QUERY:
+        return ResponseEntity.ok(SparqlQueryResponse.builder()
+                                                    .response(projectRdfService.executeAskSparqlQuery(projectEvent, query, cacheKey))
+                                                    .build());
+      case SELECT_QUERY:
+        return ResponseEntity.ok(SparqlQueryResponse.builder()
+                                                    .response(projectRdfService.executeSelectSparqlQuery(projectEvent, query, cacheKey))
+                                                    .build());
+      case CONSTRUCT_QUERY:
+        return ResponseEntity.ok(SparqlQueryResponse.builder()
+                                                    .response(projectRdfService.executeConstructSparqlQuery(projectEvent, query, cacheKey))
+                                                    .build());
+      default:
+        throw new NotImplementedException("unknown sparql query type");
+    }
   }
 
   @Override

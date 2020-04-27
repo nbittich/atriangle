@@ -21,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import tech.artcoded.atriangle.api.CheckedThreadHelper;
 import tech.artcoded.atriangle.api.dto.*;
+import tech.artcoded.atriangle.api.dto.SparqlQueryRequest.SparqlQueryRequestType;
 import tech.artcoded.atriangle.core.sparql.ModelConverter;
 
 import javax.inject.Inject;
@@ -126,6 +127,7 @@ public class ProjectTest {
   public void createProjectAlreadyExistTest() {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     createProjectEvent(projectName);
+
     ResponseEntity<String> responseAlreadyExist = restTemplate.exchange(backendUrl + "/project?name=" + projectName,
                                                                         HttpMethod.POST,
                                                                         testingUtils.requestWithEmptyBody(),
@@ -133,7 +135,8 @@ public class ProjectTest {
     assertEquals(HttpStatus.BAD_REQUEST, responseAlreadyExist.getStatusCode());
     assertEquals(String.format("cannot create project %s. name not valid (minimum 7 alphabetic characters) or already exist", projectName), responseAlreadyExist.getBody());
 
-    String projectNameWithNumbers = RandomStringUtils.randomAlphanumeric(7);
+    String projectNameWithNumbers = RandomStringUtils.randomAlphanumeric(6)
+                                                     .concat("9");
 
     ResponseEntity<String> responseNameNotValid = restTemplate.exchange(backendUrl + "/project?name=" + projectNameWithNumbers,
                                                                         HttpMethod.POST,
@@ -166,7 +169,7 @@ public class ProjectTest {
     String projectName = RandomStringUtils.randomAlphabetic(7);
     ProjectEvent projectEvent = createProjectEvent(projectName);
 
-    ResponseEntity<String> response = testingUtils.postFileToProject(projectEvent.getId(), backendUrl + "/project/add-rdf-file", xlsSkosExampleFile.getFilename(),
+    ResponseEntity<String> response = testingUtils.postFileToProject(Map.of("projectId", projectEvent.getId()), backendUrl + "/project/add-rdf-file", xlsSkosExampleFile.getFilename(),
                                                                      xlsSkosExampleFile, String.class);
     assertSame(response.getStatusCode(), HttpStatus.BAD_REQUEST);
     assertEquals("the file is not an rdf file", response.getBody());
@@ -243,26 +246,53 @@ public class ProjectTest {
     checkLogs(projectEvent);
 
     // add ask query
-    FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE, askQueryFile);
-    Map<String, String> variables = Map.of(
-      "name", "Alice"
-    );
-    Boolean alicePresent = restTemplate.postForObject(String.format("%s/project/execute-ask-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
-                                                      testingUtils.requestWithBody(Map.of(
-                                                        "name", "Alice"
-                                                      )), Boolean.class);
-    Boolean bobPresent = restTemplate.postForObject(String.format("%s/project/execute-ask-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
-                                                    testingUtils.requestWithBody(Map.of(
-                                                      "name", "Bob"
-                                                    )), Boolean.class);
-    assertTrue(alicePresent);
-    assertTrue(bobPresent);
+    FileEvent queryFile = addFile(backendUrl + "/project/add-sparql-query-template", askQueryFile, Map.of("projectId", projectEvent.getId(),
+                                                                                                          "queryType", SparqlQueryRequestType.ASK_QUERY.name()));
 
-    Boolean jenaPresent = restTemplate.postForObject(String.format("%s/project/execute-ask-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
-                                                     testingUtils.requestWithBody(Map.of(
-                                                       "name", "Jena"
-                                                     )), Boolean.class);
-    assertFalse(jenaPresent);
+    SparqlQueryRequest.SparqlQueryRequestBuilder askBuilder = SparqlQueryRequest.builder()
+                                                                                .projectId(projectEvent.getId())
+                                                                                .freemarkerTemplateFileId(queryFile.getId())
+                                                                                .type(SparqlQueryRequestType.ASK_QUERY);
+    SparqlQueryRequest alicePresentRequest = askBuilder
+      .variables(
+        Map.of(
+          "name", "Alice"
+        )
+      )
+      .build();
+    SparqlQueryRequest bobPresentRequest = askBuilder
+      .variables(
+        Map.of(
+          "name", "Bob"
+        )
+      )
+      .build();
+    SparqlQueryRequest jenaNotPresentRequest = askBuilder
+      .variables(
+        Map.of(
+          "name", "Jena"
+        )
+      )
+      .build();
+
+    SparqlQueryResponse alicePresent = restTemplate.postForObject(String.format("%s/project/execute-sparql-query", backendUrl),
+                                                                  testingUtils.requestWithBody(alicePresentRequest), SparqlQueryResponse.class);
+    assertNotNull(alicePresent.getResponse());
+    assertTrue(Boolean.parseBoolean(alicePresent.getResponse()
+                                                .toString()));
+
+    SparqlQueryResponse bobPresent = restTemplate.postForObject(String.format("%s/project/execute-sparql-query", backendUrl),
+                                                                testingUtils.requestWithBody(bobPresentRequest), SparqlQueryResponse.class);
+
+    assertNotNull(bobPresent.getResponse());
+    assertTrue(Boolean.parseBoolean(bobPresent.getResponse()
+                                              .toString()));
+
+    SparqlQueryResponse jenaNotPresent = restTemplate.postForObject(String.format("%s/project/execute-sparql-query", backendUrl),
+                                                                    testingUtils.requestWithBody(jenaNotPresentRequest), SparqlQueryResponse.class);
+    assertNotNull(jenaNotPresent.getResponse());
+    assertFalse(Boolean.parseBoolean(jenaNotPresent.getResponse()
+                                                   .toString()));
 
   }
 
@@ -277,38 +307,48 @@ public class ProjectTest {
     checkLogs(projectEvent);
 
     // add select query
-    FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE, selectQueryFile);
-    Map<String, String> variables = Map.of(
-      "s", "?s",
-      "p", "?p",
-      "o", "?o"
-    );
-    List<Map<String, String>> result = restTemplate.postForObject(String.format("%s/project/execute-select-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
-                                                                  testingUtils.requestWithBody(variables), List.class);
+    FileEvent queryFile = addFile(backendUrl + "/project/add-sparql-query-template", selectQueryFile, Map.of("projectId", projectEvent.getId(),
+                                                                                                             "queryType", SparqlQueryRequestType.SELECT_QUERY.name()));
+
+    SparqlQueryRequest selectQuery = SparqlQueryRequest.builder()
+                                                       .projectId(projectEvent.getId())
+                                                       .freemarkerTemplateFileId(queryFile.getId())
+                                                       .variables(Map.of(
+                                                         "s", "?s",
+                                                         "p", "?p",
+                                                         "o", "?o"
+                                                       ))
+                                                       .type(SparqlQueryRequestType.SELECT_QUERY)
+                                                       .build();
+    SparqlQueryResponse result = restTemplate.postForObject(String.format("%s/project/execute-sparql-query", backendUrl),
+                                                            testingUtils.requestWithBody(selectQuery), SparqlQueryResponse.class);
 
     log.info("result of select query:\n {}", mapper.writerWithDefaultPrettyPrinter()
                                                    .writeValueAsString(result));
 
-    assertTrue(result.stream()
-                     .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
-                       "http://artcoded.tech#artist".equals(map.get("p")) &&
-                       "Nordine Bittich".equals(map.get("o"))
-                     ));
-    assertTrue(result.stream()
-                     .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
-                       "http://artcoded.tech#company".equals(map.get("p")) &&
-                       "Artcoded".equals(map.get("o"))
-                     ));
-    assertTrue(result.stream()
-                     .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
-                       "http://artcoded.tech#country".equals(map.get("p")) &&
-                       "BELGIUM".equals(map.get("o"))
-                     ));
-    assertTrue(result.stream()
-                     .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
-                       "http://artcoded.tech#year".equals(map.get("p")) &&
-                       "1988".equals(map.get("o"))
-                     ));
+    assertNotNull(result);
+    List<Map<String, String>> responseSelect = (List<Map<String, String>>) result.getResponse();
+
+    assertTrue(responseSelect.stream()
+                             .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
+                               "http://artcoded.tech#artist".equals(map.get("p")) &&
+                               "Nordine Bittich".equals(map.get("o"))
+                             ));
+    assertTrue(responseSelect.stream()
+                             .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
+                               "http://artcoded.tech#company".equals(map.get("p")) &&
+                               "Artcoded".equals(map.get("o"))
+                             ));
+    assertTrue(responseSelect.stream()
+                             .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
+                               "http://artcoded.tech#country".equals(map.get("p")) &&
+                               "BELGIUM".equals(map.get("o"))
+                             ));
+    assertTrue(responseSelect.stream()
+                             .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
+                               "http://artcoded.tech#year".equals(map.get("p")) &&
+                               "1988".equals(map.get("o"))
+                             ));
 
   }
 
@@ -322,26 +362,36 @@ public class ProjectTest {
 
 
     // add full text search query
-    FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE, fullTextSearchFile);
-    Map<String, String> variables = Map.of(
-      "searchTerm", "Nordine",
-      "minRelevance", "0.25",
-      "matchAllTerm", "true",
-      "maxRank", "1000"
-    );
-    List<Map<String, String>> result = restTemplate.postForObject(String.format("%s/project/execute-select-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
-                                                                  testingUtils.requestWithBody(variables), List.class);
+
+    FileEvent queryFile = addFile(backendUrl + "/project/add-sparql-query-template", fullTextSearchFile, Map.of("projectId", projectEvent.getId(),
+                                                                                                                "queryType", SparqlQueryRequestType.SELECT_QUERY.name()));
+
+    SparqlQueryRequest selectQuery = SparqlQueryRequest.builder()
+                                                       .projectId(projectEvent.getId())
+                                                       .freemarkerTemplateFileId(queryFile.getId())
+                                                       .variables(Map.of(
+                                                         "searchTerm", "Nordine",
+                                                         "minRelevance", "0.25",
+                                                         "matchAllTerm", "true",
+                                                         "maxRank", "1000"
+                                                       ))
+                                                       .type(SparqlQueryRequestType.SELECT_QUERY)
+                                                       .build();
+    SparqlQueryResponse result = restTemplate.postForObject(String.format("%s/project/execute-sparql-query", backendUrl),
+                                                            testingUtils.requestWithBody(selectQuery), SparqlQueryResponse.class);
 
     log.info("result of select query:\n {}", mapper.writerWithDefaultPrettyPrinter()
                                                    .writeValueAsString(result));
+    assertNotNull(result);
+    List<Map<String, String>> responseSelect = (List<Map<String, String>>) result.getResponse();
 
-    assertTrue(result.stream()
-                     .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
-                       "http://artcoded.tech#artist".equals(map.get("p")) &&
-                       "1".equals(map.get("rank")) &&
-                       "0.625".equals(map.get("score")) &&
-                       "Nordine Bittich".equals(map.get("o"))
-                     ));
+    assertTrue(responseSelect.stream()
+                             .anyMatch(map -> "http://artcoded.tech/person".equals(map.get("s")) &&
+                               "http://artcoded.tech#artist".equals(map.get("p")) &&
+                               "1".equals(map.get("rank")) &&
+                               "0.625".equals(map.get("score")) &&
+                               "Nordine Bittich".equals(map.get("o"))
+                             ));
   }
 
   @Test
@@ -355,17 +405,26 @@ public class ProjectTest {
     checkLogs(projectEvent);
 
     // add construct query
-    FileEvent queryFile = addFileToProject(projectEvent.getId(), FREEMARKER_TEMPLATE_FILE, constructQueryFile);
-    Map<String, String> variables = Map.of(
-      "toConstruct", "?s ?p ?o",
-      "condition", "?s ?p ?o"
-    );
-    String modelString = restTemplate.postForObject(String.format("%s/project/execute-construct-sparql-query?projectId=%s&freemarkerTemplateFileId=%s", backendUrl, projectEvent.getId(), queryFile.getId()),
-                                                    testingUtils.requestWithBody(variables), String.class);
-    log.info("result of construct query:\n {}", mapper.writerWithDefaultPrettyPrinter()
-                                                      .writeValueAsString(modelString));
+    FileEvent queryFile = addFile(backendUrl + "/project/add-sparql-query-template", constructQueryFile, Map.of("projectId", projectEvent.getId(),
+                                                                                                                "queryType", SparqlQueryRequestType.CONSTRUCT_QUERY.name()));
 
-    Model model = ModelConverter.toModel(modelString, RDFFormat.JSONLD);
+    SparqlQueryRequest constructQuery = SparqlQueryRequest.builder()
+                                                          .projectId(projectEvent.getId())
+                                                          .freemarkerTemplateFileId(queryFile.getId())
+                                                          .variables(Map.of(
+                                                            "toConstruct", "?s ?p ?o",
+                                                            "condition", "?s ?p ?o"
+                                                          ))
+                                                          .type(SparqlQueryRequestType.CONSTRUCT_QUERY)
+                                                          .build();
+    SparqlQueryResponse result = restTemplate.postForObject(String.format("%s/project/execute-sparql-query", backendUrl),
+                                                            testingUtils.requestWithBody(constructQuery), SparqlQueryResponse.class);
+    assertNotNull(result.getResponse());
+    log.info("result of construct query:\n {}", mapper.writerWithDefaultPrettyPrinter()
+                                                      .writeValueAsString(result));
+
+    Model model = ModelConverter.toModel(result.getResponse()
+                                               .toString(), RDFFormat.JSONLD);
     Model expectedModel = ModelConverter.inputStreamToModel(expectedConstructFile.getFilename(), expectedConstructFile::getInputStream);
     assertTrue(ModelConverter.equals(expectedModel, model));
 
@@ -473,28 +532,26 @@ public class ProjectTest {
 
   private FileEvent addFileToProject(String projectId, FileEventType fileEventType,
                                      Resource resource) throws Exception {
+    Map<String, String> params = Map.of("projectId", projectId);
     switch (fileEventType) {
       case RDF_FILE:
-        return addFile(backendUrl + "/project/add-rdf-file", projectId, resource);
+        return addFile(backendUrl + "/project/add-rdf-file", resource, params);
       case SHACL_FILE:
-        return addFile(backendUrl + "/project/add-shacl-file", projectId, resource);
+        return addFile(backendUrl + "/project/add-shacl-file", resource, params);
       case SKOS_FILE:
-        return addFile(backendUrl + "/project/add-skos-file", projectId, resource);
+        return addFile(backendUrl + "/project/add-skos-file", resource, params);
       case PROJECT_FILE:
       case RAW_FILE:
-        return addFile(backendUrl + "/project/add-raw-file", projectId, resource);
-      case FREEMARKER_TEMPLATE_FILE:
-        return addFile(backendUrl + "/project/add-sparql-query-template", projectId, resource);
+        return addFile(backendUrl + "/project/add-raw-file", resource, params);
       default:
         throw new RuntimeException("file event type not supported yet");
     }
 
   }
 
-  private FileEvent addFile(String url, String projectId, Resource resource) throws Exception {
+  private FileEvent addFile(String url, Resource resource, Map<String, String> params) throws Exception {
     // add rdf file
-    log.info("add file {} to project {}", resource.getFilename(), projectId);
-    ResponseEntity<ProjectEvent> response = testingUtils.postFileToProject(projectId, url, resource.getFilename(),
+    ResponseEntity<ProjectEvent> response = testingUtils.postFileToProject(params, url, resource.getFilename(),
                                                                            resource, ProjectEvent.class);
     log.info("response status {}", response.getStatusCodeValue());
     assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -544,4 +601,6 @@ public class ProjectTest {
                                                       .getFilename());
     return file;
   }
+
+
 }

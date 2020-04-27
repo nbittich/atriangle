@@ -1,5 +1,6 @@
 package tech.artcoded.atriangle.core.kafka;
 
+import com.fasterxml.jackson.core.util.DefaultPrettyPrinter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -28,7 +29,7 @@ public class KafkaConfig {
   @Bean
   @Named(OBJECT_MAPPER_WRAPPER)
   public ObjectMapperWrapper objectMapperWrapper() {
-    return ObjectMapper::new;
+    return () -> new ObjectMapper().setDefaultPrettyPrinter(new DefaultPrettyPrinter());
   }
 
   @Bean

@@ -1,4 +1,5 @@
 import {FileUpload} from "./file-upload";
+import {SparqlQueryRequest} from "./sparql.query.request";
 
 export interface Project {
   id: string;
@@ -7,4 +8,5 @@ export interface Project {
   creationDate: Date;
   lastModifiedDate?: Date;
   fileEvents: FileUpload[];
+  sparqlQueries: SparqlQueryRequest[];
 }

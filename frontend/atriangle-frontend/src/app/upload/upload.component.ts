@@ -24,7 +24,7 @@ export class UploadComponent implements OnInit {
   title: string = 'Upload';
 
   @Input()
-  projectId: string;
+  formData: FormData;
 
   @ViewChild("fileUpload", {static: false}) fileUpload: ElementRef;
 
@@ -38,22 +38,23 @@ export class UploadComponent implements OnInit {
 
   uploadFile(file) {
     this.loadingService.showSpinner();
-    const formData = new FormData();
-    formData.append('file', file.data);
-    formData.append('projectId', this.projectId);
-    this.projectService.upload(formData, FileUploadType[this.uploadType]).pipe(
+    this.formData.append('file', file.data);
+    this.projectService.upload(this.formData, FileUploadType[this.uploadType]).pipe(
       catchError((error: Error) => {
-        this.files = [];
-        this.fileUpload.nativeElement.value = '';
-        this.loadingService.hideSpinner();
+        this.reset();
         throw error;
       })
     ).subscribe((data: Project) => {
-      this.files = [];
-      this.fileUpload.nativeElement.value = '';
+      this.reset();
       this.onFinish.emit(data);
-      this.loadingService.hideSpinner();
     });
+  }
+
+  private reset(): void {
+    this.files = [];
+    this.fileUpload.nativeElement.value = '';
+    this.loadingService.hideSpinner();
+    this.formData = null;
   }
 
   private uploadFiles() {

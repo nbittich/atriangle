@@ -106,7 +106,8 @@ public class ProjectRdfService {
                                                 .bytes(body.getByteArray())
                                                 .build();
 
-    return this.projectFileService.addFile(projectId, rdfOutput, FileEventType.SKOS_PLAY_CONVERTER_OUTPUT);
+    return this.projectFileService.addFile(projectId, rdfOutput, FileEventType.SKOS_PLAY_CONVERTER_OUTPUT)
+                                  .map(Map.Entry::getValue);
   }
 
   @SneakyThrows

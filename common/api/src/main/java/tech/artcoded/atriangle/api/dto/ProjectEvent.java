@@ -31,4 +31,7 @@ public class ProjectEvent {
 
   @Builder.Default
   private List<FileEvent> fileEvents = List.of();
+
+  @Builder.Default
+  private List<SparqlQueryRequest> sparqlQueries = List.of();
 }
