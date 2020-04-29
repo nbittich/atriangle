@@ -1,6 +1,5 @@
 package tech.artcoded.atriangle.rest.sparql;
 
-
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -40,19 +39,19 @@ import java.util.stream.StreamSupport;
 
 @RestController
 @Slf4j
-public class SparqlRestController implements PingControllerTrait, BuildInfoControllerTrait, SparqlRestFeignClient {
-  @Getter
-  private final BuildProperties buildProperties;
+public class SparqlRestController
+    implements PingControllerTrait, BuildInfoControllerTrait, SparqlRestFeignClient {
+  @Getter private final BuildProperties buildProperties;
 
   private final SimpleSparqlService simpleSparqlService;
 
   private final FileRestFeignClient fileRestFeignClient;
 
-
   @Inject
-  public SparqlRestController(BuildProperties buildProperties,
-                              SimpleSparqlService simpleSparqlService,
-                              FileRestFeignClient fileRestFeignClient) {
+  public SparqlRestController(
+      BuildProperties buildProperties,
+      SimpleSparqlService simpleSparqlService,
+      FileRestFeignClient fileRestFeignClient) {
     this.buildProperties = buildProperties;
     this.simpleSparqlService = simpleSparqlService;
     this.fileRestFeignClient = fileRestFeignClient;
@@ -69,15 +68,17 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
   @SneakyThrows
   @SwaggerHeaderAuthentication
   public ResponseEntity<String> loadRdfFile(String rdfFileEvent, String namespace) {
-    FileEvent rdfFile = fileRestFeignClient.findById(rdfFileEvent)
-                                           .getBody();
+    FileEvent rdfFile = fileRestFeignClient.findById(rdfFileEvent).getBody();
 
-    ResponseEntity<ByteArrayResource> rdf = fileRestFeignClient.download(rdfFile.getId(), IdGenerators.get());
+    ResponseEntity<ByteArrayResource> rdf =
+        fileRestFeignClient.download(rdfFile.getId(), IdGenerators.get());
 
-    simpleSparqlService.load(namespace, rdf.getBody()
-                                           .getInputStream(), RDFFormat.forFileName(rdfFile.getName()));
+    simpleSparqlService.load(
+        namespace, rdf.getBody().getInputStream(), RDFFormat.forFileName(rdfFile.getName()));
 
-    String jsonLd = ModelConverter.inputStreamToLang(rdfFile.getName(), rdf.getBody()::getInputStream, RDFFormat.JSONLD);
+    String jsonLd =
+        ModelConverter.inputStreamToLang(
+            rdfFile.getName(), rdf.getBody()::getInputStream, RDFFormat.JSONLD);
 
     return ResponseEntity.ok(jsonLd);
   }
@@ -85,24 +86,23 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
   @Override
   @SwaggerHeaderAuthentication
   public ResponseEntity<String> insertRdfAsJsonLd(String jsonLdModel, String namespace) {
-    simpleSparqlService.load(namespace, IOUtils.toInputStream(jsonLdModel, StandardCharsets.UTF_8), RDFFormat.JSONLD);
+    simpleSparqlService.load(
+        namespace, IOUtils.toInputStream(jsonLdModel, StandardCharsets.UTF_8), RDFFormat.JSONLD);
     return ResponseEntity.ok("jsonLd loaded");
-
   }
 
   @Override
   @SwaggerHeaderAuthentication
-  public ResponseEntity<String> convert(String jsonLdModel,
-                                        RdfType rdfFormatInput,
-                                        RdfType rdfFormaOutput) {
+  public ResponseEntity<String> convert(
+      String jsonLdModel, RdfType rdfFormatInput, RdfType rdfFormaOutput) {
     RDFFormat formatInput = RDFFormat.valueOf(rdfFormatInput.getValue());
     RDFFormat formatOutput = RDFFormat.valueOf(rdfFormaOutput.getValue());
     String defaultMIMEType = formatOutput.getDefaultMIMEType();
     Model model = ModelConverter.toModel(jsonLdModel, formatInput);
     String converted = ModelConverter.modelToLang(model, formatOutput);
     return ResponseEntity.ok()
-                         .contentType(MediaType.parseMediaType(defaultMIMEType))
-                         .body(converted);
+        .contentType(MediaType.parseMediaType(defaultMIMEType))
+        .body(converted);
   }
 
   @Override
@@ -114,15 +114,16 @@ public class SparqlRestController implements PingControllerTrait, BuildInfoContr
   @SneakyThrows
   @Override
   @SwaggerHeaderAuthentication
-  public ResponseEntity<List<Map<String, String>>> selectQuery(String selectQuery, String namespace) {
+  public ResponseEntity<List<Map<String, String>>> selectQuery(
+      String selectQuery, String namespace) {
     TupleQueryResult tupleQueryResult = simpleSparqlService.tupleQuery(namespace, selectQuery);
     List<Map<String, String>> response = new ArrayList<>();
     while (tupleQueryResult.hasNext()) {
       BindingSet next = tupleQueryResult.next();
-      Map<String, String> result = StreamSupport.stream(next.spliterator(), false)
-                                                .map(iterator -> Map.entry(iterator.getName(), iterator.getValue()
-                                                                                                       .stringValue()))
-                                                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+      Map<String, String> result =
+          StreamSupport.stream(next.spliterator(), false)
+              .map(iterator -> Map.entry(iterator.getName(), iterator.getValue().stringValue()))
+              .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
       response.add(result);
     }
     tupleQueryResult.close();

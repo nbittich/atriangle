@@ -29,28 +29,32 @@ public class JwtAuthenticationFilter extends BasicAuthenticationFilter {
   }
 
   @Override
-  protected void onSuccessfulAuthentication(HttpServletRequest request,
-                                            HttpServletResponse response, Authentication auth) throws IOException {
+  protected void onSuccessfulAuthentication(
+      HttpServletRequest request, HttpServletResponse response, Authentication auth)
+      throws IOException {
 
     User user = (User) auth.getPrincipal();
 
-    List<String> roles = user.getAuthorities()
-                             .stream()
-                             .map(GrantedAuthority::getAuthority)
-                             .collect(Collectors.toList());
+    List<String> roles =
+        user.getAuthorities().stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
 
-    byte[] signingKey = env.getRequiredProperty("jwt.secret")
-                           .getBytes();
+    byte[] signingKey = env.getRequiredProperty("jwt.secret").getBytes();
 
-    String token = Jwts.builder()
-                       .signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
-                       .setHeaderParam("typ", env.getRequiredProperty("jwt.type"))
-                       .setIssuer(env.getRequiredProperty("jwt.issuer"))
-                       .setAudience(env.getRequiredProperty("jwt.audience"))
-                       .setSubject(user.getUsername())
-                       .setExpiration(new Date(System.currentTimeMillis() + env.getRequiredProperty("jwt.expireAfter", Long.class)))
-                       .claim("rol", roles)
-                       .compact();
+    String token =
+        Jwts.builder()
+            .signWith(Keys.hmacShaKeyFor(signingKey), SignatureAlgorithm.HS512)
+            .setHeaderParam("typ", env.getRequiredProperty("jwt.type"))
+            .setIssuer(env.getRequiredProperty("jwt.issuer"))
+            .setAudience(env.getRequiredProperty("jwt.audience"))
+            .setSubject(user.getUsername())
+            .setExpiration(
+                new Date(
+                    System.currentTimeMillis()
+                        + env.getRequiredProperty("jwt.expireAfter", Long.class)))
+            .claim("rol", roles)
+            .compact();
 
     response.addHeader("X-Auth-Token", env.getRequiredProperty("jwt.prefix") + " " + token);
   }

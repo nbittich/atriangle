@@ -25,58 +25,60 @@ import java.util.Optional;
 
 import static java.util.Objects.requireNonNull;
 
-
 @RestController
 @ApiOperation("Shacl Validation Rest")
 @Slf4j
-public class ShaclRestController implements PingControllerTrait, BuildInfoControllerTrait, ShaclRestFeignClient {
+public class ShaclRestController
+    implements PingControllerTrait, BuildInfoControllerTrait, ShaclRestFeignClient {
   private final FileRestFeignClient fileRestFeignClient;
-  @Getter
-  private final BuildProperties buildProperties;
+  @Getter private final BuildProperties buildProperties;
 
   @Inject
-  public ShaclRestController(FileRestFeignClient fileRestFeignClient,
-                             BuildProperties buildProperties) {
+  public ShaclRestController(
+      FileRestFeignClient fileRestFeignClient, BuildProperties buildProperties) {
     this.fileRestFeignClient = fileRestFeignClient;
     this.buildProperties = buildProperties;
   }
 
-
   @SneakyThrows
   @Override
   @SwaggerHeaderAuthentication
-  public ResponseEntity<String> validate(String correlationId,
-                                         String shaclFileEventId,
-                                         String modelFileEventId) {
+  public ResponseEntity<String> validate(
+      String correlationId, String shaclFileEventId, String modelFileEventId) {
 
-    FileEvent shaclFileEvent = fileRestFeignClient.findById(shaclFileEventId)
-                                                  .getBody();
-    FileEvent modelFileEvent = fileRestFeignClient.findById(modelFileEventId)
-                                                  .getBody();
+    FileEvent shaclFileEvent = fileRestFeignClient.findById(shaclFileEventId).getBody();
+    FileEvent modelFileEvent = fileRestFeignClient.findById(modelFileEventId).getBody();
 
-    ResponseEntity<ByteArrayResource> shaclDownload = fileRestFeignClient.download(shaclFileEventId, correlationId);
-    ResponseEntity<ByteArrayResource> modelDownload = fileRestFeignClient.download(modelFileEventId, correlationId);
+    ResponseEntity<ByteArrayResource> shaclDownload =
+        fileRestFeignClient.download(shaclFileEventId, correlationId);
+    ResponseEntity<ByteArrayResource> modelDownload =
+        fileRestFeignClient.download(modelFileEventId, correlationId);
 
-    CheckedSupplier<String> shaclFile = () -> IOUtils.toString(requireNonNull(shaclDownload.getBody()).getInputStream(), StandardCharsets.UTF_8);
-    CheckedSupplier<String> modelFile = () -> IOUtils.toString(requireNonNull(modelDownload.getBody()).getInputStream(), StandardCharsets.UTF_8);
+    CheckedSupplier<String> shaclFile =
+        () ->
+            IOUtils.toString(
+                requireNonNull(shaclDownload.getBody()).getInputStream(), StandardCharsets.UTF_8);
+    CheckedSupplier<String> modelFile =
+        () ->
+            IOUtils.toString(
+                requireNonNull(modelDownload.getBody()).getInputStream(), StandardCharsets.UTF_8);
 
+    Optional<String> report =
+        ShaclValidationUtils.validate(
+            modelFile.safeGet(),
+            RDFLanguages.filenameToLang(modelFileEvent.getOriginalFilename()),
+            shaclFile.safeGet(),
+            RDFLanguages.filenameToLang(shaclFileEvent.getOriginalFilename()));
 
-    Optional<String> report = ShaclValidationUtils.validate(modelFile.safeGet(),
-                                                            RDFLanguages.filenameToLang(modelFileEvent.getOriginalFilename()),
-                                                            shaclFile.safeGet(),
-                                                            RDFLanguages.filenameToLang(shaclFileEvent.getOriginalFilename())
-    );
-
-    return report.map(ResponseEntity.badRequest()::body)
-                 .orElseGet(ResponseEntity.ok()::build);
+    return report.map(ResponseEntity.badRequest()::body).orElseGet(ResponseEntity.ok()::build);
   }
 
   @Override
   @SwaggerHeaderAuthentication
   public ResponseEntity<String> test(String shaclRules, String sampleData) {
 
-    Optional<String> report = ShaclValidationUtils.validate(sampleData, Lang.TURTLE, shaclRules, Lang.TURTLE);
-    return report.map(ResponseEntity.badRequest()::body)
-                 .orElseGet(ResponseEntity.ok()::build);
+    Optional<String> report =
+        ShaclValidationUtils.validate(sampleData, Lang.TURTLE, shaclRules, Lang.TURTLE);
+    return report.map(ResponseEntity.badRequest()::body).orElseGet(ResponseEntity.ok()::build);
   }
 }

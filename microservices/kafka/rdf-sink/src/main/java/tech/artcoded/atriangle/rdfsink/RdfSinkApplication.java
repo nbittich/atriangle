@@ -13,7 +13,12 @@ import tech.artcoded.atriangle.feign.clients.sparql.UrlBasedSparqlRestFeignClien
 @SpringBootApplication
 @EnableScheduling
 @Import({KafkaConfig.class})
-@EnableFeignClients(clients = {UrlBasedShaclRestFeignClient.class, UrlBasedSparqlRestFeignClient.class, UrlBasedFileRestFeignClient.class})
+@EnableFeignClients(
+    clients = {
+      UrlBasedShaclRestFeignClient.class,
+      UrlBasedSparqlRestFeignClient.class,
+      UrlBasedFileRestFeignClient.class
+    })
 public class RdfSinkApplication {
   public static void main(String[] args) {
     SpringApplication.run(RdfSinkApplication.class, args);

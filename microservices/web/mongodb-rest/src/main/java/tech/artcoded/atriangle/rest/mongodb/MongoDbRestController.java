@@ -1,6 +1,5 @@
 package tech.artcoded.atriangle.rest.mongodb;
 
-
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.result.DeleteResult;
 import lombok.Getter;
@@ -27,15 +26,13 @@ import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
-public class MongoDbRestController implements PingControllerTrait,
-  BuildInfoControllerTrait, MongoDbRestFeignClient {
-  @Getter
-  private final BuildProperties buildProperties;
+public class MongoDbRestController
+    implements PingControllerTrait, BuildInfoControllerTrait, MongoDbRestFeignClient {
+  @Getter private final BuildProperties buildProperties;
   private final MongoTemplate mongoTemplate;
 
   @Inject
-  public MongoDbRestController(BuildProperties buildProperties,
-                               MongoTemplate mongoTemplate) {
+  public MongoDbRestController(BuildProperties buildProperties, MongoTemplate mongoTemplate) {
     this.buildProperties = buildProperties;
     this.mongoTemplate = mongoTemplate;
   }
@@ -44,8 +41,7 @@ public class MongoDbRestController implements PingControllerTrait,
   @SwaggerHeaderAuthentication
   public ResponseEntity<String> createCollection(String collectionName) {
     if (mongoTemplate.collectionExists(collectionName)) {
-      return ResponseEntity.badRequest()
-                           .body("collection already exists");
+      return ResponseEntity.badRequest().body("collection already exists");
     }
     mongoTemplate.createCollection(collectionName);
     return ResponseEntity.ok("collection created");
@@ -61,8 +57,7 @@ public class MongoDbRestController implements PingControllerTrait,
   @SwaggerHeaderAuthentication
   public ResponseEntity<String> deleteCollection(String collectionName) {
     if (!mongoTemplate.collectionExists(collectionName)) {
-      return ResponseEntity.badRequest()
-                           .body("collection does not exist");
+      return ResponseEntity.badRequest().body("collection does not exist");
     }
     mongoTemplate.dropCollection(collectionName);
     return ResponseEntity.ok("collection deleted");
@@ -71,10 +66,12 @@ public class MongoDbRestController implements PingControllerTrait,
   @Override
   @SwaggerHeaderAuthentication
   public ResponseEntity<String> delete(String collectionName, String id) {
-    DeleteResult deleteResult = mongoTemplate.remove(Query.query(Criteria.where("_id")
-                                                                         .is(new ObjectId(id))), collectionName);
+    DeleteResult deleteResult =
+        mongoTemplate.remove(
+            Query.query(Criteria.where("_id").is(new ObjectId(id))), collectionName);
     log.info("object with id {} deleted. acknowledge {}", id, deleteResult.wasAcknowledged());
-    return ResponseEntity.ok(String.format("%s object has been deleted", deleteResult.getDeletedCount()));
+    return ResponseEntity.ok(
+        String.format("%s object has been deleted", deleteResult.getDeletedCount()));
   }
 
   @Override
@@ -89,32 +86,36 @@ public class MongoDbRestController implements PingControllerTrait,
   @SwaggerHeaderAuthentication
   public ResponseEntity<List<RawJsonWrappedResponse>> query(String collectionName, String query) {
     BasicQuery basicQuery = new BasicQuery(query);
-    return ResponseEntity.ok(mongoTemplate.find(basicQuery, BasicDBObject.class, collectionName)
-                                          .stream()
-                                          .map(BasicDBObject::toJson)
-                                          .map(RawJsonWrappedResponse::new)
-                                          .collect(Collectors.toUnmodifiableList()));
+    return ResponseEntity.ok(
+        mongoTemplate.find(basicQuery, BasicDBObject.class, collectionName).stream()
+            .map(BasicDBObject::toJson)
+            .map(RawJsonWrappedResponse::new)
+            .collect(Collectors.toUnmodifiableList()));
   }
 
   @Override
   @SwaggerHeaderAuthentication
   public ResponseEntity<Set<RawJsonWrappedResponse>> findAll(String collectionName) {
     List<BasicDBObject> list = mongoTemplate.findAll(BasicDBObject.class, collectionName);
-    return ResponseEntity.ok(list.stream()
-                                 .map(BasicDBObject::toJson)
-                                 .map(RawJsonWrappedResponse::new)
-                                 .collect(Collectors.toSet()));
+    return ResponseEntity.ok(
+        list.stream()
+            .map(BasicDBObject::toJson)
+            .map(RawJsonWrappedResponse::new)
+            .collect(Collectors.toSet()));
   }
 
   @Override
   @SwaggerHeaderAuthentication
   public ResponseEntity<RawJsonWrappedResponse> findById(String collectionName, String id) {
-    BasicDBObject object = mongoTemplate.findOne(Query.query(Criteria.where("_id")
-                                                                     .is(new ObjectId(id))), BasicDBObject.class, collectionName);
+    BasicDBObject object =
+        mongoTemplate.findOne(
+            Query.query(Criteria.where("_id").is(new ObjectId(id))),
+            BasicDBObject.class,
+            collectionName);
     return Optional.ofNullable(object)
-                   .map(BasicDBObject::toJson)
-                   .map(RawJsonWrappedResponse::new)
-                   .map(ResponseEntity::ok)
-                   .orElseGet(ResponseEntity.notFound()::build);
+        .map(BasicDBObject::toJson)
+        .map(RawJsonWrappedResponse::new)
+        .map(ResponseEntity::ok)
+        .orElseGet(ResponseEntity.notFound()::build);
   }
 }

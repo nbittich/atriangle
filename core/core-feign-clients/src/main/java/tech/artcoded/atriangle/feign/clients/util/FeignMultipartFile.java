@@ -21,7 +21,6 @@ public class FeignMultipartFile implements MultipartFile {
   private String contentType;
   private byte[] bytes;
 
-
   @Override
   public boolean isEmpty() {
     return MultipartFileUtils.isEmpty(bytes);
@@ -31,7 +30,6 @@ public class FeignMultipartFile implements MultipartFile {
   public long getSize() {
     return MultipartFileUtils.getSize(bytes);
   }
-
 
   @Override
   public InputStream getInputStream() throws IOException {

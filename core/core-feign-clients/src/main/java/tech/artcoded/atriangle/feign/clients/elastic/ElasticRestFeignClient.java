@@ -14,38 +14,36 @@ public interface ElasticRestFeignClient {
   List<LogEvent> getLogsByCorrelationId(@RequestParam("correlationId") String correlationId);
 
   @PostMapping("/create-index")
-  ResponseEntity<String> createIndex(@RequestParam("indexName") String indexName,
-                                     @RequestParam(value = "deleteIndexIfExist",
-                                                   defaultValue = "false") boolean deleteIndexIfExist,
-                                     @RequestBody(required = false) String elasticConfiguration);
+  ResponseEntity<String> createIndex(
+      @RequestParam("indexName") String indexName,
+      @RequestParam(value = "deleteIndexIfExist", defaultValue = "false")
+          boolean deleteIndexIfExist,
+      @RequestBody(required = false) String elasticConfiguration);
 
   @DeleteMapping("/index")
   ResponseEntity<String> deleteIndex(@RequestParam("indexName") String indexName);
 
   @DeleteMapping("/document")
-  ResponseEntity<String> deleteDocument(@RequestParam("indexName") String indexName,
-                                        @RequestParam("id") String uuid);
+  ResponseEntity<String> deleteDocument(
+      @RequestParam("indexName") String indexName, @RequestParam("id") String uuid);
 
   @PostMapping("/index/{indexName}")
-  ResponseEntity<String> index(@PathVariable("indexName") String indexName,
-                               @RequestBody String document);
+  ResponseEntity<String> index(
+      @PathVariable("indexName") String indexName, @RequestBody String document);
 
   @GetMapping("/indices")
   ResponseEntity<Set<String>> indices();
 
   /**
-   * e.g:
-   * {
-   * "term" : { "firstname" : "nordine" }
-   * }
+   * e.g: { "term" : { "firstname" : "nordine" } }
    *
    * @param indexName
    * @param request
    * @return
    */
   @PostMapping("/search/{indexName}")
-  ResponseEntity<String> search(@PathVariable("indexName") String indexName,
-                                @RequestBody String request);
+  ResponseEntity<String> search(
+      @PathVariable("indexName") String indexName, @RequestBody String request);
 
   @GetMapping("/all/{indexName}")
   ResponseEntity<String> findAll(@PathVariable("indexName") String indexName);
@@ -59,17 +57,17 @@ public interface ElasticRestFeignClient {
    * @return
    */
   @PostMapping("/settings/{indexName}")
-  ResponseEntity<String> updateSettings(@PathVariable("indexName") String indexName,
-                                        @RequestParam(value = "preserveSettings",
-                                                      defaultValue = "false") boolean preserveSettings,
-                                        @RequestBody String settings);
+  ResponseEntity<String> updateSettings(
+      @PathVariable("indexName") String indexName,
+      @RequestParam(value = "preserveSettings", defaultValue = "false") boolean preserveSettings,
+      @RequestBody String settings);
 
   @GetMapping("/settings/{indexName}")
   ResponseEntity<String> getSettings(@PathVariable("indexName") String indexName);
 
-
   @PostMapping("/mapping/{indexName}")
-  ResponseEntity<String> updateMapping(@PathVariable("indexName") String indexName, @RequestBody String mapping);
+  ResponseEntity<String> updateMapping(
+      @PathVariable("indexName") String indexName, @RequestBody String mapping);
 
   @GetMapping("/mapping/{indexName}")
   ResponseEntity<Map<String, Object>> getMapping(@PathVariable("indexName") String indexName);

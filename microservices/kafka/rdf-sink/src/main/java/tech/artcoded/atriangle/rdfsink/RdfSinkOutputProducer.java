@@ -18,8 +18,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * in case rdf sink is successfull, we produce new events to sink into mongodb/elastic
- * this could also be done in the project layer
+ * in case rdf sink is successfull, we produce new events to sink into mongodb/elastic this could
+ * also be done in the project layer
  */
 @Component
 public class RdfSinkOutputProducer {
@@ -33,53 +33,54 @@ public class RdfSinkOutputProducer {
   private String mongoSinkTopic;
 
   @Inject
-  public RdfSinkOutputProducer(ObjectMapperWrapper mapperWrapper,
-                               BuildProperties buildProperties,
-                               KafkaEventHelper kafkaEventHelper,
-                               LoggerAction loggerAction) {
+  public RdfSinkOutputProducer(
+      ObjectMapperWrapper mapperWrapper,
+      BuildProperties buildProperties,
+      KafkaEventHelper kafkaEventHelper,
+      LoggerAction loggerAction) {
     this.mapperWrapper = mapperWrapper;
     this.buildProperties = buildProperties;
     this.kafkaEventHelper = kafkaEventHelper;
     this.loggerAction = loggerAction;
   }
 
-  public List<KafkaMessage<String, String>> produce(KafkaEvent kafkaEvent,
-                                                    RestEvent event,
-                                                    FileEvent jsonLdFile,
-                                                    int partition,
-                                                    long offset,
-                                                    Headers headers) {
+  public List<KafkaMessage<String, String>> produce(
+      KafkaEvent kafkaEvent,
+      RestEvent event,
+      FileEvent jsonLdFile,
+      int partition,
+      long offset,
+      Headers headers) {
 
-    KafkaEvent.KafkaEventBuilder kafkaEventBuilder = kafkaEventHelper.newKafkaEventBuilder(kafkaEvent.getCorrelationId(),
-                                                                                           partition,
-                                                                                           offset,
-                                                                                           headers,
-                                                                                           buildProperties);
+    KafkaEvent.KafkaEventBuilder kafkaEventBuilder =
+        kafkaEventHelper.newKafkaEventBuilder(
+            kafkaEvent.getCorrelationId(), partition, offset, headers, buildProperties);
 
     String mongoSinkEventId = IdGenerators.get();
 
-    MongoEvent mongoEvent = MongoEvent.builder()
-                                      .collection(event.getNamespace())
-                                      .inputToSink(jsonLdFile)
-                                      .build();
-    String kafkaEventForMongo = mapperWrapper.serialize(kafkaEventBuilder
-                                                          .id(mongoSinkEventId)
-                                                          .eventType(EventType.MONGODB_SINK)
-                                                          .event(mapperWrapper.serialize(mongoEvent))
-                                                          .build());
+    MongoEvent mongoEvent =
+        MongoEvent.builder().collection(event.getNamespace()).inputToSink(jsonLdFile).build();
+    String kafkaEventForMongo =
+        mapperWrapper.serialize(
+            kafkaEventBuilder
+                .id(mongoSinkEventId)
+                .eventType(EventType.MONGODB_SINK)
+                .event(mapperWrapper.serialize(mongoEvent))
+                .build());
 
-
-    CheckedSupplier<KafkaMessage.KafkaMessageBuilder<String, String>> builder = KafkaMessage::builder;
+    CheckedSupplier<KafkaMessage.KafkaMessageBuilder<String, String>> builder =
+        KafkaMessage::builder;
 
     loggerAction.info(kafkaEvent::getCorrelationId, "rdf saved to triplestore");
 
-    return Stream.of(builder.safeGet()
-                            .outTopic(mongoSinkTopic)
-                            .key(mongoSinkEventId)
-                            .value(kafkaEventForMongo)
-                            .build()
-    )
-                 .filter(m -> StringUtils.isNotBlank(m.getValue()))
-                 .collect(Collectors.toList());
+    return Stream.of(
+            builder
+                .safeGet()
+                .outTopic(mongoSinkTopic)
+                .key(mongoSinkEventId)
+                .value(kafkaEventForMongo)
+                .build())
+        .filter(m -> StringUtils.isNotBlank(m.getValue()))
+        .collect(Collectors.toList());
   }
 }

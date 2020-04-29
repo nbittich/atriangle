@@ -11,6 +11,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class RawJsonWrappedResponse {
-  @JsonRawValue
-  private String data;
+  @JsonRawValue private String data;
 }

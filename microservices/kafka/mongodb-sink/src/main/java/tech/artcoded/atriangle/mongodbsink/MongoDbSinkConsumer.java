@@ -35,17 +35,15 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
   private final KafkaEventHelper kafkaEventHelper;
   private final LoggerAction loggerAction;
 
-
-  @Getter
-  private final KafkaTemplate<String, String> kafkaTemplate;
-
+  @Getter private final KafkaTemplate<String, String> kafkaTemplate;
 
   @Inject
-  public MongoDbSinkConsumer(MongoTemplate mongoTemplate,
-                             FileRestFeignClient fileRestFeignClient,
-                             KafkaEventHelper kafkaEventHelper,
-                             LoggerAction loggerAction,
-                             KafkaTemplate<String, String> kafkaTemplate) {
+  public MongoDbSinkConsumer(
+      MongoTemplate mongoTemplate,
+      FileRestFeignClient fileRestFeignClient,
+      KafkaEventHelper kafkaEventHelper,
+      LoggerAction loggerAction,
+      KafkaTemplate<String, String> kafkaTemplate) {
     this.mongoTemplate = mongoTemplate;
     this.fileRestFeignClient = fileRestFeignClient;
     this.kafkaEventHelper = kafkaEventHelper;
@@ -53,31 +51,28 @@ public class MongoDbSinkConsumer implements KafkaSink<String, String> {
     this.kafkaTemplate = kafkaTemplate;
   }
 
-
   @Override
-  public List<KafkaMessage<String, String>> consume(ConsumerRecord<String, String> record) throws Exception {
+  public List<KafkaMessage<String, String>> consume(ConsumerRecord<String, String> record)
+      throws Exception {
     String mongoEvent = record.value();
 
     KafkaEvent kafkaEvent = kafkaEventHelper.parseKafkaEvent(mongoEvent);
     MongoEvent event = kafkaEventHelper.parseEvent(kafkaEvent, MongoEvent.class);
 
-    ResponseEntity<ByteArrayResource> inputToSink = fileRestFeignClient.download(event.getInputToSink()
-                                                                                      .getId(), kafkaEvent.getCorrelationId());
+    ResponseEntity<ByteArrayResource> inputToSink =
+        fileRestFeignClient.download(event.getInputToSink().getId(), kafkaEvent.getCorrelationId());
 
-
-    BasicDBObject objectToSave = BasicDBObject.parse(IOUtils.toString(requireNonNull(inputToSink.getBody())
-                                                                                 .getInputStream(), StandardCharsets.UTF_8));
+    BasicDBObject objectToSave =
+        BasicDBObject.parse(
+            IOUtils.toString(
+                requireNonNull(inputToSink.getBody()).getInputStream(), StandardCharsets.UTF_8));
 
     BasicDBObject saved = mongoTemplate.save(objectToSave, event.getCollection());
 
-
     log.info("saved {}", saved.toJson());
-
 
     loggerAction.info(kafkaEvent::getCorrelationId, "rdf saved to mongodb");
 
     return List.of();
   }
-
-
 }

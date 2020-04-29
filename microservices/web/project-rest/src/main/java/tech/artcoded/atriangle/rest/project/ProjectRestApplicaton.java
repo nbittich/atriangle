@@ -17,14 +17,21 @@ import tech.artcoded.atriangle.feign.clients.util.FeignExceptionHandler;
 import tech.artcoded.atriangle.feign.clients.xls2rdf.DiscoverableXls2RdfRestFeignClient;
 
 @SpringBootApplication
-@Import({KafkaConfig.class, FeignExceptionHandler.class, SwaggerConfig.class, DefaultExceptionHandler.class})
+@Import({
+  KafkaConfig.class,
+  FeignExceptionHandler.class,
+  SwaggerConfig.class,
+  DefaultExceptionHandler.class
+})
 @EnableDiscoveryClient
-@EnableFeignClients(clients = {
-  DiscoverableElasticRestFeignClient.class,
-  DiscoverableFileRestFeignClient.class,
-  DiscoverableXls2RdfRestFeignClient.class,
-  DiscoverableShaclRestFeignClient.class,
-  DiscoverableSparqlRestFeignClient.class})
+@EnableFeignClients(
+    clients = {
+      DiscoverableElasticRestFeignClient.class,
+      DiscoverableFileRestFeignClient.class,
+      DiscoverableXls2RdfRestFeignClient.class,
+      DiscoverableShaclRestFeignClient.class,
+      DiscoverableSparqlRestFeignClient.class
+    })
 @EnableCaching
 public class ProjectRestApplicaton {
   public static void main(String[] args) {

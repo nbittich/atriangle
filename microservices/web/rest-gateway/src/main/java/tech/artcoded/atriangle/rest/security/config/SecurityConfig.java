@@ -28,22 +28,19 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Override
   protected void configure(HttpSecurity http) throws Exception {
-    http
-      .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
-      .authorizeRequests()
-      // mapping
-      .antMatchers(HttpMethod.DELETE, "/**")
-      .hasAnyAuthority(ADMIN.getAuthority())
-
-      .antMatchers(HttpMethod.POST, "/api/user/**")
-      .hasAnyAuthority(USER.getAuthority(), ADMIN.getAuthority())
-
-      .antMatchers(HttpMethod.POST, "/api/**")
-      .hasAuthority(ADMIN.getAuthority())
+    http.cors(
+            httpSecurityCorsConfigurer ->
+                httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
+        .authorizeRequests()
+        // mapping
+        .antMatchers(HttpMethod.DELETE, "/**")
+        .hasAnyAuthority(ADMIN.getAuthority())
+        .antMatchers(HttpMethod.POST, "/api/user/**")
+        .hasAnyAuthority(USER.getAuthority(), ADMIN.getAuthority())
+        .antMatchers(HttpMethod.POST, "/api/**")
+        .hasAuthority(ADMIN.getAuthority())
         .antMatchers(HttpMethod.PUT, "/api/**")
         .hasAuthority(ADMIN.getAuthority())
-
-
         .antMatchers(HttpMethod.POST, "/proxy/**/sparql")
         .permitAll()
         .antMatchers(HttpMethod.GET, "/proxy/**")
@@ -52,7 +49,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .hasAuthority(ADMIN.getAuthority())
         .antMatchers(HttpMethod.PUT, "/proxy/**")
         .hasAuthority(ADMIN.getAuthority())
-
         .antMatchers(HttpMethod.GET, "/api/**/swagger-ui.html")
         .permitAll()
         .antMatchers(HttpMethod.GET, "/api/**/webjars/**")
@@ -65,13 +61,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         .permitAll()
         .antMatchers(HttpMethod.GET, "/index.html")
         .permitAll()
-
         .antMatchers(HttpMethod.GET, "/api/**")
         .hasAnyAuthority(ADMIN.getAuthority(), USER.getAuthority())
-
         .antMatchers(HttpMethod.OPTIONS, "/**")
         .permitAll()
-
         .anyRequest()
         .permitAll()
 
@@ -87,8 +80,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // exception handling
         .and()
         .exceptionHandling()
-        .authenticationEntryPoint((req, resp, e) -> resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
-
+        .authenticationEntryPoint(
+            (req, resp, e) -> resp.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
         .and()
         .formLogin()
         .disable()
@@ -109,15 +102,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
   @Inject
   public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
-    auth.userDetailsService(userRepository)
-        .passwordEncoder(passwordEncoder());
+    auth.userDetailsService(userRepository).passwordEncoder(passwordEncoder());
   }
 
-  @Inject
-  UserRepository userRepository;
+  @Inject UserRepository userRepository;
 
-  @Inject
-  Environment env;
+  @Inject Environment env;
 
   @Bean
   CorsConfigurationSource corsConfigurationSource() {
@@ -137,5 +127,4 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     source.registerCorsConfiguration("/**", config);
     return source;
   }
-
 }

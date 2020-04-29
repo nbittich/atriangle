@@ -37,24 +37,25 @@ public class ProjectService {
   }
 
   public Optional<ProjectEvent> updateDescription(String projectId, String description) {
-    return findById(projectId)
-      .stream()
-      .map(projectEvent -> {
-        loggerAction.info(projectEvent::getId, "description of project %s updated", projectEvent.getName());
+    return findById(projectId).stream()
+        .map(
+            projectEvent -> {
+              loggerAction.info(
+                  projectEvent::getId, "description of project %s updated", projectEvent.getName());
 
-        return projectEvent.toBuilder()
-                           .lastModifiedDate(new Date())
-                           .description(description)
-                           .build();
-      })
-      .map(mongoTemplate::save)
-      .findFirst();
+              return projectEvent
+                  .toBuilder()
+                  .lastModifiedDate(new Date())
+                  .description(description)
+                  .build();
+            })
+        .map(mongoTemplate::save)
+        .findFirst();
   }
 
   @Transactional
   public void deleteByName(String name) {
-    Query query = new Query().addCriteria(Criteria.where("name")
-                                                  .is(name));
+    Query query = new Query().addCriteria(Criteria.where("name").is(name));
     mongoTemplate.remove(query);
   }
 
@@ -63,8 +64,7 @@ public class ProjectService {
   }
 
   public Optional<ProjectEvent> findByName(String name) {
-    Query query = new Query().addCriteria(Criteria.where("name")
-                                                  .is(name));
+    Query query = new Query().addCriteria(Criteria.where("name").is(name));
     return Optional.ofNullable(mongoTemplate.findOne(query, ProjectEvent.class));
   }
 
@@ -74,18 +74,22 @@ public class ProjectService {
 
   @Transactional
   public ProjectEvent newProject(String name, String description, FileEvent... fileEvents) {
-    String sanitizedName = StringUtils.trimToEmpty(name)
-                                      .replaceAll("[^A-Za-z]+", "")
-                                      .toLowerCase();
-    if (sanitizedName.isEmpty() || sanitizedName.length() < 7 || findByName(sanitizedName).isPresent()) {
-      throw new RuntimeException(String.format("cannot create project %s. name not valid (minimum 7 alphabetic characters) or already exist", name));
+    String sanitizedName = StringUtils.trimToEmpty(name).replaceAll("[^A-Za-z]+", "").toLowerCase();
+    if (sanitizedName.isEmpty()
+        || sanitizedName.length() < 7
+        || findByName(sanitizedName).isPresent()) {
+      throw new RuntimeException(
+          String.format(
+              "cannot create project %s. name not valid (minimum 7 alphabetic characters) or already exist",
+              name));
     }
 
-    ProjectEvent project = ProjectEvent.builder()
-                                       .name(sanitizedName)
-                                       .description(description)
-                                       .fileEvents(Arrays.asList(fileEvents))
-                                       .build();
+    ProjectEvent project =
+        ProjectEvent.builder()
+            .name(sanitizedName)
+            .description(description)
+            .fileEvents(Arrays.asList(fileEvents))
+            .build();
     ProjectEvent save = mongoTemplate.save(project);
     loggerAction.info(save::getId, "new project with name %s created", sanitizedName);
     return save;

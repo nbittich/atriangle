@@ -15,16 +15,17 @@ public interface FileRestFeignClient {
   ResponseEntity<FileEvent> findById(@PathVariable("id") String id);
 
   @GetMapping("/download/{id}")
-  ResponseEntity<ByteArrayResource> download(@PathVariable("id") String id,
-                                             @RequestParam("correlationId") String correlationId) throws Exception;
+  ResponseEntity<ByteArrayResource> download(
+      @PathVariable("id") String id, @RequestParam("correlationId") String correlationId)
+      throws Exception;
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  ResponseEntity<FileEvent> upload(@RequestPart("file") MultipartFile file,
-                                   @RequestParam(value = "fileUploadType",
-                                                 defaultValue = "RAW_FILE") FileEventType fileUploadType,
-
-                                   @RequestParam(value = "correlationId") String correlationId) throws Exception;
-
+  ResponseEntity<FileEvent> upload(
+      @RequestPart("file") MultipartFile file,
+      @RequestParam(value = "fileUploadType", defaultValue = "RAW_FILE")
+          FileEventType fileUploadType,
+      @RequestParam(value = "correlationId") String correlationId)
+      throws Exception;
 
   @DeleteMapping
   Map.Entry<String, String> delete(@RequestParam("id") String id);

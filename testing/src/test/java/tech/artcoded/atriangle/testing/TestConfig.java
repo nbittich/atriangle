@@ -20,7 +20,9 @@ public class TestConfig {
 
   @Bean
   public TestRestTemplate restTemplate() {
-    return new TestRestTemplate(env.getRequiredProperty("backend.credentials.username"), env.getRequiredProperty("backend.credentials.password"));
+    return new TestRestTemplate(
+        env.getRequiredProperty("backend.credentials.username"),
+        env.getRequiredProperty("backend.credentials.password"));
   }
 
   @Bean

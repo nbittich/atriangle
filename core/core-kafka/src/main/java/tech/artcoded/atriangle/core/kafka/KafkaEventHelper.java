@@ -28,46 +28,53 @@ public interface KafkaEventHelper {
     return parseEvent(event.getEvent(), tClass);
   }
 
-  default KafkaEvent.KafkaEventBuilder copyKafkaEventBuilder(KafkaEvent kafkaEvent, BuildProperties buildProperties) {
-    return kafkaEvent.toBuilder()
-                     .eventMetadata(KafkaEventMetadata.builder()
-                                                      .version(buildProperties.getVersion())
-                                                      .artifactId(buildProperties.getArtifact())
-                                                      .groupId(buildProperties.getGroup())
-                                                      .moduleName(buildProperties.getName())
-                                                      .build());
+  default KafkaEvent.KafkaEventBuilder copyKafkaEventBuilder(
+      KafkaEvent kafkaEvent, BuildProperties buildProperties) {
+    return kafkaEvent
+        .toBuilder()
+        .eventMetadata(
+            KafkaEventMetadata.builder()
+                .version(buildProperties.getVersion())
+                .artifactId(buildProperties.getArtifact())
+                .groupId(buildProperties.getGroup())
+                .moduleName(buildProperties.getName())
+                .build());
   }
 
-  default KafkaEvent.KafkaEventBuilder newKafkaEventBuilder(String correlationId,
-                                                            int partition,
-                                                            long offset,
-                                                            Headers headers,
-                                                            BuildProperties buildProperties) {
-    Map<String, String> headersMap = StreamSupport.stream(headers.spliterator(), false)
-                                                  .map(header -> Map.entry(header.key(), new String(header.value())))
-                                                  .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+  default KafkaEvent.KafkaEventBuilder newKafkaEventBuilder(
+      String correlationId,
+      int partition,
+      long offset,
+      Headers headers,
+      BuildProperties buildProperties) {
+    Map<String, String> headersMap =
+        StreamSupport.stream(headers.spliterator(), false)
+            .map(header -> Map.entry(header.key(), new String(header.value())))
+            .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     return KafkaEvent.builder()
-                     .correlationId(correlationId)
-                     .eventMetadata(KafkaEventMetadata.builder()
-                                                      .version(buildProperties.getVersion())
-                                                      .artifactId(buildProperties.getArtifact())
-                                                      .groupId(buildProperties.getGroup())
-                                                      .moduleName(buildProperties.getName())
-                                                      .partition(partition)
-                                                      .offset(offset)
-                                                      .headers(headersMap)
-                                                      .build());
+        .correlationId(correlationId)
+        .eventMetadata(
+            KafkaEventMetadata.builder()
+                .version(buildProperties.getVersion())
+                .artifactId(buildProperties.getArtifact())
+                .groupId(buildProperties.getGroup())
+                .moduleName(buildProperties.getName())
+                .partition(partition)
+                .offset(offset)
+                .headers(headersMap)
+                .build());
   }
 
-  default KafkaEvent.KafkaEventBuilder newKafkaEventBuilderWithoutRecord(String correlationId,
-                                                                         BuildProperties buildProperties) {
+  default KafkaEvent.KafkaEventBuilder newKafkaEventBuilderWithoutRecord(
+      String correlationId, BuildProperties buildProperties) {
     return KafkaEvent.builder()
-                     .correlationId(correlationId)
-                     .eventMetadata(KafkaEventMetadata.builder()
-                                                      .version(buildProperties.getVersion())
-                                                      .artifactId(buildProperties.getArtifact())
-                                                      .groupId(buildProperties.getGroup())
-                                                      .moduleName(buildProperties.getName())
-                                                      .build());
+        .correlationId(correlationId)
+        .eventMetadata(
+            KafkaEventMetadata.builder()
+                .version(buildProperties.getVersion())
+                .artifactId(buildProperties.getArtifact())
+                .groupId(buildProperties.getGroup())
+                .moduleName(buildProperties.getName())
+                .build());
   }
 }

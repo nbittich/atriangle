@@ -63,5 +63,4 @@ public class User extends Auditable<String> implements UserDetails {
   public void setAuthorities(Collection<Role> roles) {
     this.roles = roles;
   }
-
 }

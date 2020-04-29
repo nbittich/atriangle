@@ -245,27 +245,28 @@
   <build>
     <plugins>
       <plugin>
-        <groupId>org.ec4j.maven</groupId>
-        <artifactId>editorconfig-maven-plugin</artifactId>
-        <version>0.0.11</version>
+        <groupId>com.theoryinpractise</groupId>
+        <artifactId>googleformatter-maven-plugin</artifactId>
+        <version>1.7.3</version>
         <executions>
           <execution>
-            <id>check</id>
-            <phase>verify</phase>
+            <id>reformat-sources</id>
+            <configuration>
+              <includeStale>false</includeStale>
+              <style>GOOGLE</style>
+              <formatMain>true</formatMain>
+              <formatTest>true</formatTest>
+              <filterModified>false</filterModified>
+              <skip>false</skip>
+              <fixImports>false</fixImports>
+              <maxLineLength>100</maxLineLength>
+            </configuration>
             <goals>
-              <goal>check</goal>
+              <goal>format</goal>
             </goals>
+            <phase>process-sources</phase>
           </execution>
         </executions>
-        <configuration>
-          <excludes>
-            <exclude>target/**</exclude>
-            <exclude>atriangle-frontend/**</exclude>
-          </excludes>
-          <includes>
-            <include>**</include>
-          </includes>
-        </configuration>
       </plugin>
     </plugins>
     <pluginManagement>

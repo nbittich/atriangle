@@ -19,24 +19,18 @@ import java.util.Date;
 @ToString
 public abstract class Auditable<U> {
 
-  @CreatedBy
-  protected U createdBy;
+  @CreatedBy protected U createdBy;
 
-
-  @LastModifiedBy
-  protected U lastModifiedBy;
+  @LastModifiedBy protected U lastModifiedBy;
 
   @CreatedDate
   @Temporal(TemporalType.TIMESTAMP)
-  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
-              timezone = "Europe/Brussels")
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
   protected Date creationDate;
-
 
   @LastModifiedDate
   @Temporal(TemporalType.TIMESTAMP)
-  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
-              timezone = "Europe/Brussels")
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
   protected Date lastModifiedDate;
 
   public U getCreatedBy() {

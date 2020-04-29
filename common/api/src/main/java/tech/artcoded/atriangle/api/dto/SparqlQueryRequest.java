@@ -13,7 +13,9 @@ import java.util.Map;
 @Builder
 public class SparqlQueryRequest {
   public enum SparqlQueryRequestType {
-    ASK_QUERY, SELECT_QUERY, CONSTRUCT_QUERY
+    ASK_QUERY,
+    SELECT_QUERY,
+    CONSTRUCT_QUERY
   }
 
   private String projectId;

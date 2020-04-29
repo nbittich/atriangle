@@ -13,13 +13,17 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 public class SinkResponse {
-  public enum SinkResponseStatus {SUCCESS, ERROR}
+  public enum SinkResponseStatus {
+    SUCCESS,
+    ERROR
+  }
 
   private EventType responseType;
   private FileEvent inputToSink;
   private String response;
+
   @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
   private Date finishedDate;
-  private SinkResponseStatus sinkResponsestatus;
 
+  private SinkResponseStatus sinkResponsestatus;
 }

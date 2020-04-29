@@ -27,15 +27,19 @@ public interface TestingUtils {
   }
 
   default ResponseEntity<ByteArrayResource> downloadFile(String url) {
-    return restTemplate().execute(url, HttpMethod.GET, null, clientHttpResponse -> {
-      String filename = clientHttpResponse.getHeaders()
-                                          .getContentDisposition()
-                                          .getFilename();
-      String contentType = requireNonNull(clientHttpResponse.getHeaders()
-                                                            .getContentType())
-        .toString();
-      return RestUtil.transformToByteArrayResource(filename, contentType, IOUtils.toByteArray(clientHttpResponse.getBody()));
-    });
+    return restTemplate()
+        .execute(
+            url,
+            HttpMethod.GET,
+            null,
+            clientHttpResponse -> {
+              String filename =
+                  clientHttpResponse.getHeaders().getContentDisposition().getFilename();
+              String contentType =
+                  requireNonNull(clientHttpResponse.getHeaders().getContentType()).toString();
+              return RestUtil.transformToByteArrayResource(
+                  filename, contentType, IOUtils.toByteArray(clientHttpResponse.getBody()));
+            });
   }
 
   @SneakyThrows
@@ -45,18 +49,19 @@ public interface TestingUtils {
     return new HttpEntity<>(MAPPER.writeValueAsString(requestBody), headers);
   }
 
-  default <T> ResponseEntity<T> postFileToProject(Map<String, String> requestParams, String url, String filename,
-                                                  Resource resource, Class<T> tClass) {
+  default <T> ResponseEntity<T> postFileToProject(
+      Map<String, String> requestParams,
+      String url,
+      String filename,
+      Resource resource,
+      Class<T> tClass) {
     HttpHeaders headers = new HttpHeaders();
     headers.setContentType(MediaType.MULTIPART_FORM_DATA);
 
     MultiValueMap<String, String> fileMap = new LinkedMultiValueMap<>();
-    ContentDisposition contentDisposition = ContentDisposition
-      .builder("form-data")
-      .name("file")
-      .filename(filename)
+    ContentDisposition contentDisposition =
+        ContentDisposition.builder("form-data").name("file").filename(filename).build();
 
-      .build();
     fileMap.add(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString());
     HttpEntity<Resource> fileEntity = new HttpEntity<>(resource, fileMap);
 
@@ -64,11 +69,7 @@ public interface TestingUtils {
     body.add("file", fileEntity);
     requestParams.forEach(body::add);
 
-    HttpEntity<MultiValueMap<String, Object>> requestEntity =
-      new HttpEntity<>(body, headers);
-    return restTemplate().exchange(url,
-                                   HttpMethod.POST,
-                                   requestEntity,
-                                   tClass);
+    HttpEntity<MultiValueMap<String, Object>> requestEntity = new HttpEntity<>(body, headers);
+    return restTemplate().exchange(url, HttpMethod.POST, requestEntity, tClass);
   }
 }

@@ -13,5 +13,4 @@ public interface FileUploadRepository extends MongoRepository<FileUpload, String
   Page<FileUpload> findAllByUploadType(FileEventType uploadType, Pageable pageable);
 
   List<FileUpload> findAllByUploadType(FileEventType uploadType);
-
 }

@@ -9,7 +9,6 @@ import org.springframework.web.context.request.WebRequest;
 public class DefaultExceptionHandler {
   @ExceptionHandler({RuntimeException.class})
   public ResponseEntity<String> runtimeException(WebRequest webRequest, Exception exception) {
-    return ResponseEntity.badRequest()
-                         .body(exception.getMessage());
+    return ResponseEntity.badRequest().body(exception.getMessage());
   }
 }

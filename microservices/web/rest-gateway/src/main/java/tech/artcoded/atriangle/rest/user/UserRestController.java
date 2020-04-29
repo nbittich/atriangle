@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.inject.Inject;
 import java.security.Principal;
 
-
 @RestController
 @RequestMapping("/api/user")
 public class UserRestController {
@@ -22,5 +21,4 @@ public class UserRestController {
   public User info(Principal principal) {
     return userRepository.principalToUser(principal);
   }
-
 }

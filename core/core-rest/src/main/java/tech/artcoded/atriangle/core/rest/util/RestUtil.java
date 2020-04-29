@@ -16,37 +16,45 @@ import java.util.function.Function;
 
 public interface RestUtil {
   Logger LOGGER = LoggerFactory.getLogger(RestUtil.class);
-  Function<MultipartFile, String> FILE_TO_JSON = file -> Optional.ofNullable(file)
-                                                                 .map(f -> {
-                                                                   try (var is = f.getInputStream()) {
-                                                                     return IOUtils.toString(is, StandardCharsets.UTF_8);
-                                                                   }
-                                                                   catch (Exception e) {
-                                                                     LOGGER.info("error transforming file", e);
-                                                                     return null;
-                                                                   }
-                                                                 })
-                                                                 .orElse("{}");
+  Function<MultipartFile, String> FILE_TO_JSON =
+      file ->
+          Optional.ofNullable(file)
+              .map(
+                  f -> {
+                    try (var is = f.getInputStream()) {
+                      return IOUtils.toString(is, StandardCharsets.UTF_8);
+                    } catch (Exception e) {
+                      LOGGER.info("error transforming file", e);
+                      return null;
+                    }
+                  })
+              .orElse("{}");
 
-  static ResponseEntity<ByteArrayResource> transformToByteArrayResource(FileEvent event, byte[] file) {
+  static ResponseEntity<ByteArrayResource> transformToByteArrayResource(
+      FileEvent event, byte[] file) {
     return Optional.ofNullable(event)
-                   .map(u -> ResponseEntity.ok()
-                                           .contentType(MediaType.parseMediaType(u.getContentType()))
-                                           .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + u.getOriginalFilename() + "\"")
-                                           .body(new ByteArrayResource(file)))
-                   .orElseGet(ResponseEntity.notFound()::build);
+        .map(
+            u ->
+                ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(u.getContentType()))
+                    .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + u.getOriginalFilename() + "\"")
+                    .body(new ByteArrayResource(file)))
+        .orElseGet(ResponseEntity.notFound()::build);
   }
 
-
-  static ResponseEntity<ByteArrayResource> transformToByteArrayResource(String filename, String contentType,
-                                                                        byte[] file) {
+  static ResponseEntity<ByteArrayResource> transformToByteArrayResource(
+      String filename, String contentType, byte[] file) {
     return Optional.ofNullable(file)
-                   .map(u -> ResponseEntity.ok()
-                                           .contentType(MediaType.parseMediaType(contentType))
-                                           .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
-                                           .body(new ByteArrayResource(file)))
-                   .orElse(ResponseEntity.badRequest()
-                                         .body(null));
+        .map(
+            u ->
+                ResponseEntity.ok()
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .header(
+                        HttpHeaders.CONTENT_DISPOSITION,
+                        "attachment; filename=\"" + filename + "\"")
+                    .body(new ByteArrayResource(file)))
+        .orElse(ResponseEntity.badRequest().body(null));
   }
-
 }

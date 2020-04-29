@@ -11,8 +11,6 @@ then
 fi
 
 mvn clean
-mvn editorconfig:check
-mvn editorconfig:format
 
 clocResult=$(cloc common core microservices frontend/atriangle-frontend/src testing --quiet)
 

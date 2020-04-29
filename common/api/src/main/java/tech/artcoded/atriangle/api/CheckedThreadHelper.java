@@ -17,10 +17,8 @@ public enum CheckedThreadHelper {
   SIXTY_MIN(60, TimeUnit.MINUTES),
   DISABLED(0, null);
 
-  @Getter
-  private final int rate;
-  @Getter
-  private final TimeUnit timeUnit;
+  @Getter private final int rate;
+  @Getter private final TimeUnit timeUnit;
 
   CheckedThreadHelper(int rate, TimeUnit timeUnit) {
     this.rate = rate;

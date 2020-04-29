@@ -11,7 +11,6 @@ docker system prune -f
 docker volume prune -f
 docker network prune -f
 
-mvn editorconfig:format
 mvn clean install -Ddocker
 
 # you must uncomment the next row in case of weird behavior

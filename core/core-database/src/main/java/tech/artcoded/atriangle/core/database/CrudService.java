@@ -111,5 +111,4 @@ public interface CrudService<K, V> {
   default boolean exists(Example<V> var1) {
     return getRepository().exists(var1);
   }
-
 }

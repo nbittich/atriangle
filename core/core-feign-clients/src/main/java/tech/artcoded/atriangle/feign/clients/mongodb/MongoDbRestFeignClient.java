@@ -19,12 +19,12 @@ public interface MongoDbRestFeignClient {
   ResponseEntity<String> deleteCollection(@RequestParam("collectionName") String collectionName);
 
   @DeleteMapping("/delete")
-  ResponseEntity<String> delete(@RequestParam("collectionName") String collectionName,
-                                @RequestParam("id") String id);
+  ResponseEntity<String> delete(
+      @RequestParam("collectionName") String collectionName, @RequestParam("id") String id);
 
   @PostMapping("/save")
-  ResponseEntity<RawJsonWrappedResponse> save(@RequestParam("collectionName") String collectionName,
-                                              @RequestBody String objectToSave);
+  ResponseEntity<RawJsonWrappedResponse> save(
+      @RequestParam("collectionName") String collectionName, @RequestBody String objectToSave);
 
   /**
    * e.g "{ age : { $lt : 50 } }"
@@ -34,13 +34,14 @@ public interface MongoDbRestFeignClient {
    * @return
    */
   @PostMapping("/query")
-  ResponseEntity<List<RawJsonWrappedResponse>> query(@RequestParam("collectionName") String collectionName,
-                                                     @RequestBody String query);
+  ResponseEntity<List<RawJsonWrappedResponse>> query(
+      @RequestParam("collectionName") String collectionName, @RequestBody String query);
 
   @GetMapping("/all")
-  ResponseEntity<Set<RawJsonWrappedResponse>> findAll(@RequestParam("collectionName") String collectionName);
+  ResponseEntity<Set<RawJsonWrappedResponse>> findAll(
+      @RequestParam("collectionName") String collectionName);
 
   @GetMapping("/by-id")
-  ResponseEntity<RawJsonWrappedResponse> findById(@RequestParam("collectionName") String collectionName,
-                                                  @RequestParam("id") String id);
+  ResponseEntity<RawJsonWrappedResponse> findById(
+      @RequestParam("collectionName") String collectionName, @RequestParam("id") String id);
 }

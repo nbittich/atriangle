@@ -40,19 +40,24 @@ public class FileUploadService {
   }
 
   public FileEvent upload(MultipartFile file, FileEventType uploadType) throws Exception {
-    File upload = new File(getDirectory(), UUID.randomUUID()
-                                               .toString() + "_" + FilenameUtils.normalize(file.getOriginalFilename()));
+    File upload =
+        new File(
+            getDirectory(),
+            UUID.randomUUID().toString()
+                + "_"
+                + FilenameUtils.normalize(file.getOriginalFilename()));
     FileUtils.writeByteArrayToFile(upload, file.getBytes());
     FileUpload apUpload = FileUpload.newUpload(file, uploadType, upload.getAbsolutePath());
     return FileUpload.transform(repository.save(apUpload));
   }
 
-  public FileUpload upload(String contentType, String filename, FileEventType uploadType,
-                           byte[] file) throws IOException {
-    File upload = new File(getDirectory(), UUID.randomUUID()
-                                               .toString() + '_' + filename);
+  public FileUpload upload(
+      String contentType, String filename, FileEventType uploadType, byte[] file)
+      throws IOException {
+    File upload = new File(getDirectory(), UUID.randomUUID().toString() + '_' + filename);
     FileUtils.writeByteArrayToFile(upload, file);
-    FileUpload uploadNew = FileUpload.newUpload(contentType, filename, uploadType, upload.getAbsolutePath());
+    FileUpload uploadNew =
+        FileUpload.newUpload(contentType, filename, uploadType, upload.getAbsolutePath());
     uploadNew.setSize(file.length);
     return repository.save(uploadNew);
   }
@@ -72,8 +77,7 @@ public class FileUploadService {
   public byte[] uploadToByteArray(FileEvent upload) {
     try {
       return FileUtils.readFileToByteArray(uploadToFile(upload));
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       return null;
     }
   }
@@ -91,5 +95,4 @@ public class FileUploadService {
     FileUtils.forceDelete(new File(upload.getPathToFile()));
     repository.delete(upload);
   }
-
 }

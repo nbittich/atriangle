@@ -20,9 +20,7 @@ public class UserFixture implements CommandLineRunner {
   private final UserRepository userRepository;
   private final BCryptPasswordEncoder passwordEncoder;
 
-  @Getter
-  @Setter
-  private List<User> users;
+  @Getter @Setter private List<User> users;
 
   @Inject
   public UserFixture(UserRepository userRepository, BCryptPasswordEncoder passwordEncoder) {
@@ -33,13 +31,12 @@ public class UserFixture implements CommandLineRunner {
   @Override
   public void run(String... args) throws Exception {
     userRepository.deleteAll();
-    userRepository.saveAll(users.stream()
-                                .peek(user -> log.info("saving user {}", user.getUsername()))
-                                .map(user -> user.toBuilder()
-                                                 .password(passwordEncoder.encode(user.getPassword()))
-                                                 .build())
-                                .collect(Collectors.toList()));
-
-
+    userRepository.saveAll(
+        users.stream()
+            .peek(user -> log.info("saving user {}", user.getUsername()))
+            .map(
+                user ->
+                    user.toBuilder().password(passwordEncoder.encode(user.getPassword())).build())
+            .collect(Collectors.toList()));
   }
 }

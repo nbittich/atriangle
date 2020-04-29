@@ -1,6 +1,5 @@
 package tech.artcoded.atriangle.rest.xls2rdf;
 
-
 import fr.sparna.rdf.xls2rdf.*;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -27,9 +26,9 @@ import java.util.*;
 
 @RestController
 @Slf4j
-public class Xls2RdfRestController implements PingControllerTrait, BuildInfoControllerTrait, Xls2RdfRestFeignClient {
-  @Getter
-  private final BuildProperties buildProperties;
+public class Xls2RdfRestController
+    implements PingControllerTrait, BuildInfoControllerTrait, Xls2RdfRestFeignClient {
+  @Getter private final BuildProperties buildProperties;
 
   @Inject
   public Xls2RdfRestController(BuildProperties buildProperties) {
@@ -43,61 +42,74 @@ public class Xls2RdfRestController implements PingControllerTrait, BuildInfoCont
 
   @Override
   @SwaggerHeaderAuthentication
-  public ResponseEntity<ByteArrayResource> convertRDF(String sourceString, MultipartFile file, String language,
-                                                      String url,
-                                                      String format, boolean useSkosXl, boolean useZip,
-                                                      boolean useGraph, boolean ignorePostProc) throws Exception {
+  public ResponseEntity<ByteArrayResource> convertRDF(
+      String sourceString,
+      MultipartFile file,
+      String language,
+      String url,
+      String format,
+      boolean useSkosXl,
+      boolean useZip,
+      boolean useGraph,
+      boolean ignorePostProc)
+      throws Exception {
     SOURCE_TYPE source = SOURCE_TYPE.valueOf(sourceString.toUpperCase());
-    RDFFormat theFormat = RDFWriterRegistry.getInstance()
-                                           .getFileFormatForMIMEType(format)
-                                           .orElse(RDFFormat.RDFXML);
+    RDFFormat theFormat =
+        RDFWriterRegistry.getInstance().getFileFormatForMIMEType(format).orElse(RDFFormat.RDFXML);
 
     InputStream in;
     String resultFileName = "skos-play-convert";
 
     switch (source) {
-      case FILE: {
-        if (file.isEmpty()) {
-          throw new RuntimeException("Uploaded file is empty");
-        }
+      case FILE:
+        {
+          if (file.isEmpty()) {
+            throw new RuntimeException("Uploaded file is empty");
+          }
 
-        in = file.getInputStream();
-        // set the output file name to the name of the input file
-        resultFileName = (file.getOriginalFilename()
-                              .contains(".")) ? file.getOriginalFilename()
-                                                    .substring(0, file.getOriginalFilename()
-                                                                      .lastIndexOf('.')) : file.getOriginalFilename();
-        break;
-      }
-      case URL: {
-        if (url.isEmpty()) {
-          throw new RuntimeException("Uploaded link file is empty");
+          in = file.getInputStream();
+          // set the output file name to the name of the input file
+          resultFileName =
+              (file.getOriginalFilename().contains("."))
+                  ? file.getOriginalFilename()
+                      .substring(0, file.getOriginalFilename().lastIndexOf('.'))
+                  : file.getOriginalFilename();
+          break;
         }
+      case URL:
+        {
+          if (url.isEmpty()) {
+            throw new RuntimeException("Uploaded link file is empty");
+          }
 
-        try {
-          URL urls = new URL(url);
-          InputStream urlInputStream = urls.openStream(); // throws an IOException
-          in = new DataInputStream(new BufferedInputStream(urlInputStream));
+          try {
+            URL urls = new URL(url);
+            InputStream urlInputStream = urls.openStream(); // throws an IOException
+            in = new DataInputStream(new BufferedInputStream(urlInputStream));
 
-          // set the output file name to the final part of the URL
-          resultFileName = (!urls.getPath()
-                                 .equals("")) ? urls.getPath() : resultFileName;
-          // keep only latest file, after final /
-          resultFileName = (resultFileName.contains("/")) ? resultFileName.substring(0, resultFileName.lastIndexOf("/")) : resultFileName;
+            // set the output file name to the final part of the URL
+            resultFileName = (!urls.getPath().equals("")) ? urls.getPath() : resultFileName;
+            // keep only latest file, after final /
+            resultFileName =
+                (resultFileName.contains("/"))
+                    ? resultFileName.substring(0, resultFileName.lastIndexOf("/"))
+                    : resultFileName;
+          } catch (IOException e) {
+            log.error("error", e);
+            throw new RuntimeException(e);
+          }
+
+          break;
         }
-        catch (IOException e) {
-          log.error("error", e);
-          throw new RuntimeException(e);
-        }
-
-        break;
-      }
       default:
         throw new NotImplementedException();
     }
 
     try {
-      resultFileName = (resultFileName.contains(".")) ? resultFileName.substring(0, resultFileName.lastIndexOf('.')) : resultFileName;
+      resultFileName =
+          (resultFileName.contains("."))
+              ? resultFileName.substring(0, resultFileName.lastIndexOf('.'))
+              : resultFileName;
       String extension = (useZip) ? "zip" : theFormat.getDefaultFileExtension();
 
       // add the date in the filename
@@ -105,37 +117,35 @@ public class Xls2RdfRestController implements PingControllerTrait, BuildInfoCont
 
       ByteArrayOutputStream responseOutputStream = new ByteArrayOutputStream();
       try (var openedIn = in) {
-        List<String> cvIds = runConversion(
-          new ModelWriterFactory(useZip, theFormat, useGraph).buildNewModelWriter(responseOutputStream),
-          openedIn,
-          Optional.ofNullable(language)
-                  .filter(StringUtils::isNotEmpty)
-                  .orElse(null),
-          useSkosXl,
-          ignorePostProc
-        );
+        List<String> cvIds =
+            runConversion(
+                new ModelWriterFactory(useZip, theFormat, useGraph)
+                    .buildNewModelWriter(responseOutputStream),
+                openedIn,
+                Optional.ofNullable(language).filter(StringUtils::isNotEmpty).orElse(null),
+                useSkosXl,
+                ignorePostProc);
 
         Collections.sort(cvIds);
-        cvIds.stream()
-             .map(cv -> "ConvertedVocabularyIdentifier: " + cv)
-             .forEach(log::info);
+        cvIds.stream().map(cv -> "ConvertedVocabularyIdentifier: " + cv).forEach(log::info);
 
         String filename = String.format("%s-%s.%s", resultFileName, dateString, extension);
         String contentType = useZip ? "application/zip" : theFormat.getDefaultMIMEType();
-        return RestUtil.transformToByteArrayResource(filename, contentType, responseOutputStream.toByteArray());
+        return RestUtil.transformToByteArrayResource(
+            filename, contentType, responseOutputStream.toByteArray());
       }
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       log.error("error", e);
       throw new RuntimeException(e);
     }
   }
 
-  private List<String> runConversion(ModelWriterIfc writer,
-                                     InputStream fileFrom,
-                                     String lang,
-                                     boolean generateXl,
-                                     boolean ignorePostProc) {
+  private List<String> runConversion(
+      ModelWriterIfc writer,
+      InputStream fileFrom,
+      String lang,
+      boolean generateXl,
+      boolean ignorePostProc) {
     Xls2RdfConverter converter = new Xls2RdfConverter(writer, lang);
     List<Xls2RdfPostProcessorIfc> postProcessors = new ArrayList<>();
 

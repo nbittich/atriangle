@@ -14,8 +14,7 @@ public enum RdfType {
   RDFJSON("RDF/JSON"),
   RDFA("RDFA");
 
-  @Getter
-  private String value;
+  @Getter private String value;
 
   RdfType(String value) {
     this.value = value;

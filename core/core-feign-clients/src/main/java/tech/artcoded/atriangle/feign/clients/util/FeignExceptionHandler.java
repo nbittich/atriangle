@@ -13,10 +13,9 @@ public class FeignExceptionHandler {
 
   @SneakyThrows
   @ExceptionHandler({FeignException.class})
-  public ResponseEntity<String> handleFeignStatusException(FeignException e, HttpServletResponse response) {
+  public ResponseEntity<String> handleFeignStatusException(
+      FeignException e, HttpServletResponse response) {
     response.setStatus(e.status());
-    return ResponseEntity.status(e.status())
-                         .body(e.contentUTF8());
+    return ResponseEntity.status(e.status()).body(e.contentUTF8());
   }
-
 }

@@ -15,14 +15,17 @@ public interface UserRepository extends JpaRepository<User, Long>, UserDetailsSe
   @Override
   default UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
     return this.findOneByUsername(s)
-               .orElseThrow(() -> new UsernameNotFoundException(s + " not found"));
+        .orElseThrow(() -> new UsernameNotFoundException(s + " not found"));
   }
 
   default User principalToUser(Principal p) {
     return this.findOneByUsername(p.getName())
-               .orElseThrow(() ->
-                              new RuntimeException(String.format("Principal %s not found", StringUtils.defaultIfEmpty(p.getName(), "USERNAME_NULL")))
-               );
+        .orElseThrow(
+            () ->
+                new RuntimeException(
+                    String.format(
+                        "Principal %s not found",
+                        StringUtils.defaultIfEmpty(p.getName(), "USERNAME_NULL"))));
   }
 
   Optional<User> findOneByUsername(String username);

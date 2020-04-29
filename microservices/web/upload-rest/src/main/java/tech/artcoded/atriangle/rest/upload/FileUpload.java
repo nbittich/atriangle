@@ -21,22 +21,22 @@ public class FileUpload {
 
   public static FileEvent transform(FileUpload fileUpload) {
     return FileEvent.builder()
-                    .creationDate(fileUpload.getCreationDate())
-                    .lastModifiedDate(fileUpload.getLastModifiedDate())
-                    .id(fileUpload.getId())
-                    .contentType(fileUpload.getContentType())
-                    .eventType(fileUpload.getUploadType())
-                    .name(fileUpload.getName())
-                    .originalFilename(fileUpload.getOriginalFilename())
-                    .pathToFile(fileUpload.getPathToFile())
-                    .size(fileUpload.getSize())
-                    .build();
+        .creationDate(fileUpload.getCreationDate())
+        .lastModifiedDate(fileUpload.getLastModifiedDate())
+        .id(fileUpload.getId())
+        .contentType(fileUpload.getContentType())
+        .eventType(fileUpload.getUploadType())
+        .name(fileUpload.getName())
+        .originalFilename(fileUpload.getOriginalFilename())
+        .pathToFile(fileUpload.getPathToFile())
+        .size(fileUpload.getSize())
+        .build();
   }
 
-  public static FileUpload newUpload(MultipartFile file, FileEventType uploadType, String pathToFile) {
+  public static FileUpload newUpload(
+      MultipartFile file, FileEventType uploadType, String pathToFile) {
     FileUpload upload = new FileUpload();
-    upload.setId(UUID.randomUUID()
-                     .toString());
+    upload.setId(UUID.randomUUID().toString());
     upload.setContentType(file.getContentType());
     upload.setOriginalFilename(file.getOriginalFilename());
     upload.setName(file.getOriginalFilename());
@@ -47,13 +47,10 @@ public class FileUpload {
     return upload;
   }
 
-  public static FileUpload newUpload(String contentType,
-                                     String originalFilename,
-                                     FileEventType uploadType,
-                                     String pathToFile) {
+  public static FileUpload newUpload(
+      String contentType, String originalFilename, FileEventType uploadType, String pathToFile) {
     FileUpload upload = new FileUpload();
-    upload.setId(UUID.randomUUID()
-                     .toString());
+    upload.setId(UUID.randomUUID().toString());
     upload.setContentType(contentType);
     upload.setOriginalFilename(originalFilename);
     upload.setName(originalFilename);
@@ -64,16 +61,13 @@ public class FileUpload {
     return upload;
   }
 
-  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
-              timezone = "Europe/Brussels")
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
   private Date creationDate;
 
-  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
-              timezone = "Europe/Brussels")
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
   private Date lastModifiedDate;
 
-  @Id
-  private String id;
+  @Id private String id;
 
   private String contentType;
   private FileEventType uploadType;
@@ -81,6 +75,4 @@ public class FileUpload {
   private String name;
   private String pathToFile;
   private long size;
-
-
 }

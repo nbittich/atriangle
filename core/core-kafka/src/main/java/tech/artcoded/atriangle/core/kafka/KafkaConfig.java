@@ -43,5 +43,4 @@ public class KafkaConfig {
   public LoggerAction loggerAction() {
     return () -> kafkaTemplate;
   }
-
 }

@@ -31,12 +31,13 @@ public class ProjectSinkProducer {
   private String topicProducer;
 
   @Inject
-  public ProjectSinkProducer(ProjectFileService projectFileService,
-                             ProjectService projectService,
-                             ObjectMapperWrapper objectMapperWrapper,
-                             KafkaTemplate<String, String> kafkaTemplate,
-                             BuildProperties buildProperties,
-                             KafkaEventHelper kafkaEventHelper) {
+  public ProjectSinkProducer(
+      ProjectFileService projectFileService,
+      ProjectService projectService,
+      ObjectMapperWrapper objectMapperWrapper,
+      KafkaTemplate<String, String> kafkaTemplate,
+      BuildProperties buildProperties,
+      KafkaEventHelper kafkaEventHelper) {
     this.projectFileService = projectFileService;
     this.projectService = projectService;
     this.objectMapperWrapper = objectMapperWrapper;
@@ -46,35 +47,41 @@ public class ProjectSinkProducer {
   }
 
   public void sink(SinkRequest sinkRequest) {
-    CompletableFuture.runAsync(() -> {
-      String projectId = sinkRequest.getProjectId();
-      log.info("sink {}, request {}", projectId, sinkRequest.getRdfFileEventId());
-      ProjectEvent projectEvent = projectService.findById(projectId)
-                                                .orElseThrow();
-      String ns = projectEvent.getName();
+    CompletableFuture.runAsync(
+        () -> {
+          String projectId = sinkRequest.getProjectId();
+          log.info("sink {}, request {}", projectId, sinkRequest.getRdfFileEventId());
+          ProjectEvent projectEvent = projectService.findById(projectId).orElseThrow();
+          String ns = projectEvent.getName();
 
+          RestEvent restRdfEvent =
+              RestEvent.builder()
+                  .namespace(ns)
+                  .inputToSink(
+                      projectFileService
+                          .getFileMetadata(projectId, sinkRequest.getRdfFileEventId())
+                          .orElseThrow())
+                  .shaclModel(
+                      projectFileService
+                          .getFileMetadata(projectId, sinkRequest.getShaclFileEventId())
+                          .orElse(null))
+                  .build();
 
-      RestEvent restRdfEvent = RestEvent.builder()
-                                        .namespace(ns)
-                                        .inputToSink(projectFileService.getFileMetadata(projectId, sinkRequest.getRdfFileEventId())
-                                                                       .orElseThrow())
-                                        .shaclModel(projectFileService.getFileMetadata(projectId, sinkRequest.getShaclFileEventId())
-                                                                      .orElse(null))
-                                        .build();
+          KafkaEvent kafkaEvent =
+              kafkaEventHelper
+                  .newKafkaEventBuilderWithoutRecord(projectId, buildProperties)
+                  .eventType(EventType.RDF_SINK)
+                  .id(IdGenerators.get())
+                  .event(objectMapperWrapper.serialize(restRdfEvent))
+                  .build();
 
-      KafkaEvent kafkaEvent = kafkaEventHelper.newKafkaEventBuilderWithoutRecord(projectId,
-                                                                                 buildProperties)
-                                              .eventType(EventType.RDF_SINK)
-                                              .id(IdGenerators.get())
-                                              .event(objectMapperWrapper.serialize(restRdfEvent))
-                                              .build();
+          log.info("sending kafka event");
 
-      log.info("sending kafka event");
+          ProducerRecord<String, String> restRecord =
+              new ProducerRecord<>(
+                  topicProducer, kafkaEvent.getId(), objectMapperWrapper.serialize(kafkaEvent));
 
-      ProducerRecord<String, String> restRecord = new ProducerRecord<>(topicProducer, kafkaEvent.getId(), objectMapperWrapper.serialize(kafkaEvent));
-
-      kafkaTemplate.send(restRecord);
-    });
-
+          kafkaTemplate.send(restRecord);
+        });
   }
 }

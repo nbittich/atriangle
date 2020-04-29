@@ -13,15 +13,16 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.io.IOException;
 
-
 @Configuration
 @Slf4j
 public class ElasticConfig {
 
   @Value("${elasticsearch.hostname}")
   private String hostname;
+
   @Value("${elasticsearch.port}")
   private int port;
+
   @Value("${elasticsearch.scheme}")
   private String scheme;
 
@@ -30,26 +31,23 @@ public class ElasticConfig {
   public RestHighLevelClient restHighLevelClient() {
     log.info("hostname {}, port {}, scheme {}", hostname, port, scheme);
     return new RestHighLevelClient(
-      RestClient.builder(
-        new HttpHost(hostname, port, scheme),
-        new HttpHost(hostname, port, scheme)));
+        RestClient.builder(
+            new HttpHost(hostname, port, scheme), new HttpHost(hostname, port, scheme)));
   }
 
   @Bean
   @Inject
   @Named("coreElasticSearchRdfService")
   public ElasticSearchRdfService elasticSearchRdfService(
-    @Named("coreRdfRestHighLevelClient") RestHighLevelClient client) throws IOException {
+      @Named("coreRdfRestHighLevelClient") RestHighLevelClient client) throws IOException {
     ElasticSearchRdfService elasticSearchRdfService = () -> client;
     log.info("elasticsearch ping result: {}", elasticSearchRdfService.ping());
     MainResponse info = elasticSearchRdfService.info();
     log.info("clusterName: {}", info.getClusterName());
     log.info("clusterUuid: {}", info.getClusterUuid());
     log.info("nodeName: {}", info.getNodeName());
-    log.info("elastic version: {}", info.getVersion()
-                                        .getNumber());
-    log.info("lucene version: {}", info.getVersion()
-                                       .getLuceneVersion());
+    log.info("elastic version: {}", info.getVersion().getNumber());
+    log.info("lucene version: {}", info.getVersion().getLuceneVersion());
     log.info("tagLine: {}", info.getTagline());
     return elasticSearchRdfService;
   }

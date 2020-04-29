@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
 
-
   private final Environment env;
 
   public JwtAuthorizationFilter(AuthenticationManager authenticationManager, Environment env) {
@@ -34,12 +33,12 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
   }
 
   @Override
-  protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
-                                  FilterChain filterChain) throws IOException, ServletException {
+  protected void doFilterInternal(
+      HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+      throws IOException, ServletException {
     Authentication authentication = getAuthentication(request);
     if (authentication != null) {
-      SecurityContextHolder.getContext()
-                           .setAuthentication(authentication);
+      SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     filterChain.doFilter(request, response);
@@ -48,31 +47,26 @@ public class JwtAuthorizationFilter extends BasicAuthenticationFilter {
   private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
     String token = request.getHeader("X-Auth-Token");
     if (StringUtils.isNotEmpty(token) && token.startsWith(env.getRequiredProperty("jwt.prefix"))) {
-      byte[] signingKey = env.getRequiredProperty("jwt.secret")
-                             .getBytes();
+      byte[] signingKey = env.getRequiredProperty("jwt.secret").getBytes();
       try {
 
-        Jws<Claims> parsedToken = Jwts.parserBuilder()
-                                      .requireAudience(env.getRequiredProperty("jwt.audience"))
-                                      .setSigningKey(signingKey)
-                                      .build()
-                                      .parseClaimsJws(token.replace("Bearer ", ""));
+        Jws<Claims> parsedToken =
+            Jwts.parserBuilder()
+                .requireAudience(env.getRequiredProperty("jwt.audience"))
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token.replace("Bearer ", ""));
 
-        String username = parsedToken
-          .getBody()
-          .getSubject();
+        String username = parsedToken.getBody().getSubject();
 
-        List<GrantedAuthority> authorities = ((List<?>) parsedToken.getBody()
-                                                                   .get("rol")).stream()
-                                                                               .map(String::valueOf)
-                                                                               .map(Role::valueOf)
-                                                                               .collect(Collectors.toList());
+        List<GrantedAuthority> authorities =
+            ((List<?>) parsedToken.getBody().get("rol"))
+                .stream().map(String::valueOf).map(Role::valueOf).collect(Collectors.toList());
 
         if (StringUtils.isNotEmpty(username)) {
           return new UsernamePasswordAuthenticationToken(username, null, authorities);
         }
-      }
-      catch (Exception e) {
+      } catch (Exception e) {
         logger.error("error occured while authorization phase ", e);
       }
     }

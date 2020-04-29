@@ -25,35 +25,35 @@ import java.util.UUID;
 @Slf4j
 public class LogSinkConsumer implements KafkaSink<String, String> {
   private final ElasticSearchRdfService elasticSearchRdfService;
-  @Getter
-  private final KafkaTemplate<String, String> kafkaTemplate;
+  @Getter private final KafkaTemplate<String, String> kafkaTemplate;
   private final ObjectMapperWrapper mapperWrapper;
   private final KafkaEventHelper kafkaEventHelper;
 
   @Value("${elasticsearch.shared-indexes.logsink}")
   private String logSinkIndex;
 
-
   @PostConstruct
   public void createIndexIfNotExist() {
     boolean indexExist = elasticSearchRdfService.indexExist(logSinkIndex);
     if (!indexExist) {
-      CreateIndexResponse response = elasticSearchRdfService.createIndex(logSinkIndex, createIndexRequest -> createIndexRequest);
+      CreateIndexResponse response =
+          elasticSearchRdfService.createIndex(
+              logSinkIndex, createIndexRequest -> createIndexRequest);
       log.info("acknowledge of index creation {}", response.isAcknowledged());
     }
   }
 
   @Inject
-  public LogSinkConsumer(ElasticSearchRdfService elasticSearchRdfService,
-                         KafkaTemplate<String, String> kafkaTemplate,
-                         ObjectMapperWrapper objectMapperWrapper,
-                         KafkaEventHelper kafkaEventHelper) {
+  public LogSinkConsumer(
+      ElasticSearchRdfService elasticSearchRdfService,
+      KafkaTemplate<String, String> kafkaTemplate,
+      ObjectMapperWrapper objectMapperWrapper,
+      KafkaEventHelper kafkaEventHelper) {
     this.elasticSearchRdfService = elasticSearchRdfService;
     this.kafkaTemplate = kafkaTemplate;
     this.mapperWrapper = objectMapperWrapper;
     this.kafkaEventHelper = kafkaEventHelper;
   }
-
 
   @Override
   public List<KafkaMessage<String, String>> consume(ConsumerRecord<String, String> record) {
@@ -61,10 +61,10 @@ public class LogSinkConsumer implements KafkaSink<String, String> {
 
     LogEvent event = kafkaEventHelper.parseEvent(logEvent, LogEvent.class);
 
-    String uuid = UUID.randomUUID()
-                      .toString();
+    String uuid = UUID.randomUUID().toString();
 
-    IndexResponse response = elasticSearchRdfService.index(logSinkIndex, uuid, mapperWrapper.serialize(event));
+    IndexResponse response =
+        elasticSearchRdfService.index(logSinkIndex, uuid, mapperWrapper.serialize(event));
 
     log.info("status {}", response.status());
 
@@ -75,6 +75,4 @@ public class LogSinkConsumer implements KafkaSink<String, String> {
 
     return List.of(); // no need to do anything
   }
-
-
 }

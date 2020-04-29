@@ -11,13 +11,11 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE, ElementType.TYPE})
 @ApiImplicitParams({
-                     @ApiImplicitParam(name = "X-AUTH-TOKEN",
-                                       value = "Access Token",
-                                       paramType = "header"),
-                     @ApiImplicitParam(name = "Authorization",
-                                       value = "Access Token",
-                                       defaultValue = "Basic YWRtaW46YWRtaW4=",
-                                       paramType = "header")
-                   })
-public @interface SwaggerHeaderAuthentication {
-}
+  @ApiImplicitParam(name = "X-AUTH-TOKEN", value = "Access Token", paramType = "header"),
+  @ApiImplicitParam(
+      name = "Authorization",
+      value = "Access Token",
+      defaultValue = "Basic YWRtaW46YWRtaW4=",
+      paramType = "header")
+})
+public @interface SwaggerHeaderAuthentication {}

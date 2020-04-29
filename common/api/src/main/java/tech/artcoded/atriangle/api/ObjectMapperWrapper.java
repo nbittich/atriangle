@@ -12,9 +12,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/**
- * @author Nordine Bittich
- */
+/** @author Nordine Bittich */
 @FunctionalInterface
 public interface ObjectMapperWrapper {
   ObjectMapper mapper();
@@ -31,8 +29,7 @@ public interface ObjectMapperWrapper {
     try {
       Optional<T> deserialize = deserialize(value, tClass);
       return deserialize.isPresent();
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       return false;
     }
   }
@@ -40,22 +37,25 @@ public interface ObjectMapperWrapper {
   default <T> Optional<T> deserialize(String value, Class<T> tClass) {
     try {
       return Optional.of(mapper().readValue(value, tClass));
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       LOG.debug("error while deserialize -> " + tClass, e);
       return Optional.empty();
     }
   }
 
   /**
-   * if any error occurs during the process of deserialization or if the object is null, throws a runtime exception
+   * if any error occurs during the process of deserialization or if the object is null, throws a
+   * runtime exception
    */
   default <T> T deserializeStrict(String value, Class<T> tClass) {
     try {
       return Optional.of(mapper().readValue(value, tClass))
-                     .orElseThrow(() -> new RuntimeException(String.format("cannot deserialize class %s with value %s", tClass.getName(), value)));
-    }
-    catch (IOException e) {
+          .orElseThrow(
+              () ->
+                  new RuntimeException(
+                      String.format(
+                          "cannot deserialize class %s with value %s", tClass.getName(), value)));
+    } catch (IOException e) {
       throw new RuntimeException(e);
     }
   }
@@ -66,18 +66,15 @@ public interface ObjectMapperWrapper {
   }
 
   default List<String> serializeList(List<Object> list) {
-    return list.stream()
-               .map(this::serialize)
-               .collect(Collectors.toList());
+    return list.stream().map(this::serialize).collect(Collectors.toList());
   }
-
 
   default <T> List<T> deserializeList(List<String> list, Class<T> tClass) {
     return list.stream()
-               .filter(Objects::nonNull)
-               .map(o -> deserialize(o, tClass))
-               .filter(Optional::isPresent)
-               .map(Optional::get)
-               .collect(Collectors.toList());
+        .filter(Objects::nonNull)
+        .map(o -> deserialize(o, tClass))
+        .filter(Optional::isPresent)
+        .map(Optional::get)
+        .collect(Collectors.toList());
   }
 }

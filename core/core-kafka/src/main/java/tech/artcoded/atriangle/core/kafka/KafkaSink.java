@@ -21,18 +21,25 @@ public interface KafkaSink<K, V> {
   List<KafkaMessage<K, V>> consume(ConsumerRecord<K, V> record) throws Exception;
 
   default Function<KafkaMessage<K, V>, SendResult<K, V>> sendKafkaMessageForEachEntries() {
-    return CheckedFunction.toFunction((var response) -> getKafkaTemplate().send(new ProducerRecord<>(response.getOutTopic(), response.getKey(), response
-      .getValue()))
-                                                                          .get());
+    return CheckedFunction.toFunction(
+        (var response) ->
+            getKafkaTemplate()
+                .send(
+                    new ProducerRecord<>(
+                        response.getOutTopic(), response.getKey(), response.getValue()))
+                .get());
   }
 
   @KafkaListener(topics = "#{'${kafka.listener.topics}'.split(',')}")
   default void sink(ConsumerRecord<K, V> record) throws Exception {
-    LOGGER.info("receiving key {}, partition {}, offset {}", record.key(), record.partition(), record.offset());
+    LOGGER.info(
+        "receiving key {}, partition {}, offset {}",
+        record.key(),
+        record.partition(),
+        record.offset());
     List<KafkaMessage<K, V>> responses = consume(record);
     responses.stream()
-             .map(this.sendKafkaMessageForEachEntries())
-             .forEach(result -> LOGGER.info("result {}", result.toString()));
+        .map(this.sendKafkaMessageForEachEntries())
+        .forEach(result -> LOGGER.info("result {}", result.toString()));
   }
-
 }

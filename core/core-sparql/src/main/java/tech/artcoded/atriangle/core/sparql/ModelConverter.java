@@ -45,6 +45,7 @@ public interface ModelConverter {
   static boolean equals(Model firstModel, Model secondModel) {
     return ModelUtil.equals(firstModel, secondModel);
   }
+
   static Collection<? extends Statement> difference(Model firstModel, Model secondModel) {
     return RepositoryUtil.difference(firstModel, secondModel);
   }
@@ -72,7 +73,8 @@ public interface ModelConverter {
     }
   }
 
-  static String inputStreamToLang(String filename, CheckedSupplier<InputStream> file, RDFFormat lang) {
+  static String inputStreamToLang(
+      String filename, CheckedSupplier<InputStream> file, RDFFormat lang) {
     return modelToLang(inputStreamToModel(filename, file), lang);
   }
 
@@ -82,9 +84,9 @@ public interface ModelConverter {
   }
 
   static boolean checkFileFormat(String filename) {
-    try{
+    try {
       return RDFFormat.forFileName(filename) != null;
-    }catch (Exception e){
+    } catch (Exception e) {
       LOG.error("an error occurred", e);
     }
     return false;

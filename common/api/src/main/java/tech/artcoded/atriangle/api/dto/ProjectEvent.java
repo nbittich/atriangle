@@ -15,23 +15,18 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProjectEvent {
-  @Builder.Default
-  private String id = IdGenerators.UUID_SUPPLIER.get();
+  @Builder.Default private String id = IdGenerators.UUID_SUPPLIER.get();
   private String name;
   private String description;
 
-  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
-              timezone = "Europe/Brussels")
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
   @Builder.Default
   protected Date creationDate = new Date();
 
-  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss",
-              timezone = "Europe/Brussels")
+  @JsonFormat(pattern = "dd-MM-yyyy HH:mm:ss", timezone = "Europe/Brussels")
   protected Date lastModifiedDate;
 
-  @Builder.Default
-  private List<FileEvent> fileEvents = List.of();
+  @Builder.Default private List<FileEvent> fileEvents = List.of();
 
-  @Builder.Default
-  private List<SparqlQueryRequest> sparqlQueries = List.of();
+  @Builder.Default private List<SparqlQueryRequest> sparqlQueries = List.of();
 }

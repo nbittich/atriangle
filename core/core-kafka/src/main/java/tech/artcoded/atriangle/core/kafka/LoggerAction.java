@@ -17,22 +17,25 @@ public interface LoggerAction {
   String DEFAULT_TOPIC_NAME = "event-sink-log";
   Logger LOGGER = LoggerFactory.getLogger(LoggerAction.class);
 
-
   KafkaTemplate<String, String> getKafkaTemplate();
 
   ObjectMapperWrapper MAPPER_WRAPPER = ObjectMapper::new;
 
   @SneakyThrows
-  default void log(String correlationId, LogEventType eventType, String messageFormat, Object... params) {
-    SendResult<String, String> response = getKafkaTemplate().send(DEFAULT_TOPIC_NAME, IdGenerators.get(),
-                                                                  MAPPER_WRAPPER.serialize(
-                                                                    LogEvent.builder()
-                                                                            .message(String.format(messageFormat, params))
-                                                                            .correlationId(correlationId)
-                                                                            .type(eventType)
-                                                                            .build()
-                                                                  ))
-                                                            .get();
+  default void log(
+      String correlationId, LogEventType eventType, String messageFormat, Object... params) {
+    SendResult<String, String> response =
+        getKafkaTemplate()
+            .send(
+                DEFAULT_TOPIC_NAME,
+                IdGenerators.get(),
+                MAPPER_WRAPPER.serialize(
+                    LogEvent.builder()
+                        .message(String.format(messageFormat, params))
+                        .correlationId(correlationId)
+                        .type(eventType)
+                        .build()))
+            .get();
     LOGGER.info("response {} ", response);
   }
 
@@ -47,5 +50,4 @@ public interface LoggerAction {
   default void warn(Supplier<String> correlationId, String messageFormat, Object... params) {
     log(correlationId.get(), LogEventType.WARN, messageFormat, params);
   }
-
 }

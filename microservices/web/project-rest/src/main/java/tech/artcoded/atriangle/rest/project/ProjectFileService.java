@@ -36,10 +36,11 @@ public class ProjectFileService {
   private final ProjectService projectService;
 
   @Inject
-  public ProjectFileService(LoggerAction loggerAction,
-                            FileRestFeignClient fileRestFeignClient,
-                            SparqlRestFeignClient sparqlRestFeignClient,
-                            ProjectService projectService) {
+  public ProjectFileService(
+      LoggerAction loggerAction,
+      FileRestFeignClient fileRestFeignClient,
+      SparqlRestFeignClient sparqlRestFeignClient,
+      ProjectService projectService) {
     this.loggerAction = loggerAction;
     this.fileRestFeignClient = fileRestFeignClient;
     this.sparqlRestFeignClient = sparqlRestFeignClient;
@@ -49,96 +50,104 @@ public class ProjectFileService {
   public ResponseEntity<ByteArrayResource> downloadFile(String projectId, String fileEventId) {
     try {
       Optional<ProjectEvent> projectEvent = projectService.findById(projectId);
-      return projectEvent.flatMap(p -> p.getFileEvents()
-                                        .stream()
-                                        .filter(file -> file.getId()
-                                                            .equals(fileEventId))
-                                        .findFirst())
-                         .map(CheckedFunction.toFunction(f -> fileRestFeignClient.download(f.getId(), projectId)))
-                         .orElseGet(ResponseEntity.notFound()::build);
-    }
-    catch (Exception e) {
+      return projectEvent
+          .flatMap(
+              p ->
+                  p.getFileEvents().stream()
+                      .filter(file -> file.getId().equals(fileEventId))
+                      .findFirst())
+          .map(CheckedFunction.toFunction(f -> fileRestFeignClient.download(f.getId(), projectId)))
+          .orElseGet(ResponseEntity.notFound()::build);
+    } catch (Exception e) {
       log.error("error", e);
       loggerAction.error(() -> projectId, "an error occured %s", e.getMessage());
     }
-    return ResponseEntity.notFound()
-                         .build();
+    return ResponseEntity.notFound().build();
   }
 
   public Optional<FileEvent> getFileMetadata(String projectId, String fileEventId) {
     Optional<ProjectEvent> projectEvent = projectService.findById(projectId);
-    return projectEvent.flatMap(p -> p.getFileEvents()
-                                      .stream()
-                                      .filter(file -> file.getId()
-                                                          .equals(fileEventId))
-                                      .findFirst());
+    return projectEvent.flatMap(
+        p ->
+            p.getFileEvents().stream()
+                .filter(file -> file.getId().equals(fileEventId))
+                .findFirst());
   }
 
   @Transactional
-  public Optional<Map.Entry<FileEvent, ProjectEvent>> addFile(String projectId, MultipartFile file,
-                                                              FileEventType fileEventType) {
-    if (FileEventType.RDF_FILE.equals(fileEventType) || FileEventType.SHACL_FILE.equals(fileEventType)) {
-      ResponseEntity<Boolean> isRDFResponse = sparqlRestFeignClient.checkFileFormat(file.getOriginalFilename());
-      if (!Optional.ofNullable(isRDFResponse)
-                   .map(ResponseEntity::getBody)
-                   .orElse(false)) {
+  public Optional<Map.Entry<FileEvent, ProjectEvent>> addFile(
+      String projectId, MultipartFile file, FileEventType fileEventType) {
+    if (FileEventType.RDF_FILE.equals(fileEventType)
+        || FileEventType.SHACL_FILE.equals(fileEventType)) {
+      ResponseEntity<Boolean> isRDFResponse =
+          sparqlRestFeignClient.checkFileFormat(file.getOriginalFilename());
+      if (!Optional.ofNullable(isRDFResponse).map(ResponseEntity::getBody).orElse(false)) {
         throw new RuntimeException("the file is not an rdf file");
       }
     }
 
-    return projectService.findById(projectId)
-                         .stream()
-                         .map(projectEvent -> {
-                           ResponseEntity<FileEvent> fileEvent = CheckedSupplier.toSupplier(() -> fileRestFeignClient.upload(file, fileEventType, projectId))
-                                                                                .get();
-                           if (!HttpStatus.OK.equals(fileEvent.getStatusCode()) || !fileEvent.hasBody()) {
-                             throw new RuntimeException("upload failed with status " + fileEvent.getStatusCode());
-                           }
+    return projectService.findById(projectId).stream()
+        .map(
+            projectEvent -> {
+              ResponseEntity<FileEvent> fileEvent =
+                  CheckedSupplier.toSupplier(
+                          () -> fileRestFeignClient.upload(file, fileEventType, projectId))
+                      .get();
+              if (!HttpStatus.OK.equals(fileEvent.getStatusCode()) || !fileEvent.hasBody()) {
+                throw new RuntimeException(
+                    "upload failed with status " + fileEvent.getStatusCode());
+              }
 
-                           FileEvent body = fileEvent.getBody();
-                           Preconditions.checkNotNull(body, "file event null");
+              FileEvent body = fileEvent.getBody();
+              Preconditions.checkNotNull(body, "file event null");
 
-                           loggerAction.info(projectEvent::getId, "new file %s added to project %s", body.getName(), projectEvent.getName());
+              loggerAction.info(
+                  projectEvent::getId,
+                  "new file %s added to project %s",
+                  body.getName(),
+                  projectEvent.getName());
 
-                           return Map.entry(body, projectEvent.toBuilder()
-                                                              .lastModifiedDate(new Date())
-                                                              .fileEvents(Stream.concat(projectEvent.getFileEvents()
-                                                                                                    .stream(), Stream.of(body))
-                                                                                .collect(toList()))
-                                                              .build());
-                         })
-                         .map(entry -> Map.entry(entry.getKey(), projectService.save(entry.getValue())))
-                         .findFirst();
+              return Map.entry(
+                  body,
+                  projectEvent
+                      .toBuilder()
+                      .lastModifiedDate(new Date())
+                      .fileEvents(
+                          Stream.concat(projectEvent.getFileEvents().stream(), Stream.of(body))
+                              .collect(toList()))
+                      .build());
+            })
+        .map(entry -> Map.entry(entry.getKey(), projectService.save(entry.getValue())))
+        .findFirst();
   }
-
 
   @Transactional
   public void deleteFile(String projectId, String fileEventId) {
     Optional<ProjectEvent> projectEvent = projectService.findById(projectId);
-    projectEvent.ifPresent((p) -> {
-      Optional<FileEvent> fileEvent = p.getFileEvents()
-                                       .stream()
-                                       .filter(file -> file.getId()
-                                                           .equals(fileEventId))
-                                       .findAny();
-      fileEvent.ifPresent(f -> {
-        loggerAction.info(p::getId, " file %s removed from project %s", f.getId(), p.getName());
-        fileRestFeignClient.delete(f.getId());
-        ProjectEvent newProject = p.toBuilder()
-                                   .lastModifiedDate(new Date())
-                                   .fileEvents(p.getFileEvents()
-                                                .stream()
-                                                .filter(file -> !file.getId()
-                                                                     .equals(fileEventId))
-                                                .collect(toList()))
-                                   .sparqlQueries(p.getSparqlQueries()
-                                                   .stream()
-                                                   .filter(file -> !file.getFreemarkerTemplateFileId()
-                                                                        .equals(fileEventId))
-                                                   .collect(Collectors.toList()))
-                                   .build();
-        projectService.save(newProject);
-      });
-    });
+    projectEvent.ifPresent(
+        (p) -> {
+          Optional<FileEvent> fileEvent =
+              p.getFileEvents().stream().filter(file -> file.getId().equals(fileEventId)).findAny();
+          fileEvent.ifPresent(
+              f -> {
+                loggerAction.info(
+                    p::getId, " file %s removed from project %s", f.getId(), p.getName());
+                fileRestFeignClient.delete(f.getId());
+                ProjectEvent newProject =
+                    p.toBuilder()
+                        .lastModifiedDate(new Date())
+                        .fileEvents(
+                            p.getFileEvents().stream()
+                                .filter(file -> !file.getId().equals(fileEventId))
+                                .collect(toList()))
+                        .sparqlQueries(
+                            p.getSparqlQueries().stream()
+                                .filter(
+                                    file -> !file.getFreemarkerTemplateFileId().equals(fileEventId))
+                                .collect(Collectors.toList()))
+                        .build();
+                projectService.save(newProject);
+              });
+        });
   }
 }
