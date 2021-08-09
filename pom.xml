@@ -33,7 +33,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jackson.version>2.10.5.1</jackson.version>
     <spring-kafka.version>2.4.5.RELEASE</spring-kafka.version>
-    <elasticsearch.version>7.6.2</elasticsearch.version>
+    <elasticsearch.version>7.13.3</elasticsearch.version>
     <spring.cloud.version>Hoxton.SR3</spring.cloud.version>
     <feign-form.version>3.8.0</feign-form.version>
     <ant.version>1.10.9</ant.version>
